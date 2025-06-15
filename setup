@@ -1,0 +1,7 @@
+sudo ln -sf ~/.config/nix/nixos /etc/nixos
+ln -sf ~/.config/nix/alacritty ~/.config/alacritty
+ln -sf ~/.config/nix/sway ~/.config/sway
+ln -sf ~/.config/nix/zsh/.zshrc ~/.zshrc
+ln -sf ~/.config/nix/nvim ~/.config/nvim
+ln -sf ~/.config/nix/.gitconfig ~/.gitconfig
+
