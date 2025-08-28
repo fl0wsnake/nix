@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export HISTFILE=/tmp/.zsh-history
+export SAVEHIST=5000000
+export HISTSIZE=5000000
+export HISTFILESIZE=$SAVEHIST
+export HISTORY_IGNORE='(clear|ls)'

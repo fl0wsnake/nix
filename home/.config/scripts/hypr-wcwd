@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Select the longest of all paths from the current process tree
+longest_pcwd=$(hyprctl activewindow -j \
+  | jq '.pid' \
+  | xargs pstree -p \
+  | sed -nE 's/ *\S* 0*([0-9]+).*/\1/p' \
+  | xargs -I{} readlink -e /proc/{}/cwd \
+  | awk '{if(length($0)>max){max=length($0);line=$0}}END{print line}')
+
+if [ -d "$longest_pcwd" ]; then
+  echo "$longest_pcwd"
+else
+  echo "$HOME"
+fi

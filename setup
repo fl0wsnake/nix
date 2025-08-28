@@ -1,7 +1,31 @@
-sudo ln -sf ~/.config/nix/nixos /etc/nixos
-ln -sf ~/.config/nix/alacritty ~/.config/alacritty
-ln -sf ~/.config/nix/sway ~/.config/sway
-ln -sf ~/.config/nix/zsh/.zshrc ~/.zshrc
-ln -sf ~/.config/nix/nvim ~/.config/nvim
-ln -sf ~/.config/nix/.gitconfig ~/.gitconfig
+#!/bin/sh
 
+### TODO Fix structure and populate these docs
+
+# TODO fix paths
+BASE=~/.config/nixos-rice
+
+sudo ln -sf $BASE/nixos /etc/nixos
+
+(
+  ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
+  ln -sTv $BASE/home/.bashrc ~/.bashrc
+  ln -sTv $BASE/home/.blerc ~/.blerc
+  ln -sTv $BASE/home/.config/alacritty ~/.config/alacritty
+  ln -sTv $BASE/home/.config/eww ~/.config/eww
+  ln -sTv $BASE/home/.config/hypr ~/.config/hypr
+  ln -sTv $BASE/home/.config/i3status-rust ~/.config/i3status-rust
+  ln -sTv $BASE/home/.config/mimeapps.list ~/.config/mimeapps.list
+  ln -sTv $BASE/home/.config/nnn ~/.config/nnn
+  ln -sTv $BASE/home/.config/nvim ~/.config/nvim
+  ln -sTv $BASE/home/.config/scripts ~/.config/scripts
+  ln -sTv $BASE/home/.config/vimiv ~/.config/vimiv
+  ln -sTv $BASE/home/.config/waybar ~/.config/waybar
+  ln -sTv $BASE/home/.config/zsh/.zshrc ~/.zshrc
+  ln -sTv $BASE/home/.fuzzy-home-ignore ~/.fuzzy-home-ignore
+  ln -sTv $BASE/home/.gitconfig ~/.gitconfig
+  ln -sTv $BASE/home/.lesskey ~/.lesskey
+  ln -sTv $BASE/home/.profile ~/.profile
+  ln -sTv $BASE/home/.tmux.conf ~/.tmux.conf
+  ln -sTv $BASE/home/.config/rclone.conf ~/$SYNC/.config/rclone.conf
+) 2>/dev/null

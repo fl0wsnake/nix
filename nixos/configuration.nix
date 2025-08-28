@@ -5,11 +5,13 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ 
-      # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./blue-light-filter.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -26,7 +28,7 @@
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-  time.timeZone = "Europe/Kyiv";
+  # time.timeZone = "Europe/Kyiv";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -50,44 +52,30 @@
     "x-scheme-handler/https" = [ "vivaldi.desktop" ];
   };
 
-  programs.sway = {
-    enable = true;
-    # wrapperFeatures.gtk
-  };
+  # programs.sway = {
+  #   enable = true;
+  #   # wrapperFeatures.gtk
+  # };
 
   services.greetd = {
     enable = true;
-    vt = 1;
+    # vt = 1;
     settings = {
       default_session = {
-        command = "${pkgs.sway}/bin/sway";
+        command = "${pkgs.hyprland}/bin/hyprland";
         user = "nix";
       };
     };
   };
 
-  # # services.displayManager.defaultSession = "gnome";
-  # services.xserver = {
-  #   enable = true;
-  #   displayManager = {
-  #     gdm = {
-  #       enable = true;
-  #       # wayland = true;
-  #     };
-  #   };
-  #   xkb = {
-  #     layout = "us";
-  #     variant = "";
-  #   };
-  #   # desktopManager.gnome = {
-  #   #   enable = true;
-  #   #   extraGSettingsOverridePackages = [ pkgs.mutter ];
-  #   #   extraGSettingsOverrides = ''
-  #   #     [org.gnome.mutter]
-  #   #     experimental-features=['scale-monitor-framebuffer']
-  #   #       '';
-  #   # };
-  # };
+  services.upower = {
+    enable = true;
+    usePercentageForPolicy = true;
+    percentageLow = 40;
+    percentageCritical = 35;
+    percentageAction = 30;
+    criticalPowerAction = "PowerOff";
+  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -115,14 +103,19 @@
   users.users.nix = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.zsh;
+    shell = pkgs.bash;
   };
+
+  users.defaultUserShell = pkgs.bash;
+
+  programs.bash.blesh.enable = true;
+
+  programs.starship.enable = true;
 
   security.sudo = {
     enable = true;
     wheelNeedsPassword = false;
   };
-
 
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
@@ -135,81 +128,273 @@
   # Install firefox.
   programs.firefox.enable = true;
 
-  programs.bash = {
-    shellAliases = {
-      nr="sudo nixos-rebuild switch";
-      e="nvim";
-      se="sudo -e";
-    };
-    interactiveShellInit = ''
-if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
-    tmux attach-session -t base || exec tmux new-session -s base
-fi
-  '';
-  };
+  # users.defaultUserShell = pkgs.zsh;
+  # programs.zsh = {
+  #   enable = true;
+  #   autosuggestions = {enable = true;};
+  #   syntaxHighlighting = {enable = true;};
+  #   # ohMyZsh = {
+  #   #   enable = true;
+  #   #   plugins = [
+  #   #    "zsh-expand"
+  #   #   # {
+  #   #   #   name = "zsh-expand";
+  #   #   #   src = pkgs.fetchFromGitHub {
+  #   #   #     owner = "MenkeTechnologies";
+  #   #   #     repo = "zsh-expand.git";
+  #   #   #   };
+  #   #   # }
+  #   #   ];
+  #   # };
+  # };
 
-  users.defaultUserShell = pkgs.zsh;
-  programs.zsh = {
-    enable = true;
-  };
-
-  programs.tmux = {
-    enable = true;
-    extraConfig = ''
-        set -g base-index 1
-        set -s escape-time 0
-        bind-key -n M-Tab select-window -l
-        bind-key -n M-1 select-window -t :1
-        bind-key -n M-2 select-window -t :2
-        bind-key -n M-3 select-window -t :3
-        bind-key -n M-4 select-window -t :4
-        bind-key -n M-5 select-window -t :5
-        bind-key -n M-6 select-window -t :6
-        bind-key -n M-7 select-window -t :7
-        bind-key -n M-8 select-window -t :8
-        bind-key -n M-9 select-window -t :9
-        bind-key -n C-S-PageUp swap-window -t -1\; select-window -p
-        bind-key -n C-S-PageDown swap-window -t +1\; select-window -n
-        bind-key -n M-t new-window
-        bind-key -n M-q kill-window
-    '';
-    };
+  programs.tmux = { enable = true; };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   environment.variables = {
-    GCM_CREDENTIAL_STORE = "plaintext";
-    EDITOR = "nvim";
-    VISUAL = "nvim";
-    EXPLORER = "nnn";
-    # Bookmarks
-    SYNC="~/Dropbox";
-    MY_WIKI="$SYNC/MyWiki";
-    MY_TODOS="$SYNC/MyTodos";
-    MY_SCREENSHOTS="$SYNC/MyScreenshots";
-    # Gnome only supports non-fractional scaling by default. Although "2" is too much for 2560x1440 and "1" is too little.
-    GDK_SCALE = "2";
-    QT_SCALE_FACTOR = "2";
+    NIXPKGS_ALLOW_UNFREE = 1;
+    # XDG_RUNTIME_DIR = "/run/user/$UID";
+    # XDG_CURRENT_DESKTOP = "hyprland"; # Helps applications know they're on Sway
+    # XDG_SESSION_TYPE = "wayland"; # Explicitly state the session type
   };
-  environment.sessionVariables = {
-    XDG_RUNTIME_DIR = "/run/user/${toString config.users.users.nix.uid}";
-    XDG_CURRENT_DESKTOP = "sway"; # Helps applications know they're on Sway
-    XDG_SESSION_TYPE = "wayland"; # Explicitly state the session type
+
+  # xdg.portal.enable = pkgs.lib.mkForce false; # Fix vivaldi using portals instead of xdg-open
+  # xdg.portal.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal-gtk # Important for GTK applications
+    ];
+    config.common.default = [ "hyprland" "gtk" ];
+  };
+
+  services.flatpak = { # from nix-flatpak
+    enable = true;
+    packages =
+      [ "app.zen_browser.zen" "com.github.tchx84.Flatseal" "com.viber.Viber" ];
+    overrides = {
+      "app.zen_browser.zen".Context = { filesystems = [ "home" "/tmp" ]; };
+    };
   };
 
   environment.systemPackages = with pkgs; [
-    gnumake # for bin/make
+    ### Code
+    (python3.withPackages (p: with p; [ yt-dlp curl-cffi ]))
+    gnumake # for vim-jsdoc
+    bash-language-server
+    vscode-langservers-extracted # lsps: css html eslint json markdown
+    nodePackages.prettier
+    black
+    go
+    typescript
+    typescript-language-server
+    lua
+    cargo
+    rustc
+    eww
+    ### System
+    rclone
+    lsof
+    pulseaudioFull # for pactl: watch-volume
+    glib
+    socat
+    wireplumber
+    brightnessctl
+    htop
+    psmisc # *pstree* for cwd, *killall* also
+    udiskie
+    ### Media
+    vlc
+    libva
+    vlc-bittorrent
+    ### Social
+    telegram-desktop
+    ### Hardware
+    tlp
+    acpi
+    ### Files
+    ffmpeg-full
+    inotify-tools
+    git
+    vimiv-qt
+    trash-cli
+    fd
+    git-credential-manager
+    ripgrep
+    nautilus
+    renameutils
+    ### Terminals
+    alacritty
+    ghostty
+    ### TUIs
+    neovim
+    nnn
+    bat
+    ### Internet
+    wget
+    transmission_3-gtk
+    vivaldi
+    dropbox
+    ### Deps
+    mpv # for nnn previews
     libappindicator # for Dropbox
-    neovim vimPlugins.lazy-nvim
-    alacritty nnn
-    sway wl-clipboard
-    xclip # for backup
-    git git-credential-manager
-    vivaldi dropbox
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    luarocks-nix # for nvim
+    gzip # for treesitter
+    gcc # for treesitter. Clang works the same.
+    cmake # for nvim supermaven
+    marksman # for nvim LSP
+    file
+    mktemp
+    xdotool
+    tabbed
+    sxiv
+    zathura
+    nil
+    nixfmt-classic
+    lua-language-server
+    ### Text
+    calc
+    jq
+    diffutils
+    translate-shell
+    dict
+    fzf
+    ### WM
+    hyprland
+    grim
+    hyprlandPlugins.hy3
+    libnotify
+    mako # notification daemon for libnotify
+    dconf # for dark theme in apps
+    xdg-desktop-portal-hyprland # for flatpak
+    xdg-desktop-portal
+    xdg-desktop-portal-gtk
+    hyprpaper
+    wl-clipboard
+    wofi
+    hyprsunset
+    waybar
+    libdbusmenu-gtk3 # for waybar
+    libappindicator-gtk3 # for waybar
+    i3status-rust
+    ### Trash
+    # zsh-completions zsh-syntax-highlighting nix-zsh-completions
+    # ncurses # for tui app colors
+    # gnumake # for bin/make
+    #  wget
   ];
+
+  services.dictd = {
+    enable = true;
+    DBs = [
+      pkgs.dictdDBs.wordnet
+      # pkgs.dictdDBs.gcide
+    ];
+  };
+
+  programs.npm.enable = true;
+
+  programs.dconf.profiles.user.databases = [{
+    settings."org/gnome/desktop/interface" = {
+      gtk-theme = "Adwaita-dark"; # Your chosen dark GTK theme
+      color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
+    };
+  }];
+
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandlePowerKey = "poweroff";
+    HandlePowerKeyLongPress = "sleep";
+  };
+
+  fonts = {
+    # enableDefaultPackages = true; # TODO remove
+    fontDir.enable = true; # TODO remove
+    packages = with pkgs; [ font-awesome ];
+    fontconfig = { enable = true; };
+  };
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  # NOTE: nixing coz nix runs `systemctl enable` for each one
+  systemd.user.services = {
+    dropbox-gui = {
+      wantedBy = [ "graphical-session.target" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
+        Restart = "on-failure";
+      };
+    };
+    dropbox-headless = {
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
+        Restart = "on-failure";
+        ConditionEnvironment = "!DISPLAY";
+      };
+    };
+    udiskie-gui = {
+      wantedBy = [ "graphical-session.target" ];
+      path = with pkgs; [ bash udiskie alacritty nnn xdg-utils ];
+      script = ''
+        udiskie --smart-tray | while read l; do 
+          mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
+          if [[ -d "$mount_dir" ]]; then
+            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
+          fi
+        done
+      '';
+      serviceConfig = { Restart = "on-failure"; };
+    };
+    udiskie-headless = {
+      wantedBy = [ "default.target" ];
+      path = with pkgs; [ bash udiskie alacritty nnn xdg-utils ];
+      script = ''
+        udiskie --smart-tray | while read l; do 
+          mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
+          if [[ -d "$mount_dir" ]]; then
+            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
+          fi
+        done
+      '';
+      serviceConfig = {
+        ConditionEnvironment = "!DISPLAY";
+        Restart = "on-failure";
+      };
+    };
+  };
+  services.udisks2.enable = true; # required for udiskie
+
+  # # services.displayManager.defaultSession = "gnome";
+  # services.xserver = {
+  #   enable = true;
+  #   displayManager = {
+  #     gdm = {
+  #       enable = true;
+  #       # wayland = true;
+  #     };
+  #   };
+  #   xkb = {
+  #     layout = "us";
+  #     variant = "";
+  #   };
+  #   # desktopManager.gnome = {
+  #   #   enable = true;
+  #   #   extraGSettingsOverridePackages = [ pkgs.mutter ];
+  #   #   extraGSettingsOverrides = ''
+  #   #     [org.gnome.mutter]
+  #   #     experimental-features=['scale-monitor-framebuffer']
+  #   #       '';
+  #   # };
+  # };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

@@ -1,0 +1,300 @@
+# Default config: /etc/static/sway/config
+
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+set $menu wmenu-run
+
+set $focused_con_pid swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused).pid'
+set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
+set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"
+
+font Hack 12, FontAwesome 12
+hide_edge_borders smart
+
+bar {
+# icon_theme Adwaita
+  position bottom
+# mode hide
+    status_command i3status-rs
+    font Hack 12, FontAwesome 12
+    separator_symbol |
+    strip_workspace_numbers yes
+    colors {
+      statusline #cccccc
+        background #101010
+    }
+}
+
+
+# output eDP-1 scale 1.6524
+output * bg #000000 solid_color
+# output * bg /run/current-system/sw/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+### Idle configuration
+#
+# Example configuration:
+#
+# exec swayidle -w \
+#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+#          before-sleep 'swaylock -f -c 000000'
+#
+# This will lock your screen after 300 seconds of inactivity, then turn off
+# your displays after another 300 seconds, and turn your screens back on when
+# resumed. It will also lock your screen before your computer goes to sleep.
+
+### Input configuration
+#
+# Example configuration:
+#
+#   input "2:14:SynPS/2_Synaptics_TouchPad" {
+#       dwt enabled
+#       tap enabled
+#       natural_scroll enabled
+#       middle_emulation enabled
+#   }
+#
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
+focus_follows_mouse no
+mouse_warping container
+seat * hide_cursor when-typing enable
+input type:keyboard {
+  repeat_delay 225
+  repeat_rate 20
+  xkb_layout 'us,ua'
+  xkb_options 'grp:win_space_toggle,caps:ctrl_modifier'
+  # xkb_options 'caps:ctrl_modifier'
+}
+input type:touchpad {
+  tap enabled
+  natural_scroll enabled
+}
+
+### Key bindings
+#
+# Basics:
+#
+# Start a terminal
+# bindsym $mod+Return exec $term
+bindsym $mod+Return exec $TERMINAL -e bash -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+
+# Start your launcher
+bindsym $mod+d exec $menu
+
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod normal
+
+# Reload the configuration file
+bindsym $mod+Shift+c reload
+
+# Exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+#
+# Moving around:
+#
+# Move your focus around
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+# Or use $mod+[up|down|left|right]
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move the focused window with the same, but add Shift
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+# Ditto, with arrow keys
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+#
+bindsym $mod+Tab+Ctrl workspace next
+bindsym $mod+Tab+Ctrl+Shift workspace prev
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+Tab+Shift move container to workspace back_and_forth
+
+# # Switch to workspace
+# bindsym $mod+1 workspace number 1
+# bindsym $mod+2 workspace number 2
+# bindsym $mod+3 workspace number 3
+# bindsym $mod+4 workspace number 4
+# bindsym $mod+5 workspace number 5
+# bindsym $mod+6 workspace number 6
+# bindsym $mod+7 workspace number 7
+# bindsym $mod+8 workspace number 8
+# bindsym $mod+9 workspace number 9
+# bindsym $mod+0 workspace number 10
+
+set $a_workspace 10:
+bindsym --to-code $mod+a workspace $a_workspace; exec $focused_con_pid >/dev/null || exec $TERMINAL -e $EDITOR +Wiki
+bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
+bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
+set $s_workspace 11:
+bindsym --to-code $mod+s workspace $s_workspace; exec $focused_con_pid >/dev/null || exec $BROWSER
+bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
+bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
+set $d_workspace 12:
+bindsym --to-code $mod+d workspace $d_workspace
+bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
+bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
+set $f_workspace 13:F
+bindsym --to-code $mod+f workspace $f_workspace
+bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
+bindsym --to-code $mod+f+Control exec $sway_scripts/move_workspace $current_ws_name $f_workspace
+set $g_workspace 14:G
+bindsym --to-code $mod+g workspace $g_workspace
+bindsym --to-code $mod+g+Shift move container to workspace $g_workspace
+bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_name $g_workspace
+
+set $1_workspace 30:1
+bindsym $mod+1 workspace $1_workspace
+bindsym $mod+1+Shift move container to workspace $1_workspace
+bindsym $mod+1+Control exec $sway_scripts/move_workspace $current_ws_name $1_workspace
+# exec notify-send $current_ws_name $1_workspace # 3 - 30:1
+set $2_workspace 31:2
+bindsym $mod+2 workspace $2_workspace
+bindsym $mod+2+Shift move container to workspace $2_workspace
+bindsym $mod+2+Control exec $sway_scripts/move_workspace $current_ws_name $2_workspace
+set $3_workspace 32:3
+bindsym $mod+3 workspace $3_workspace
+bindsym $mod+3+Shift move container to workspace $3_workspace
+bindsym $mod+3+Control exec $sway_scripts/move_workspace $current_ws_name $3_workspace
+set $4_workspace 33:4
+bindsym $mod+4 workspace $4_workspace
+bindsym $mod+4+Shift move container to workspace $4_workspace
+bindsym $mod+4+Control exec $sway_scripts/move_workspace $current_ws_name $4_workspace
+set $5_workspace 34:5
+bindsym $mod+5 workspace $5_workspace
+bindsym $mod+5+Shift move container to workspace $5_workspace
+bindsym $mod+5+Control exec $sway_scripts/move_workspace $current_ws_name $5_workspace
+set $6_workspace 35:6
+bindsym $mod+6 workspace $6_workspace
+bindsym $mod+6+Shift move container to workspace $6_workspace
+bindsym $mod+6+Control exec $sway_scripts/move_workspace $current_ws_name $6_workspace
+set $7_workspace 36:7
+bindsym $mod+7 workspace $7_workspace
+bindsym $mod+7+Shift move container to workspace $7_workspace
+bindsym $mod+7+Control exec $sway_scripts/move_workspace $current_ws_name $7_workspace
+set $8_workspace 37:8
+bindsym $mod+8 workspace $8_workspace
+bindsym $mod+8+Shift move container to workspace $8_workspace
+bindsym $mod+8+Control exec $sway_scripts/move_workspace $current_ws_name $8_workspace
+set $9_workspace 38:9
+bindsym $mod+9 workspace $9_workspace
+bindsym $mod+9+Shift move container to workspace $9_workspace
+bindsym $mod+9+Control exec $sway_scripts/move_workspace $current_ws_name $9_workspace
+set $0_workspace 39:0
+bindsym $mod+0 workspace $0_workspace
+bindsym $mod+0+Shift move container to workspace $0_workspace
+bindsym $mod+0+Control exec $sway_scripts/move_workspace $current_ws_name $0_workspace
+
+#     # Move focused container to workspace
+#     bindsym $mod+Shift+1 move container to workspace number 1
+#     bindsym $mod+Shift+2 move container to workspace number 2
+#     bindsym $mod+Shift+3 move container to workspace number 3
+#     bindsym $mod+Shift+4 move container to workspace number 4
+#     bindsym $mod+Shift+5 move container to workspace number 5
+#     bindsym $mod+Shift+6 move container to workspace number 6
+#     bindsym $mod+Shift+7 move container to workspace number 7
+#     bindsym $mod+Shift+8 move container to workspace number 8
+#     bindsym $mod+Shift+9 move container to workspace number 9
+#     bindsym $mod+Shift+0 move container to workspace number 10
+#     # Note: workspaces can have any name you want, not just numbers.
+#     # We just use 1-10 as the default.
+
+
+bindsym $mod+period split h
+bindsym $mod+period+Shift sway-msg input type:keyboard xkb_layout 'us,ua'
+bindsym $mod+comma split v
+bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
+
+bindsym --to-code $mod+n layout tabbed
+bindsym --to-code $mod+n+Shift layout stacking
+bindsym --to-code $mod+m layout toggle split
+
+
+bindsym --to-code $mod+q kill
+bindsym --to-code $mod+Ctrl+q fullscreen
+bindsym --to-code $mod+Shift+q floating toggle
+
+# Swap focus between the tiling area and the floating area
+bindsym $mod+space focus mode_toggle
+
+# Move focus to the parent container
+bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+# Sway has a "scratchpad", which is a bag of holding for windows.
+# You can send windows there and get them back later.
+
+# Move the currently focused window to the scratchpad
+bindsym $mod+Shift+minus move scratchpad
+
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+minus scratchpad show
+
+### Remove title bars
+default_border pixel 2
+
+#
+# Resizing containers:
+#
+mode "resize" {
+# left will shrink the containers width
+# right will grow the containers width
+# up will shrink the containers height
+# down will grow the containers height
+  bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+# Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+# Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+#
+# Utilities:
+#
+# Special keys to adjust volume via PulseAudio
+bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
+bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
+# Special keys to adjust brightness via brightnessctl
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+# Special key to take a screenshot with grim
+bindsym Print exec grim
+
+include /etc/sway/config.d/*
+
+workspace $1_workspace

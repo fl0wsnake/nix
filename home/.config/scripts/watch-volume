@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+get_sink_status() {
+  volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -Po '\d+(?=%)' | head -1)
+  mute=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -Po '(?<=Mute: ).*')
+  echo "{\"vol\":$volume,\"mute\":\"$mute\"}"
+}
+
+get_sink_status
+
+pactl subscribe | while read -r event; do
+if echo "$event" | grep -q "^Event 'change' on sink"; then
+  get_sink_status
+  notify-send "$volume"
+fi
+done

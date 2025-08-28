@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sudo tlp setcharge $(expr $1 - 5) $1 $BAT

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+file=~/"$(fd -LH -d7 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore | fzf)" \
+	|| exit
+echo -n "$file"

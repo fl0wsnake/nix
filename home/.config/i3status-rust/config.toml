@@ -1,0 +1,60 @@
+# https://github.com/greshake/i3status-rust#configuration
+# https://docs.rs/i3status-rs/latest/i3status_rs/blocks/index.html
+
+[theme]
+theme = "plain"
+[icons]
+icons = "awesome4"
+
+[[block]]
+block = "keyboard_layout"
+driver = "sway"
+[block.mappings]
+"English (US)" = "EN"
+"Russian (N/A)" = "RU"
+"Ukrainian (N/A)" = "UA"
+
+[[block]]
+block = "sound"
+
+[[block]]
+block = "backlight"
+format = "$icon$brightness"
+
+[[block]]
+block = "battery"
+driver = "upower"
+format = "{percentage}"
+
+# [[block]]
+# block = "custom"
+# command = "/usr/local/bin/thinkpad-battery-daemon 2>~/.thinkpad-battery-daemon.log"
+# persistent = true
+# format = "$text.pango-str()"
+
+[[block]]
+block = "cpu"
+interval = 1
+format = "$barchart"
+# info = 5
+# warning = 10
+# critical = 15
+
+[[block]]
+block = "memory"
+interval = 1
+format = "$icon$mem_avail.eng()"
+
+[[block]]
+block = "net"
+format = "$icon$speed_down"
+
+# [[block]]
+# block = "custom"
+# command = "tail -f ~/.weather-short"
+# persistent = true
+
+[[block]]
+block = "time"
+format = "$timestamp.datetime(f:'%a %m/%d %T')"
+interval = 1

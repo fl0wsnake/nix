@@ -1,0 +1,13 @@
+#!/bin/sh
+
+### Disable multiline mode as much as possible
+ble-bind -m vi_imap -f 'C-m' 'accept-line'
+ble-bind -m vi_imap -f 'RET' 'accept-line'
+ble-bind -m vi_nmap -f 'C-m' 'accept-line'
+ble-bind -m vi_nmap -f 'RET' 'accept-line'
+ble-bind -m emacs -f 'C-m' 'accept-line'
+ble-bind -m emacs -f 'RET' 'accept-line'
+
+# TODO remove this if you don't know why it's here
+# function ble/term/bracketed-paste-mode/enter { :; }
+# function ble/term/bracketed-paste-mode/leave { :; }

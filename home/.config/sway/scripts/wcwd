@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pid_w=$(swaymsg -t get_tree | jq '.. | select(.type?) | select(.type=="con") | select(.focused==true).pid')
+pid_deepest=$(
+ps --forest --no-headers -e -o pid,ppid,stat= \
+	| awk -v p="$pid_w" '$2==p{p=$1;print}' \
+	| awk '$3~"+"{print $1}' \
+	| tail -1
+)
+readlink /proc/$pid_deepest/cwd

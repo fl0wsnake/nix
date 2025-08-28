@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find . -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do if [[ "$file" != *.avi ]] && ! ffprobe -v error -show_streams "$file" 2>&1 | grep -q "codec_name=tlc"; then echo "✅ Compatible file: $file"; else echo "❌ Incompatible file: $file"; fi; done

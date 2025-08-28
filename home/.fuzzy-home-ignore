@@ -1,0 +1,13 @@
+.nix-profile
+.zen
+.var
+.nix-defexpr
+.mozilla
+.local/share/nvim/lazy/*
+.local
+.gnupg/*
+.git
+.dropbox-dist
+.dropbox
+.config/vivaldi
+.cache

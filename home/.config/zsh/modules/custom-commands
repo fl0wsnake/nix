@@ -1,0 +1,38 @@
+#!/bin/bash
+
+man-command() {
+	word_command=$(awk '{print $1;}'<<<"$BUFFER")
+	if type -p "$word_command" &>/dev/null; then
+		man "$word_command"
+	fi
+}
+zle -N man-command
+
+zshrc-edit() {
+	$EDITOR "$ZDOTDIR"/.zshrc
+	. "$ZDOTDIR"/.zshrc
+}
+zle -N zshrc-edit
+
+explorer() { # https://github.com/jarun/nnn/discussions/1817
+	command $EXPLORER <"$TTY"
+  zle .redisplay
+}
+zle -N explorer
+
+globalias() {
+	# zle expand-word # expands subcommands like `echo $(cat .profile)` which is awfull
+	zle _expand_alias # TODO: triggers completion-next
+	zle self-insert
+}
+zle -N globalias
+
+yank-line() {
+	wl-copy -n<<<"$BUFFER"
+}
+zle -N yank-line
+
+zsh-history() {
+	$EDITOR "$HISTFILE"
+}
+zle -N zsh-history

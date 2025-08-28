@@ -1,0 +1,19 @@
+# xdg-mime query default application/x-bittorrent = transmission-gtk.desktop
+# xdg-mime query filetype FILE.torrent = application/x-bittorrent
+
+[Default Applications]
+x-scheme-handler/http=app.zen_browser.zen.desktop
+x-scheme-handler/https=app.zen_browser.zen.desktop
+text/html=app.zen_browser.zen.desktop
+x-scheme-handler/about=app.zen_browser.zen.desktop
+x-scheme-handler/unknown=app.zen_browser.zen.desktop
+
+application/x-bittorrent=transmission-gtk.desktop
+
+x-scheme-handler/tg=org.telegram.desktop.desktop
+x-scheme-handler/tonsite=org.telegram.desktop.desktop
+x-scheme-handler/viber=viber.desktop
+
+[Added Associations]
+x-scheme-handler/tg=org.telegram.desktop.desktop;
+x-scheme-handler/tonsite=org.telegram.desktop.desktop;

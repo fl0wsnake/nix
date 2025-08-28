@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# `jq` inserts a `;` for `fzf` to hide device PATH 
+# and joins by `,` for `column` to make a nice table.
+blk_path=$(
+lsblk --json -I8 -oPATH,LABEL,SIZE,FSUSE% \
+	| jq -r '.blockdevices[]|select(.label)|.label=";"+.label|map(values)|join(",")' \
+	| column -t -s, \
+	| fzf -d';' --with-nth 2.. \
+	| grep -o '^\S*' \
+) || exit
+blk_base_path=$(grep -o '/dev/sd[a-zA-Z]*'<<<"$blk_path") || exit
+
+lsblk --json -I8 -oPATH,MOUNTPOINTS \
+	| jq -r ".blockdevices[]|select((.path|test(\"$blk_base_path\")) and .mountpoints[])|.mountpoints[]" \
+	| while read -r mountpoint; do
+	kill -s 9 $(lsof -t "$mountpoint") 2>/dev/null
+	umount "$blk_path" || exit
+done
+udisksctl power-off -b "$blk_path"

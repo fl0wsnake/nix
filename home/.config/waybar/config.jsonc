@@ -1,0 +1,98 @@
+{
+  "reload_style_on_change": true,
+  // "layer": "top", // Waybar at top layer
+  // "position": "bottom", // Waybar position (top|bottom|left|right)
+  "height": 24, // Waybar height (to be removed for auto height)
+  // "width": 1280, // Waybar width
+  "spacing": 0, // Gaps between modules (4px)
+  // Choose the order of the modules
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-right": [
+    "custom/i3status-rs",
+
+    // "hyprland/language",
+    // "pulseaudio",
+    // "backlight",
+    // "network",
+    // "cpu",
+    // "memory",
+    // "temperature",
+    // "battery",
+    // "clock",
+
+    "tray"
+  ],
+  "custom/i3status-rs": {
+    "format": "{}",
+    "exec": "i3status-rs",
+    "return-type": "json"
+  },
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "en",
+    "format-uk": "uk"
+  },
+  "pulseaudio": {
+    "format": "{volume}% {icon} {format_source}",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol"
+  },
+  "backlight": {
+    "format": "{percent}{icon}",
+    "format-icons": ["", "", "", "", "", "", "", "", ""]
+  },
+  "network": {
+    "format-wifi": "{essid} ({signalStrength}%) ",
+    "format-ethernet": "{ipaddr}/{cidr} ",
+    "tooltip-format": "{ifname} via {gwaddr} ",
+    "format-linked": "{ifname} (No IP) ",
+    "format-disconnected": "Disconnected ⚠",
+    "format-alt": "{ifname}: {ipaddr}/{cidr}"
+  },
+  "cpu": {
+    "format": "{usage} ",
+    "tooltip": false
+  },
+  "memory": {
+    "format": "{used} "
+  },
+  "temperature": {
+    "critical-threshold": 80,
+    "format": "{temperatureC}°C"
+  },
+  // "custom/battery": {
+  //   "exec": "",
+  // },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{capacity}{icon}",
+    "format-full": "{capacity}{icon}",
+    "format-charging": "{capacity}",
+    "format-plugged": "{capacity}",
+    "format-alt": "{time}{icon}",
+    "format-icons": ["", "", "", "", ""]
+  },
+  "tray": {
+    "spacing": 10
+  },
+  "clock": {
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+    "format": "{:%m-%d %H:%M}"
+  }
+}

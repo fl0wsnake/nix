@@ -1,8 +1,0 @@
-[user]
-  email = lastthursdayist@gmail.com
-  name = fl0wsnake
-[credential]
-	helper = 
-	helper = /run/current-system/sw/bin/git-credential-manager
-[credential "https://dev.azure.com"]
-	useHttpPath = true

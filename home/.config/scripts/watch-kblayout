@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+app_name=$(ps -q $$ -o comm=)
+
+shorten() {
+  if [[ "$1" == "Ukrainian" ]]; then
+    echo "UA"
+  elif [[ "$1" == "English (US)" ]]; then
+    echo "EN"
+  else
+    echo "$1"
+  fi
+}
+
+echo $(shorten "$(hyprctl devices -j | jq -r '.keyboards[0].active_keymap')")
+
+# Start socat in the background to listen for Hyprland events
+# The `activeLayout` event is what we're interested in
+socat -u UNIX-CONNECT:/run/user/1000/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r event; do
+if [[ "$event" =~ ^activelayout ]]; then
+  layout=$(echo "$event" | cut -d',' -f2)
+  echo `shorten "$layout"`
+  notify-send -a "$app_name" "$layout"
+fi
+done

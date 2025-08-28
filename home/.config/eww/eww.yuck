@@ -1,0 +1,95 @@
+; NOTE Some scripts just don't output fast enough not to cause harmless errors, hence all the 'deflisten :initial's
+
+(defwindow bar
+ :monitor 0
+ :geometry (geometry :x "0"
+   :y "0"
+   :width "100%"
+   :height "24px"
+   :anchor "top center")
+ :exclusive true
+ :windowtype "dock"
+ :spacing 2
+ (box
+  (box :orientation "horizontal"
+   :halign "start"
+   :space-evenly false
+   (hypr-workspaces)
+  )
+  (box :orientation "horizontal" :class "system-widgets"
+   :halign "end"
+   :space-evenly false
+   (kblayout) sep
+   (volume) sep
+   (cpu) sep
+   (battery) sep
+   (network) sep
+   time sep
+   (systray) sep
+  )
+ )
+  )
+
+  (defvar sep "|")
+
+   (deflisten watch-hypr-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "watch-hypr-workspaces")
+   (defwidget hypr-workspaces []
+    (box
+    (for ws in {watch-hypr-workspaces.wss}
+     (box 
+      :class { watch-hypr-workspaces.active_ws == ws ? "active_ws" : "" } 
+      ws)
+     ))
+    )
+
+   (deflisten watch-hypr-activewindowtitle "watch-hypr-activewindowtitle")
+   (defwidget hypr-activewindowtitle []
+    (box watch-hypr-activewindowtitle)
+    )
+
+
+   (deflisten watch-kblayout 'watch-kblayout')
+   (defwidget kblayout []
+    (box watch-kblayout)
+   )
+
+   (deflisten watch-volume :initial "{\"vol\": 0, \"mute\": \"no\"}" 'watch-volume')
+   (defwidget volume []
+    (box { (watch-volume.mute == "yes" ? "󰖁" : 
+                        watch-volume.vol < 33 ? "󰕿" :
+                        watch-volume.vol < 67 ? "󰖀" :
+                        "󰕾") + " " + watch-volume.vol })
+   )
+
+   (deflisten watch-network 'watch-network')
+   (defwidget network []
+    (box 
+     watch-network))
+
+
+  (defwidget cpu []
+   (box :class {EWW_CPU.avg>48?"critical":EWW_CPU.avg>16?"warning":"normal"}
+    " "{round(EWW_CPU.avg, 0)}
+   )
+  )
+
+  (defwidget battery []
+   (box :class
+    {EWW_BATTERY.BAT0.status == "Charging" ? "warning":
+    EWW_BATTERY.BAT0.capacity < 40 ? "critical":
+    "normal"}
+    {EWW_BATTERY.BAT0.status == "Charging" ? "" : 
+    EWW_BATTERY.BAT0.status == "Discharging" ? 
+    (EWW_BATTERY.BAT0.capacity > 80 ? "" : 
+     EWW_BATTERY.BAT0.capacity > 60 ? "" : 
+     EWW_BATTERY.BAT0.capacity > 40 ? "" : 
+     EWW_BATTERY.BAT0.capacity > 20 ? "" : 
+     "") : 
+    ""}
+    {EWW_BATTERY.BAT0.capacity}
+   )
+  )
+
+  (defpoll time :interval "10s" 
+   "date '+%H:%M'")
+

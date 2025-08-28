@@ -1,0 +1,7 @@
+#!/bin/sh
+
+${@:2} &
+inotifywait -me MODIFY "$1" | while read _; do 
+  kill `pgrep "${@:2}"`
+  ${@:2} &
+done

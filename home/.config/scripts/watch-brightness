@@ -1,0 +1,14 @@
+#!/bin/sh
+
+path='/sys/class/backlight/intel_backlight/brightness'
+max=`brightnessctl m`
+app_name=$(ps -q $$ -o comm=)
+
+brightness ()
+{
+  echo $((`cat "$path"` * 100 / $max))
+}
+
+inotifywait -mqe modify "$path" | while read -r line; do
+  notify-send -a "app_name" "$(brightness)"
+done

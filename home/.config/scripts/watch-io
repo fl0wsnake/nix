@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# cat /proc/diskstats | awk '$1!=id{id=$1;print $4}' | awk '{sum+=$1}END{print sum}'
+
+interval=5
+
+
+
+while true; do
+  read=$( (awk '$1!=id{id=$1;print $6}' | awk '{sum+=$1}END{print sum}') </proc/diskstats)
+  write=$( ( awk '$1!=id{id=$1;print $10}' | awk '{sum+=$1}END{print sum}') </proc/diskstats)
+  sleep $interval
+  read_new=$( (awk '$1!=id{id=$1;print $6}' | awk '{sum+=$1}END{print sum}') </proc/diskstats)
+  write_new=$( ( awk '$1!=id{id=$1;print $10}' | awk '{sum+=$1}END{print sum}') </proc/diskstats)
+  echo $(((read_new - read)/interval/1024/1024))/$(((write_new - write)/interval/1024/1024))
+done
+
