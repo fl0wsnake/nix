@@ -196,6 +196,8 @@
     rustc
     eww
     ### System
+    go-mtpfs # only one mtp tool that works
+    xorg.xev # print input codes
     rclone
     lsof
     pulseaudioFull # for pactl: watch-volume
@@ -207,6 +209,8 @@
     psmisc # *pstree* for cwd, *killall* also
     udiskie
     ### Media
+    mkvtoolnix-cli
+    libreoffice-fresh
     vlc
     libva
     vlc-bittorrent
@@ -216,6 +220,7 @@
     tlp
     acpi
     ### Files
+    ntfs3g
     ffmpeg-full
     inotify-tools
     git
@@ -263,7 +268,6 @@
     dict
     fzf
     ### WM
-    hyprland
     grim
     hyprlandPlugins.hy3
     libnotify
@@ -295,6 +299,11 @@
     ];
   };
 
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
+
   programs.npm.enable = true;
 
   programs.dconf.profiles.user.databases = [{
@@ -315,7 +324,9 @@
   fonts = {
     # enableDefaultPackages = true; # TODO remove
     fontDir.enable = true; # TODO remove
-    packages = with pkgs; [ font-awesome ];
+    packages = with pkgs;
+      [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation
+      (builtins.attrValues pkgs.nerd-fonts);
     fontconfig = { enable = true; };
   };
 
@@ -330,15 +341,16 @@
       wantedBy = [ "graphical-session.target" ];
       serviceConfig = {
         ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
-        Restart = "on-failure";
+        Restart = "always";
       };
     };
     dropbox-headless = {
       wantedBy = [ "default.target" ];
+      after = [ "graphical-session.target" ];
       serviceConfig = {
         ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
-        Restart = "on-failure";
-        ConditionEnvironment = "!DISPLAY";
+        Restart = "always";
+        ExecCondition = "if [ -n $WAYLAND_DISPLAY ]; then exit 1; fi";
       };
     };
     udiskie-gui = {
@@ -352,13 +364,14 @@
           fi
         done
       '';
-      serviceConfig = { Restart = "on-failure"; };
+      serviceConfig = { Restart = "always"; };
     };
     udiskie-headless = {
       wantedBy = [ "default.target" ];
+      after = [ "graphical-session.target" ];
       path = with pkgs; [ bash udiskie alacritty nnn xdg-utils ];
       script = ''
-        udiskie --smart-tray | while read l; do 
+        udiskie | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
             alacritty -e bash -c "nnn \"$mount_dir\"; bash"
@@ -366,8 +379,8 @@
         done
       '';
       serviceConfig = {
-        ConditionEnvironment = "!DISPLAY";
-        Restart = "on-failure";
+        ExecCondition = "if [ -n $WAYLAND_DISPLAY ]; then exit 1; fi";
+        Restart = "always";
       };
     };
   };

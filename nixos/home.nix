@@ -8,16 +8,16 @@
   # programs.yt-dlp.enable = true;
   # home.packages = [ (pkgs.python3.withPackages (p: [ p.yt-dlp p.curl-cffi ])) ];
 
-  programs.nnn = {
-    enable = true;
-    plugins = [ "nnn-fzf" ];
-  }
+  # programs.nnn = { TODO
+  #   enable = true;
+  # };
 
   wayland.windowManager.hyprland = {
     enable = true;
-    # plugins = [ pkgs.hyprlandPlugins.hy3 ];
     extraConfig = "source = ~/.config/hypr/config.conf";
   };
+
+  programs.home-manager.packages = [ nodePackages.npm-package-name ];
 
   # https://github.com/outfoxxed/hy3
 

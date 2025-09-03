@@ -1,31 +1,69 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-### TODO Fix structure and populate these docs
+DIR="$(readlink -f "$(dirname "$0")")" || exit
+
+ln -sTv ~/.config/rclone/rclone.conf $SYNC/.config/rclone.conf 2>/dev/null
 
 # TODO fix paths
-BASE=~/.config/nixos-rice
+# BASE=~/.config/nixos-rice
 
-sudo ln -sf $BASE/nixos /etc/nixos
+sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 
-(
-  ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
-  ln -sTv $BASE/home/.bashrc ~/.bashrc
-  ln -sTv $BASE/home/.blerc ~/.blerc
-  ln -sTv $BASE/home/.config/alacritty ~/.config/alacritty
-  ln -sTv $BASE/home/.config/eww ~/.config/eww
-  ln -sTv $BASE/home/.config/hypr ~/.config/hypr
-  ln -sTv $BASE/home/.config/i3status-rust ~/.config/i3status-rust
-  ln -sTv $BASE/home/.config/mimeapps.list ~/.config/mimeapps.list
-  ln -sTv $BASE/home/.config/nnn ~/.config/nnn
-  ln -sTv $BASE/home/.config/nvim ~/.config/nvim
-  ln -sTv $BASE/home/.config/scripts ~/.config/scripts
-  ln -sTv $BASE/home/.config/vimiv ~/.config/vimiv
-  ln -sTv $BASE/home/.config/waybar ~/.config/waybar
-  ln -sTv $BASE/home/.config/zsh/.zshrc ~/.zshrc
-  ln -sTv $BASE/home/.fuzzy-home-ignore ~/.fuzzy-home-ignore
-  ln -sTv $BASE/home/.gitconfig ~/.gitconfig
-  ln -sTv $BASE/home/.lesskey ~/.lesskey
-  ln -sTv $BASE/home/.profile ~/.profile
-  ln -sTv $BASE/home/.tmux.conf ~/.tmux.conf
-  ln -sTv $BASE/home/.config/rclone.conf ~/$SYNC/.config/rclone.conf
-) 2>/dev/null
+paths=(
+  # ~/.bash_profile # to prevent tmux from running ~/.profile
+  # ~/.bashrc
+  # ~/.blerc
+  # ~/.config/alacritty
+  # ~/.config/eww
+  # ~/.config/hypr
+  # ~/.config/i3status-rust
+  # ~/.config/mimeapps.list
+  # ~/.config/nnn
+  # ~/.config/nvim
+  # ~/.config/scripts
+  # ~/.config/vimiv
+  # ~/.config/waybar
+  # ~/.fuzzy-home-ignore
+  # ~/.gitconfig
+  ~/.ignore # for ripgrep
+  # ~/.lesskey
+  # ~/.profile
+  # ~/.tmux.conf
+)
+
+printf "%s\n" "${paths[@]}" | while read -r path; do 
+  path_bac="${path/~/$DIR/home}"
+  # echo "$path -> $path_bac"
+  if [[ ! -e "$path_bac" ]]; then
+    if [[ ! -e "$path" ]]; then
+      echo "No config to backup: $path"; exit 1
+    else
+      echo "Backing up $path to $(readlink -e "$path_bac")"
+      mv "$path" "$path_bac"
+    fi
+  fi
+  ln -sTv "$path_bac" "$path" 2>/dev/null
+done
+
+# (
+#   ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
+#   ln -sTv $BASE/home/.bashrc ~/.bashrc
+#   ln -sTv $BASE/home/.blerc ~/.blerc
+#   ln -sTv $BASE/home/.config/alacritty ~/.config/alacritty
+#   ln -sTv $BASE/home/.config/eww ~/.config/eww
+#   ln -sTv $BASE/home/.config/hypr ~/.config/hypr
+#   ln -sTv $BASE/home/.config/i3status-rust ~/.config/i3status-rust
+#   ln -sTv $BASE/home/.config/mimeapps.list ~/.config/mimeapps.list
+#   ln -sTv $BASE/home/.config/nnn ~/.config/nnn
+#   ln -sTv $BASE/home/.config/nvim ~/.config/nvim
+#   ln -sTv $BASE/home/.config/scripts ~/.config/scripts
+#   ln -sTv $BASE/home/.config/vimiv ~/.config/vimiv
+#   ln -sTv $BASE/home/.config/waybar ~/.config/waybar
+#   ln -sTv $BASE/home/.config/zsh/.zshrc ~/.zshrc
+#   ln -sTv $BASE/home/.fuzzy-home-ignore ~/.fuzzy-home-ignore
+#   ln -sTv $BASE/home/.gitconfig ~/.gitconfig
+#   ln -sTv $BASE/home/.lesskey ~/.lesskey
+#   ln -sTv $BASE/home/.profile ~/.profile
+#   ln -sTv $BASE/home/.tmux.conf ~/.tmux.conf
+#   ln -sTv $BASE/home/.config/rclone.conf ~/$SYNC/.config/rclone.conf
+#   ) 2>/dev/null

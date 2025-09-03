@@ -18,13 +18,12 @@ vim.g.maplocalleader = ","
 
 --- Process integration
 vim.cmd('set termguicolors title titlestring=%t')
-
 --- Filesystem
 vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall')
 -- vim.o.statusline = '%<%{v:lua.MyStatus()} %m%r%=%l,%L'
-vim.g.netrw_list_hide = '\\.\\./,\\./'
-vim.keymap.set("", "<A-x>", function() vim.cmd('Ex') end, Silent)
-vim.g.netrw_banner = 0
+-- vim.g.netrw_list_hide = '\\.\\./,\\./' # TODO: remove
+-- vim.keymap.set("", "<A-x>", function() vim.cmd('Ex') end, Silent)
+-- vim.g.netrw_banner = 0
 vim.keymap.set("", "<leader>y", function() vim.fn.system(string.format("wl-copy '%s'", vim.fn.expand('%:p'))) end, Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
 vim.keymap.set("", "<C-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
@@ -51,7 +50,7 @@ vim.keymap.set({ 'n', 'i' }, '<Left>', '<nop>')
 vim.keymap.set({ 'n', 'i' }, '<Right>', '<nop>')
 --- Search
 vim.cmd('set ignorecase smartcase')
-vim.keymap.set("", "//", function() vim.fn.setreg("/", "") end, Silent)
+vim.keymap.set("", "<leader>/", function() vim.fn.setreg("/", "") end, Silent)
 --- Select changed or yanked text
 vim.keymap.set("n", "<a-V>", "`[v`]")
 -- Select all text
@@ -81,6 +80,9 @@ vim.keymap.set("v", "<s-a-s>", ":'<,'>!sort -r<cr>", Silent)
 vim.keymap.set("n", "<s-a-s>", "vip:'<,'>!sort -r<cr>", Silent)
 
 --- Presentation
+vim.o.list = true
+vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
+
 vim.cmd('set number relativenumber nowrap scrolloff=999')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
@@ -95,14 +97,19 @@ vim.api.nvim_create_autocmd("BufReadPost", { -- Jump to last visited pos per fil
 })
 
 --- Tabs
-vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe .' end, Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = 'fzf',
+  callback = function()
+    vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
+  end
+})
 vim.keymap.set({ '', 'i' }, '<C-S-Tab>', function() vim.cmd 'tabp' end, Silent)
 vim.api.nvim_set_keymap('', '<C-l>', '<C-w>l', Silent)
 vim.api.nvim_set_keymap('', '<C-h>', '<C-w>h', Silent)
-vim.api.nvim_set_keymap('', '<C-h>', 'gT', Silent)
 vim.api.nvim_set_keymap('', '<C-1>', '1gt', Silent)
 vim.api.nvim_set_keymap('', '<C-2>', '2gt', Silent)
 vim.api.nvim_set_keymap('', '<C-3>', '3gt', Silent)

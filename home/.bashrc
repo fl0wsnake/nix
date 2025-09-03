@@ -9,16 +9,16 @@ alias h='$EDITOR $HISTFILE'
 alias o=xdg-open
 alias x="$EXPLORER"
 
-alias ga='git add -A'
-alias gs='git status'
-alias gc='git status'
 alias cp='rsync'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias di='nix-env -i'
-alias dr="sudo nixos-rebuild switch && notify-send '*nixos-rebuild switch* done'"
+alias dr="sudo nixos-rebuild switch; notify-send '*nixos-rebuild switch* done'"
 alias ds="nix search nixpkgs"
-alias du='nix-env --uninstall'
+alias dun='nix-env --uninstall'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
+alias ga='git add -A'
+alias gc='git status'
+alias gs='git status'
 alias ka='killall -r'
 alias md=mkdir
 alias pkill='pkill -c'
@@ -26,7 +26,7 @@ alias rsync-mtp='rsync -vhaP --no-perms --no-owner --no-group'
 alias rsync='rsync -vhaP'
 alias se="sudo $EDITOR"
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
-alias y='yt-dlp -N 8 --downloader aria2c --yes-playlist'
+alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 
 # eval "$(fzf --bash)" # for <C-r> history search
 
@@ -48,6 +48,58 @@ yank-line() {
   wl-copy -n<<<"$READLINE_LINE"
 }
 bind -x '"\ec": yank-line'
+
+
+toggle_sudo_prefix() {
+  READLINE_LINE_ARRAY=($(echo $READLINE_LINE))
+  if [[ ${READLINE_LINE_ARRAY[0]} == 'sudo' ]]; then
+    READLINE_LINE=$(echo "$READLINE_LINE" | sed -E 's/^\s*sudo\s*//')
+  else
+    READLINE_LINE="sudo $READLINE_LINE"
+  fi
+}
+bind -x '"\es": toggle_sudo_prefix'
+
+edit_command_line() {
+  local tmp_file=$(mktemp)
+  echo "$READLINE_LINE" > "$tmp_file"
+  $EDITOR "$tmp_file"
+  READLINE_LINE="$(<"$tmp_file")"
+  READLINE_POINT="${#READLINE_LINE}"
+  rm "$tmp_file"
+}
+bind -x '"\M-e":edit_command_line'
+
+default_subs() {
+  if [[ -z "$@" || -d "$@" ]]; then
+    find "$@" -name '*.mkv' -type f -maxdepth 1 | while read -r file; do
+      echo "$file"
+      set_file_default_subs "$file"
+    done
+  else
+  set_file_default_subs "$@"
+  fi
+}
+set_file_default_subs() {
+  sub_count=0
+  eng_sub_count=
+  while read -r line; do
+    if [[ $line =~ 'Track type: subtitles' ]]; then
+      ((sub_count+=1))
+    elif [[ $line =~ 'Language: eng' ]]; then
+      eng_sub_count=$sub_count
+    fi
+  done < <(mkvinfo "$@")
+  echo ${eng_sub_count:=$sub_count}
+  mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
+  mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
+}
+
+# mkvify() {
+#   for file in "$@"; do 
+#     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+#   done
+# }
 
 # OPTIONS
 shopt -s autocd # make `..` like `cd ..` etc

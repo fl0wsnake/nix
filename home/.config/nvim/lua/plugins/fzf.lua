@@ -7,23 +7,27 @@ local function lines() -- reimplementing because BLines turns search upside down
     return string.format('%s:%s', i + 1, e)
   end)
   local text = table.concat(source, "\n")
-  local mktemp = io.popen('mktemp /tmp/fzf-XXX.' .. vim.fn.expand('%:e'))
+  local mktemp = io.popen('mktemp /tmp/fzf-XXX')
   local tmp_file = mktemp:read("l")
   mktemp:close()
-  io.open(tmp_file, 'w'):write(text):close()
+  local tmp_file_with_ext = tmp_file .. '.' .. vim.fn.expand('%:e')
+  os.execute(string.format('mv %s %s', tmp_file, tmp_file_with_ext))
+  local file = io.open(tmp_file_with_ext, 'w')
+  file:write(text)
+  file:close()
   vim.call('fzf#run', {
     source = source,
     options = {
       "-d", ":",
       "--nth", "2..",
-      "--preview", "bat --style=plain --color=always --highlight-line {1} " .. tmp_file,
+      "--preview", "bat --style=plain --color=always --highlight-line {1} " .. tmp_file_with_ext,
       "--preview-window", "+{1}-/2", },
     sink = function(selection)
       local line_idx = string.match(selection, '([0-9]*):')
       vim.fn.execute(line_idx)
     end,
     exit = function()
-      os.execute('rm ' .. tmp_file)
+      os.execute('rm ' .. tmp_file_with_ext)
     end
   })
 end
@@ -69,11 +73,10 @@ return {
       vim.g.fzf_layout = { window = 'enew' }
       vim.keymap.set('', '<leader>f', function() vim.cmd('Files') end)
       vim.keymap.set('', '<leader>r', GFiles) -- TODO change to `call fzf#run({'sink': 'tabedit'})`
-      vim.keymap.set('', '<leader>R', function() vim.cmd('History') end)
-      -- vim.keymap.set('', '<leader>m', function() vim.cmd('Helptags') end)
+      vim.keymap.set('', '<leader>h', function() vim.cmd('History') end)
       vim.keymap.set('', '<leader>m', helptags)
       vim.keymap.set('', '<leader>sf', function() vim.cmd('Rg') end)
-      vim.keymap.set('', '<leader>sl', function() vim.cmd('BLines') end)
+      vim.keymap.set('', '<leader>sl', function() lines() end)
       vim.keymap.set('', '<leader>sr', function() -- Search Root
         vim.cmd(string.format('sil lcd %s', root()))
         vim.fn['fzf#vim#grep'](

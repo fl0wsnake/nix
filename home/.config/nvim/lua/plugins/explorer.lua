@@ -15,7 +15,7 @@ return {
         ["<C-t>"] = false,
       }
     })
-    vim.keymap.set('', '<M-x>', function() vim.cmd('Oil') end, Silent)
+    vim.keymap.set('', '<A-x>', function() vim.cmd('Oil') end, Silent)
   end,
 
   dependencies = {

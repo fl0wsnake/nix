@@ -1,6 +1,7 @@
-.nix-profile
 .zen
 .var
+.supermaven
+.nix-profile
 .nix-defexpr
 .mozilla
 .local/share/nvim/lazy/*
@@ -11,3 +12,10 @@
 .dropbox
 .config/vivaldi
 .cache
+.cargo/registry
+.config/transmission/*
+Documents/ViberDownloads
+Downloads/Telegram Desktop
+.ViberPC
+WS/**/*
+Dropbox/.config/transmission-torrents
