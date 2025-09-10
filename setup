@@ -47,6 +47,7 @@ done
 
 # (
 #   ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
+#   ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
 #   ln -sTv $BASE/home/.bashrc ~/.bashrc
 #   ln -sTv $BASE/home/.blerc ~/.blerc
 #   ln -sTv $BASE/home/.config/alacritty ~/.config/alacritty

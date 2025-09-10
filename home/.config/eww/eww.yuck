@@ -14,7 +14,7 @@
   (box :orientation "horizontal"
    :halign "start"
    :space-evenly false
-   (hypr-workspaces)
+   (wm-workspaces)
   )
   (box :orientation "horizontal" :class "system-widgets"
    :halign "end"
@@ -32,23 +32,18 @@
 
   (defvar sep "|")
 
-   (deflisten watch-hypr-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "watch-hypr-workspaces")
-   (defwidget hypr-workspaces []
+   (deflisten watch-wm-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-sway-workspaces")
+   (defwidget wm-workspaces []
     (box
-    (for ws in {watch-hypr-workspaces.wss}
+        :spacing 0
+    (for ws in {watch-wm-workspaces.wss}
      (box 
-      :class { watch-hypr-workspaces.active_ws == ws ? "active_ws" : "" } 
+      :class { watch-wm-workspaces.active_ws == ws ? "active_ws" : "" } 
       ws)
      ))
     )
 
-   (deflisten watch-hypr-activewindowtitle "watch-hypr-activewindowtitle")
-   (defwidget hypr-activewindowtitle []
-    (box watch-hypr-activewindowtitle)
-    )
-
-
-   (deflisten watch-kblayout 'watch-kblayout')
+   (deflisten watch-kblayout '$SWAY_SCRIPTS/watch-kblayout')
    (defwidget kblayout []
     (box watch-kblayout)
    )

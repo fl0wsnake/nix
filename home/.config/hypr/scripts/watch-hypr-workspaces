@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# hyprctl activewindow -j | jq
 
 hyprctl workspaces -j | jq -c "{active_ws: \"\", wss:sort_by(.id) | map(.name)}"
 socat -u "UNIX-CONNECT:/run/user/1000/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" - \

@@ -8,6 +8,7 @@ export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
 export PATH="$PATH:$HOME/.config/scripts"
 
 ### Default apps
+export SHELL_COMM="$(grep -Po '[^\/]+$'<<<$SHELL)" # $SHELL is defined by nixos
 export EDITOR="nvim"
 export VISUAL="nvim"
 export EXPLORER="nnn"
@@ -15,15 +16,19 @@ export TERMINAL="alacritty"
 export BROWSER="flatpak run app.zen_browser.zen"
 export HYPR_BORDER_SIZE=2 # for hacking hypr's window cycling
 
-### Dirs
-export SCRIPTS="$HOME/.config/scripts"
-export HYPR_SCRIPTS="$HOME/.config/scripts"
+### Sync
 export SYNC="$HOME/Dropbox"
-export SYNC_MOBILE="$HOME/OneDrive"
+. $SYNC/.config/.profile
 export SCRIPTS_SYNC="${SYNC}/.config/scripts"
 export WIKI="${SYNC}/Wiki"
 export TODOS="${SYNC}/Todos"
 export SCREENSHOTS="${SYNC}/Screenshots"
+
+### Dirs
+export SCRIPTS="$HOME/.config/scripts"
+# export HYPR_SCRIPTS="$HOME/.config/scripts"
+export SWAY_SCRIPTS="$HOME/.config/sway/scripts"
+export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"
 
 ### Opts
@@ -60,8 +65,8 @@ P:preview-tui;
 r:rsynccp;
 R:renamer;
 v:-!vimiv --command 'toggle thumbnail' *;
->:-!mogrify -rotate 90 '$PWD/$nnn'*;
-<:-!mogrify -rotate -90 '$PWD/$nnn'*;
+>:-!mogrify -rotate 90 '\$PWD/\$nnn'*;
+<:-!mogrify -rotate -90 '\$PWD/\$nnn'*;
 s:-!echo -n>$NNN_SEL*;
 n:-!nautilus . &*;
 y:-!wl-copy \$(sed s@^$HOME@~@ <<<\"\$PWD/\$nnn\")*;

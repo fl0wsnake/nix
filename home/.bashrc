@@ -19,6 +19,7 @@ alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias ga='git add -A'
 alias gc='git status'
 alias gs='git status'
+alias jr='journalctl --since today --reverse'
 alias ka='killall -r'
 alias md=mkdir
 alias pkill='pkill -c'
@@ -63,24 +64,24 @@ bind -x '"\es": toggle_sudo_prefix'
 edit_command_line() {
   local tmp_file=$(mktemp)
   echo "$READLINE_LINE" > "$tmp_file"
-  $EDITOR "$tmp_file"
+  $EDITOR +'se ft=sh' "$tmp_file"
   READLINE_LINE="$(<"$tmp_file")"
   READLINE_POINT="${#READLINE_LINE}"
   rm "$tmp_file"
 }
 bind -x '"\M-e":edit_command_line'
 
-default_subs() {
-  if [[ -z "$@" || -d "$@" ]]; then
+subs_set_default() {
+  if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -name '*.mkv' -type f -maxdepth 1 | while read -r file; do
       echo "$file"
-      set_file_default_subs "$file"
+      subs_set_default_file "$file"
     done
   else
-  set_file_default_subs "$@"
+  subs_set_default_file "$@"
   fi
 }
-set_file_default_subs() {
+subs_set_default_file() {
   sub_count=0
   eng_sub_count=
   while read -r line; do
@@ -95,11 +96,11 @@ set_file_default_subs() {
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
 
-# mkvify() {
-#   for file in "$@"; do 
-#     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
-#   done
-# }
+mkvify() {
+  for file in "$@"; do 
+    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+  done
+}
 
 # OPTIONS
 shopt -s autocd # make `..` like `cd ..` etc

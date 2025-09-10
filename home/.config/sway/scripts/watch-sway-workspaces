@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+swaymsg -t get_workspaces -r | jq -c "{\"active_ws\": \"\", \"wss\":sort_by(.name|split(\":\")[0]) | map(.name|split(\":\")[1])}"
+
+swaymsg -t subscribe '["workspace"]' -m | while read ws; do 
+cur_ws="$(jq '.current.name|split(":")[1]'<<<"$ws")"
+swaymsg -t get_workspaces -r | jq -c "{\"active_ws\": $cur_ws, \"wss\":sort_by(.name|split(\":\")[0]) | map(.name|split(\":\")[1])}"
+done

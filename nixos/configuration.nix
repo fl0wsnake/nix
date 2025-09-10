@@ -62,7 +62,8 @@
     # vt = 1;
     settings = {
       default_session = {
-        command = "${pkgs.hyprland}/bin/hyprland";
+        # command = "${pkgs.hyprland}/bin/hyprland";
+        command = "${pkgs.sway}/bin/sway";
         user = "nix";
       };
     };
@@ -154,7 +155,9 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.variables = {
+    CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
+    PATH = "$HOME/.npm/bin:$PATH";
     # XDG_RUNTIME_DIR = "/run/user/$UID";
     # XDG_CURRENT_DESKTOP = "hyprland"; # Helps applications know they're on Sway
     # XDG_SESSION_TYPE = "wayland"; # Explicitly state the session type
@@ -162,13 +165,15 @@
 
   # xdg.portal.enable = pkgs.lib.mkForce false; # Fix vivaldi using portals instead of xdg-open
   # xdg.portal.enable = true;
-  xdg.portal = {
+  xdg.portal = { # for flatpak
     enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-hyprland
-      xdg-desktop-portal-gtk # Important for GTK applications
-    ];
-    config.common.default = [ "hyprland" "gtk" ];
+    extraPortals = with pkgs;
+      [
+        # xdg-desktop-portal-hyprland
+        xdg-desktop-portal-gtk # Important for GTK applications
+      ];
+    # config.common.default = [ "hyprland" "gtk" ];
+    config.common.default = [ "sway" "gtk" ];
   };
 
   services.flatpak = { # from nix-flatpak
@@ -176,7 +181,9 @@
     packages =
       [ "app.zen_browser.zen" "com.github.tchx84.Flatseal" "com.viber.Viber" ];
     overrides = {
-      "app.zen_browser.zen".Context = { filesystems = [ "home" "/tmp" ]; };
+      "app.zen_browser.zen".Context = {
+        filesystems = [ "home" "/tmp" "xdg-config/" "xdg-data/" ];
+      };
     };
   };
 
@@ -186,6 +193,7 @@
     gnumake # for vim-jsdoc
     bash-language-server
     vscode-langservers-extracted # lsps: css html eslint json markdown
+    nodejs
     nodePackages.prettier
     black
     go
@@ -240,12 +248,15 @@
     bat
     ### Internet
     wget
+    # qbittorrent
     transmission_3-gtk
     vivaldi
     dropbox
     ### Deps
     mpv # for nnn previews
     libappindicator # for Dropbox
+    libappindicator-gtk3 # for waybar
+    libdbusmenu-gtk3 # for waybar
     luarocks-nix # for nvim
     gzip # for treesitter
     gcc # for treesitter. Clang works the same.
@@ -268,21 +279,20 @@
     dict
     fzf
     ### WM
+    clipman
     grim
-    hyprlandPlugins.hy3
     libnotify
     mako # notification daemon for libnotify
     dconf # for dark theme in apps
-    xdg-desktop-portal-hyprland # for flatpak
+    # xdg-desktop-portal-hyprland # for flatpak
     xdg-desktop-portal
     xdg-desktop-portal-gtk
+    xdg-desktop-portal-wlr # TODO: for opening files in flatpak zen-browser
     hyprpaper
     wl-clipboard
     wofi
     hyprsunset
     waybar
-    libdbusmenu-gtk3 # for waybar
-    libappindicator-gtk3 # for waybar
     i3status-rust
     ### Trash
     # zsh-completions zsh-syntax-highlighting nix-zsh-completions
@@ -299,12 +309,17 @@
     ];
   };
 
-  programs.hyprland = {
-    enable = true;
-    withUWSM = true;
-  };
+  programs.sway = { enable = true; };
 
-  programs.npm.enable = true;
+  # programs.hyprland = {
+  #   enable = true;
+  #   withUWSM = true; # for systemd `after = [ "graphical-session.target" ];`
+  # };
+
+  programs.npm = {
+    enable = true;
+    npmrc = "ignore-scripts=true";
+  };
 
   programs.dconf.profiles.user.databases = [{
     settings."org/gnome/desktop/interface" = {
@@ -382,6 +397,13 @@
         ExecCondition = "if [ -n $WAYLAND_DISPLAY ]; then exit 1; fi";
         Restart = "always";
       };
+    };
+    clip = {
+      wantedBy = [ "graphical-session.target" ];
+      path = with pkgs; [ wl-clipboard clipman ];
+      script =
+        "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.variables.CLIP_HIST}";
+      serviceConfig = { Restart = "always"; };
     };
   };
   services.udisks2.enable = true; # required for udiskie

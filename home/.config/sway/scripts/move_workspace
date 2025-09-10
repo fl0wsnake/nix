@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+workspace_subject=$1
+workspace_target=$2
+workspace_temp="0:"
+
+if swaymsg -t get_workspaces | jq ".[] | .name" | grep -q -w "$workspace_target"; then
+  swaymsg rename workspace "$workspace_subject" to "$workspace_temp"
+  swaymsg rename workspace "$workspace_target" to "$workspace_subject"
+  swaymsg rename workspace "$workspace_temp" to "$workspace_target"
+else
+  swaymsg rename workspace "$workspace_subject" to "$workspace_target"
+fi

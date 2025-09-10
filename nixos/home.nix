@@ -17,8 +17,6 @@
     extraConfig = "source = ~/.config/hypr/config.conf";
   };
 
-  programs.home-manager.packages = [ nodePackages.npm-package-name ];
-
   # https://github.com/outfoxxed/hy3
 
   programs.fzf = {
