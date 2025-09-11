@@ -25,7 +25,7 @@ paths=(
   # ~/.config/waybar
   # ~/.fuzzy-home-ignore
   # ~/.gitconfig
-  ~/.ignore # for ripgrep
+  # ~/.ignore # for ripgrep
   # ~/.lesskey
   # ~/.profile
   # ~/.tmux.conf
@@ -33,9 +33,9 @@ paths=(
 
 printf "%s\n" "${paths[@]}" | while read -r path; do 
   path_bac="${path/~/$DIR/home}"
-  # echo "$path -> $path_bac"
   if [[ ! -e "$path_bac" ]]; then
     if [[ ! -e "$path" ]]; then
+      echo "$path"
       echo "No config to backup: $path"; exit 1
     else
       echo "Backing up $path to $(readlink -e "$path_bac")"

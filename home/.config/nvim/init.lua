@@ -24,7 +24,12 @@ vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall'
 -- vim.g.netrw_list_hide = '\\.\\./,\\./' # TODO: remove
 -- vim.keymap.set("", "<A-x>", function() vim.cmd('Ex') end, Silent)
 -- vim.g.netrw_banner = 0
-vim.keymap.set("", "<leader>y", function() vim.fn.system(string.format("wl-copy '%s'", vim.fn.expand('%:p'))) end, Silent)
+vim.keymap.set("", "<leader>y",
+  function()
+    vim.fn.system(string.format("wl-copy '%s'",
+      vim.fn.substitute(vim.fn.expand('%:p'), os.getenv("HOME"), '~', '')))
+  end,
+  Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
 vim.keymap.set("", "<C-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
 vim.keymap.set("", "<C-q>", function() vim.cmd('q') end, Silent)
@@ -83,7 +88,7 @@ vim.keymap.set("n", "<s-a-s>", "vip:'<,'>!sort -r<cr>", Silent)
 vim.o.list = true
 vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
 
-vim.cmd('set number relativenumber nowrap scrolloff=999')
+vim.cmd('set number relativenumber nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
 })

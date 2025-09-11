@@ -83,7 +83,7 @@
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
+  security.rtkit.enable = true; # Required for low-latency audio
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -349,6 +349,9 @@
     enable = true;
     enable32Bit = true;
   };
+
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true; # Enables the Blueman graphical tool
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
