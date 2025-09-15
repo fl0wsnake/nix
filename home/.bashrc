@@ -10,7 +10,6 @@ alias o=xdg-open
 alias x="$EXPLORER"
 alias w='wait; '
 
-alias cp='rsync'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias di='nix-env -i'
 alias dr="(sudo nixos-rebuild switch; notify-send '*nixos-rebuild switch* done') &"
@@ -20,6 +19,7 @@ alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias ga='git add -A'
 alias gc='git commit -v'
 alias gs='git status'
+alias gp='git push'
 alias jr='journalctl --since today --reverse'
 alias ka='killall -r'
 alias md=mkdir

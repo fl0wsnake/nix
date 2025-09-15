@@ -209,6 +209,7 @@
     rclone
     lsof
     pulseaudioFull # for pactl: watch-volume
+    pavucontrol # for combining audio sinks (2 bluetooth earpods)
     glib
     socat
     wireplumber
@@ -279,6 +280,7 @@
     dict
     fzf
     ### WM
+    wlsunset
     clipman
     grim
     libnotify
@@ -406,6 +408,12 @@
       path = with pkgs; [ wl-clipboard clipman ];
       script =
         "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.variables.CLIP_HIST}";
+      serviceConfig = { Restart = "always"; };
+    };
+    wlsunset = {
+      wantedBy = [ "graphical-session.target" ];
+      path = with pkgs; [ wlsunset ];
+      script = "wlsunset -S 4:30 -s 20:00";
       serviceConfig = { Restart = "always"; };
     };
   };

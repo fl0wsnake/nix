@@ -300,5 +300,6 @@ assign [title="^Transmission.*"] $f_workspace
 
 exec --no-startup-id eww open bar
 exec --no-startup-id $BROWSER
+exec --no-startup-id swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' && sudo modprobe -r psmouse && sudo modprobe psmouse
 
 workspace $1_workspace

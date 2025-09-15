@@ -10,25 +10,25 @@ ln -sTv ~/.config/rclone/rclone.conf $SYNC/.config/rclone.conf 2>/dev/null
 sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 
 paths=(
-  # ~/.bash_profile # to prevent tmux from running ~/.profile
-  # ~/.bashrc
-  # ~/.blerc
-  # ~/.config/alacritty
-  # ~/.config/eww
-  # ~/.config/hypr
-  # ~/.config/i3status-rust
-  # ~/.config/mimeapps.list
-  # ~/.config/nnn
-  # ~/.config/nvim
-  # ~/.config/scripts
-  # ~/.config/vimiv
-  # ~/.config/waybar
-  # ~/.fuzzy-home-ignore
-  # ~/.gitconfig
-  # ~/.ignore # for ripgrep
-  # ~/.lesskey
-  # ~/.profile
-  # ~/.tmux.conf
+  ~/.bash_profile # to prevent tmux from running ~/.profile
+  ~/.bashrc
+  ~/.blerc
+  ~/.config/alacritty
+  ~/.config/eww
+  ~/.config/hypr
+  ~/.config/i3status-rust
+  ~/.config/mimeapps.list
+  ~/.config/nnn
+  ~/.config/nvim
+  ~/.config/scripts
+  ~/.config/vimiv
+  ~/.config/waybar
+  ~/.fuzzy-home-ignore
+  ~/.gitconfig
+  ~/.ignore # for ripgrep
+  ~/.lesskey
+  ~/.profile
+  ~/.tmux.conf
 )
 
 printf "%s\n" "${paths[@]}" | while read -r path; do 
@@ -44,27 +44,3 @@ printf "%s\n" "${paths[@]}" | while read -r path; do
   fi
   ln -sTv "$path_bac" "$path" 2>/dev/null
 done
-
-# (
-#   ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
-#   ln -sTv $BASE/home/.bash_profile ~/.bash_profile # to prevent tmux from running ~/.profile
-#   ln -sTv $BASE/home/.bashrc ~/.bashrc
-#   ln -sTv $BASE/home/.blerc ~/.blerc
-#   ln -sTv $BASE/home/.config/alacritty ~/.config/alacritty
-#   ln -sTv $BASE/home/.config/eww ~/.config/eww
-#   ln -sTv $BASE/home/.config/hypr ~/.config/hypr
-#   ln -sTv $BASE/home/.config/i3status-rust ~/.config/i3status-rust
-#   ln -sTv $BASE/home/.config/mimeapps.list ~/.config/mimeapps.list
-#   ln -sTv $BASE/home/.config/nnn ~/.config/nnn
-#   ln -sTv $BASE/home/.config/nvim ~/.config/nvim
-#   ln -sTv $BASE/home/.config/scripts ~/.config/scripts
-#   ln -sTv $BASE/home/.config/vimiv ~/.config/vimiv
-#   ln -sTv $BASE/home/.config/waybar ~/.config/waybar
-#   ln -sTv $BASE/home/.config/zsh/.zshrc ~/.zshrc
-#   ln -sTv $BASE/home/.fuzzy-home-ignore ~/.fuzzy-home-ignore
-#   ln -sTv $BASE/home/.gitconfig ~/.gitconfig
-#   ln -sTv $BASE/home/.lesskey ~/.lesskey
-#   ln -sTv $BASE/home/.profile ~/.profile
-#   ln -sTv $BASE/home/.tmux.conf ~/.tmux.conf
-#   ln -sTv $BASE/home/.config/rclone.conf ~/$SYNC/.config/rclone.conf
-#   ) 2>/dev/null
