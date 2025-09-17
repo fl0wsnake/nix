@@ -4,9 +4,6 @@ DIR="$(readlink -f "$(dirname "$0")")" || exit
 
 ln -sTv ~/.config/rclone/rclone.conf $SYNC/.config/rclone.conf 2>/dev/null
 
-# TODO fix paths
-# BASE=~/.config/nixos-rice
-
 sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 
 paths=(

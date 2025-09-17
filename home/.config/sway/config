@@ -15,6 +15,7 @@ set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused
 
 font Monospace 1
 for_window [class=".*"] title_format " "
+for_window [class="^floating$"] floating enable
 
 # bar {
 # # icon_theme Adwaita
@@ -82,11 +83,6 @@ input type:touchpad {
 bindsym $mod+Return exec $TERMINAL -e bash -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec wofi --show drun
 
-# Drag floating windows by holding down $mod and left mouse button.
-# Resize them with right mouse button + $mod.
-# Despite the name, also works for non-floating windows.
-# Change normal to inverse to use left mouse button for resizing and right
-# mouse button for dragging.
 floating_modifier $mod normal
 
 # Reload the configuration file
@@ -271,10 +267,12 @@ bindsym --locked XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ tog
 
 bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 5%+
 bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 5%-
+# bindsym --locked XF86Display exec brightnessctl -e4 -n2 set 5%+
+bindsym --locked XF86WLAN exec fusermount -u "$MTPFS"; exec go-mtpfs "$MTPFS"&
 
 bindsym --locked XF86Tools exec sudo tlp setcharge 40 44
 bindsym --locked XF86Bluetooth exec sudo tlp setcharge 81 85
-bindsym --locked XF86Keyboard exec killall eject-fuzzy; $TERMINAL --class=floating -e eject-fuzzy
+bindsym --locked XF86Keyboard exec killall eject-fuzzy; exec $TERMINAL --class=floating -e eject-fuzzy
 bindsym --locked XF86Favorites exec sudo systemctl suspend
 
 bindsym --locked XF86AudioNext exec playerctl next

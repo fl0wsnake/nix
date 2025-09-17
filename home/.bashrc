@@ -103,6 +103,17 @@ mkvify() {
   done
 }
 
+mtp() {
+  set +e
+  fusermount -u "$@"; go-mtpfs "$@"&
+  # pid=$!
+  while read; do
+    # kill $pid
+    fusermount -u "$@"; go-mtpfs "$@"&
+    # pid=$!
+  done
+}
+
 # OPTIONS
 shopt -s autocd # make `..` like `cd ..` etc
 shopt -s histappend

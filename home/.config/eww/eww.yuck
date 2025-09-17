@@ -32,7 +32,7 @@
 
   (defvar sep "|")
 
-   (deflisten watch-wm-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-sway-workspaces")
+   (deflisten watch-wm-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-workspaces")
    (defwidget wm-workspaces []
     (box
         :spacing 0
