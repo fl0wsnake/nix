@@ -8,11 +8,11 @@ alias e="$EDITOR"
 alias h='$EDITOR $HISTFILE'
 alias o=xdg-open
 alias x="$EXPLORER"
-alias w='wait; '
 
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias di='nix-env -i'
-alias dr="(sudo nixos-rebuild switch; notify-send '*nixos-rebuild switch* done') &"
+alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
+alias drb="dr && reboot"
 alias ds="nix search nixpkgs"
 alias dun='nix-env --uninstall'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
@@ -105,11 +105,11 @@ mkvify() {
 
 mtp() {
   set +e
-  fusermount -u "$@"; go-mtpfs "$@"&
+  fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
   # pid=$!
-  while read; do
+  while read -r; do
     # kill $pid
-    fusermount -u "$@"; go-mtpfs "$@"&
+    fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
     # pid=$!
   done
 }

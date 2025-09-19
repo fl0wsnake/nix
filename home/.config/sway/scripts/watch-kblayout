@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-app_name=$(ps -q $$ -o comm=)
+app_name=$(basename "$0")
 
 shorten() {
   if [[ "$*" == "Ukrainian" ]]; then

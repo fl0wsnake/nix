@@ -17,6 +17,15 @@ font Monospace 1
 for_window [class=".*"] title_format " "
 for_window [class="^floating$"] floating enable
 
+# fe8019 for orange
+client.focused #000000 #ffffff #000000
+hide_edge_borders smart
+smart_borders on
+
+# TODO remove?
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+
 # bar {
 # # icon_theme Adwaita
 #   position bottom
@@ -203,7 +212,8 @@ bindsym $mod+comma split v
 bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
 
 bindsym --to-code $mod+q kill
-bindsym --to-code $mod+w layout toggle tabbed split
+# bindsym --to-code $mod+w layout toggle tabbed split # TODO accept my fate and remove this
+bindsym --to-code $mod+w fullscreen toggle
 bindsym --to-code $mod+Shift+w floating toggle
 bindsym --to-code $mod+c exec clipman pick --tool wofi --histpath=$CLIP_HIST
 bindsym --to-code $mod+b exec blueman-manager
@@ -297,7 +307,9 @@ assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
 assign [title="^Transmission.*"] $f_workspace
 
 exec --no-startup-id eww open bar
-exec --no-startup-id $BROWSER
-exec --no-startup-id swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' && sudo modprobe -r psmouse && sudo modprobe psmouse
+exec $BROWSER
+exec --no-startup-id swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' || sudo modprobe -r psmouse && sudo modprobe psmouse
+exec dropbox
+exec watch-udiskie
 
 workspace $1_workspace

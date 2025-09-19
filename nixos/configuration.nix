@@ -52,18 +52,18 @@
     "x-scheme-handler/https" = [ "vivaldi.desktop" ];
   };
 
-  # programs.sway = {
-  #   enable = true;
-  #   # wrapperFeatures.gtk
-  # };
-
   services.greetd = {
     enable = true;
-    # vt = 1;
     settings = {
       default_session = {
-        # command = "${pkgs.hyprland}/bin/hyprland";
-        command = "${pkgs.sway}/bin/sway";
+        # command = "dbus-run-session sway";
+        # command = "${pkgs.sway}/bin/sway";
+        command = "sh -c 'dbus-run-session -- sway'";
+        # command = ''
+        #   eval $(dbus-launch --sh-syntax --exit-with-session)
+        #   export DBUS_SESSION_BUS_ADDRESS
+        #   exec ${pkgs.sway}/bin/sway
+        # '';
         user = "nix";
       };
     };
@@ -73,8 +73,8 @@
     enable = true;
     usePercentageForPolicy = true;
     percentageLow = 40;
-    percentageCritical = 35;
-    percentageAction = 30;
+    percentageCritical = 30;
+    percentageAction = 20;
     criticalPowerAction = "PowerOff";
   };
 
@@ -163,29 +163,29 @@
     # XDG_SESSION_TYPE = "wayland"; # Explicitly state the session type
   };
 
-  # xdg.portal.enable = pkgs.lib.mkForce false; # Fix vivaldi using portals instead of xdg-open
-  # xdg.portal.enable = true;
-  xdg.portal = { # for flatpak
+  programs.sway = {
     enable = true;
-    extraPortals = with pkgs;
-      [
-        # xdg-desktop-portal-hyprland
-        xdg-desktop-portal-gtk # Important for GTK applications
-      ];
-    # config.common.default = [ "hyprland" "gtk" ];
-    config.common.default = [ "sway" "gtk" ];
+    wrapperFeatures.gtk = true;
+  };
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = with pkgs; [ xdg-desktop-portal-wlr xdg-desktop-portal-gtk ];
   };
 
   services.flatpak = { # from nix-flatpak
     enable = true;
     packages =
       [ "app.zen_browser.zen" "com.github.tchx84.Flatseal" "com.viber.Viber" ];
-    overrides = {
-      "app.zen_browser.zen".Context = {
-        filesystems = [ "home" "/tmp" "xdg-config/" "xdg-data/" ];
-      };
-    };
+    # overrides = {
+    #   "app.zen_browser.zen".Context = {
+    #     filesystems = [ "host" "home" "/tmp" "xdg-config" "xdg-data" ];
+    #   };
+    # };
   };
+
+  services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
     ### Code
@@ -286,10 +286,6 @@
     libnotify
     mako # notification daemon for libnotify
     dconf # for dark theme in apps
-    # xdg-desktop-portal-hyprland # for flatpak
-    xdg-desktop-portal
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-wlr # TODO: for opening files in flatpak zen-browser
     hyprpaper
     wl-clipboard
     wofi
@@ -310,13 +306,6 @@
       # pkgs.dictdDBs.gcide
     ];
   };
-
-  programs.sway = { enable = true; };
-
-  # programs.hyprland = {
-  #   enable = true;
-  #   withUWSM = true; # for systemd `after = [ "graphical-session.target" ];`
-  # };
 
   programs.npm = {
     enable = true;
@@ -357,34 +346,14 @@
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
-    dropbox-gui = {
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
-        Restart = "always";
-      };
-    };
     dropbox-headless = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
       serviceConfig = {
         ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
         Restart = "always";
-        ExecCondition = "if [ -n $WAYLAND_DISPLAY ]; then exit 1; fi";
+        ExecCondition = "/bin/sh -c '! [ -n \"\${WAYLAND_DISPLAY}\" ]'";
       };
-    };
-    udiskie-gui = {
-      wantedBy = [ "graphical-session.target" ];
-      path = with pkgs; [ bash udiskie alacritty nnn xdg-utils ];
-      script = ''
-        udiskie --smart-tray | while read l; do 
-          mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
-          if [[ -d "$mount_dir" ]]; then
-            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
-          fi
-        done
-      '';
-      serviceConfig = { Restart = "always"; };
     };
     udiskie-headless = {
       wantedBy = [ "default.target" ];
@@ -399,7 +368,7 @@
         done
       '';
       serviceConfig = {
-        ExecCondition = "if [ -n $WAYLAND_DISPLAY ]; then exit 1; fi";
+        ExecCondition = "/bin/sh -c '! [ -n \"\${WAYLAND_DISPLAY}\" ]'";
         Restart = "always";
       };
     };
@@ -415,6 +384,15 @@
       path = with pkgs; [ wlsunset ];
       script = "wlsunset -S 4:30 -s 20:00";
       serviceConfig = { Restart = "always"; };
+    };
+    desktop-portals = { # for starting sway from tty and not a display manager
+      wantedBy = [ "graphical-session.target" ];
+      script = ''
+        systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY
+        systemctl --user start xdg-desktop-portal
+        systemctl --user start xdg-desktop-portal-gtk
+        systemctl --user start xdg-desktop-portal-wlr
+      '';
     };
   };
   services.udisks2.enable = true; # required for udiskie

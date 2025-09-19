@@ -1,5 +1,7 @@
+### MTPFS
 export MTPFS=/run/media/$USER/mtp
 sudo mkdir -p "$MTPFS"
+sudo chown $USER mtp
 
 ### Trash
 trash-empty 28 -f
@@ -11,9 +13,10 @@ export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
 export PATH="$PATH:$HOME/.config/scripts"
 
 ### Default apps
-export SHELL_COMM="$(grep -Po '[^\/]+$'<<<$SHELL)" # $SHELL is defined by nixos
+export SHELL_COMM="$(grep -Po '[^\/]+$'<<<"$SHELL")" # $SHELL is defined by nixos
 export EDITOR="nvim"
 export VISUAL="nvim"
+export MANPAGER='nvim +Man!'
 export EXPLORER="nnn"
 export TERMINAL="alacritty"
 export BROWSER="flatpak run app.zen_browser.zen"
@@ -21,7 +24,7 @@ export HYPR_BORDER_SIZE=2 # for hacking hypr's window cycling
 
 ### Sync
 export SYNC="$HOME/Dropbox"
-. $SYNC/.config/.profile
+. "$SYNC/.config/.profile"
 export SCRIPTS_SYNC="${SYNC}/.config/scripts"
 export WIKI="${SYNC}/Wiki"
 export TODOS="${SYNC}/Todos"

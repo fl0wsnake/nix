@@ -21,6 +21,7 @@
    :space-evenly false
    (kblayout) sep
    (volume) sep
+   (brightness) sep
    (cpu) sep
    (battery) sep
    (network) sep
@@ -46,6 +47,11 @@
    (deflisten watch-kblayout '$SWAY_SCRIPTS/watch-kblayout')
    (defwidget kblayout []
     (box watch-kblayout)
+   )
+
+   (deflisten watch-brightness 'watch-brightness')
+   (defwidget brightness []
+    (box "" watch-brightness)
    )
 
    (deflisten watch-volume :initial "{\"vol\": 0, \"mute\": \"no\"}" 'watch-volume')
