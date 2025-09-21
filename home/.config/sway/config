@@ -9,7 +9,7 @@ set $up k
 set $right l
 set $term alacritty
 
-set $focused_con_pid swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused).pid' 2>/dev/null
+set $focused_window_pid swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused).pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
 set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"
 
@@ -144,11 +144,11 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 # bindsym $mod+0 workspace number 10
 
 set $a_workspace 10:A
-bindsym --to-code $mod+a workspace $a_workspace; exec $focused_con_pid || exec $TERMINAL -e $EDITOR +Wiki
+bindsym --to-code $mod+a workspace $a_workspace; exec $focused_window_pid || exec $TERMINAL -e $EDITOR +Wiki
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec $focused_con_pid || exec $BROWSER
+bindsym --to-code $mod+s workspace $s_workspace; exec $focused_window_pid || exec $BROWSER
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
@@ -156,7 +156,7 @@ bindsym --to-code $mod+d workspace $d_workspace
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
-bindsym --to-code $mod+f workspace $f_workspace; exec $focused_con_pid || (exec telegram-desktop; exec viber)
+bindsym --to-code $mod+f workspace $f_workspace; exec $focused_window_pid || (exec telegram-desktop; exec viber)
 bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
 bindsym --to-code $mod+f+Control exec $sway_scripts/move_workspace $current_ws_name $f_workspace
 set $g_workspace 14:G
@@ -164,44 +164,43 @@ bindsym --to-code $mod+g workspace $g_workspace
 bindsym --to-code $mod+g+Shift move container to workspace $g_workspace
 bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_name $g_workspace
 
-set $1_workspace 30:1
+set $1_workspace 31:1
 bindsym $mod+1 workspace $1_workspace
 bindsym $mod+1+Shift move container to workspace $1_workspace
 bindsym $mod+1+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $1_workspace
-# exec notify-send $current_ws_name $1_workspace # 3 - 30:1
-set $2_workspace 31:2
+set $2_workspace 32:2
 bindsym $mod+2 workspace $2_workspace
 bindsym $mod+2+Shift move container to workspace $2_workspace
 bindsym $mod+2+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $2_workspace
-set $3_workspace 32:3
+set $3_workspace 33:3
 bindsym $mod+3 workspace $3_workspace
 bindsym $mod+3+Shift move container to workspace $3_workspace
 bindsym $mod+3+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $3_workspace
-set $4_workspace 33:4
+set $4_workspace 34:4
 bindsym $mod+4 workspace $4_workspace
 bindsym $mod+4+Shift move container to workspace $4_workspace
 bindsym $mod+4+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $4_workspace
-set $5_workspace 34:5
+set $5_workspace 35:5
 bindsym $mod+5 workspace $5_workspace
 bindsym $mod+5+Shift move container to workspace $5_workspace
 bindsym $mod+5+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $5_workspace
-set $6_workspace 35:6
+set $6_workspace 36:6
 bindsym $mod+6 workspace $6_workspace
 bindsym $mod+6+Shift move container to workspace $6_workspace
 bindsym $mod+6+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $6_workspace
-set $7_workspace 36:7
+set $7_workspace 37:7
 bindsym $mod+7 workspace $7_workspace
 bindsym $mod+7+Shift move container to workspace $7_workspace
 bindsym $mod+7+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $7_workspace
-set $8_workspace 37:8
+set $8_workspace 38:8
 bindsym $mod+8 workspace $8_workspace
 bindsym $mod+8+Shift move container to workspace $8_workspace
 bindsym $mod+8+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $8_workspace
-set $9_workspace 38:9
+set $9_workspace 39:9
 bindsym $mod+9 workspace $9_workspace
 bindsym $mod+9+Shift move container to workspace $9_workspace
 bindsym $mod+9+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $9_workspace
-set $0_workspace 39:0
+set $0_workspace 40:0
 bindsym $mod+0 workspace $0_workspace
 bindsym $mod+0+Shift move container to workspace $0_workspace
 bindsym $mod+0+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $0_workspace
@@ -212,6 +211,7 @@ bindsym $mod+comma split v
 bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
 
 bindsym --to-code $mod+q kill
+bindsym --to-code $mod+Shift+q exec kill -15 $($focused_window_pid)
 # bindsym --to-code $mod+w layout toggle tabbed split # TODO accept my fate and remove this
 bindsym --to-code $mod+w fullscreen toggle
 bindsym --to-code $mod+Shift+w floating toggle
@@ -306,9 +306,11 @@ assign [title="^Rakuten Viber"] $d_workspace
 assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
 assign [title="^Transmission.*"] $f_workspace
 
-exec --no-startup-id eww open bar
+# Fix touchpad not registering
+exec swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' || sudo modprobe -r psmouse && sudo modprobe psmouse
+# Apps
+exec eww open bar
 exec $BROWSER
-exec --no-startup-id swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' || sudo modprobe -r psmouse && sudo modprobe psmouse
 exec dropbox
 exec watch-udiskie
 

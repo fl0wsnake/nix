@@ -55,15 +55,10 @@
   services.greetd = {
     enable = true;
     settings = {
-      default_session = {
-        # command = "dbus-run-session sway";
-        # command = "${pkgs.sway}/bin/sway";
-        command = "sh -c 'dbus-run-session -- sway'";
-        # command = ''
-        #   eval $(dbus-launch --sh-syntax --exit-with-session)
-        #   export DBUS_SESSION_BUS_ADDRESS
-        #   exec ${pkgs.sway}/bin/sway
-        # '';
+      default_session = { # for flatpak dbus interaction
+        command = ''
+          bash -c 'eval "$(dbus-launch --sh-syntax --exit-with-session)" && exec sway'
+        '';
         user = "nix";
       };
     };
@@ -76,6 +71,23 @@
     percentageCritical = 30;
     percentageAction = 20;
     criticalPowerAction = "PowerOff";
+  };
+  security.polkit = { # for criticalPowerAction
+    enable = true;
+    extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.upower.hibernate" ||
+          action.id == "org.freedesktop.upower.suspend" ||
+          action.id == "org.freedesktop.login1.power-off" ||
+          action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+          action.id == "org.freedesktop.login1.reboot" ||
+          action.id == "org.freedesktop.login1.reboot-multiple-sessions") {
+          if (subject.isInGroup("users") || subject.isInGroup("wheel") || subject.isInGroup("sudo")) {
+            return polkit.Result.YES;
+          }
+        }
+      });
+    '';
   };
 
   # Enable CUPS to print documents.

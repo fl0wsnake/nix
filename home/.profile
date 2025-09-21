@@ -1,7 +1,7 @@
 ### MTPFS
 export MTPFS=/run/media/$USER/mtp
 sudo mkdir -p "$MTPFS"
-sudo chown $USER mtp
+sudo chown $USER $MTPFS
 
 ### Trash
 trash-empty 28 -f

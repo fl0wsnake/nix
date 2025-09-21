@@ -4,10 +4,10 @@ get_workspaces() {
   swaymsg -t get_workspaces -r | jq -c 'sort_by(.name|split(":")[0]) | map(.name|split(":")[1])'
 }
 
-active_ws=''
+active_ws='31:1'
 wss="$(get_workspaces)"
 
-echo "$wss"
+echo "{\"active_ws\":\"$active_ws\",\"wss\":$wss}"
 
 swaymsg -mt subscribe '["workspace"]' | while read -r ws; do
 if jq -e 'select(.change=="focus" or .change=="rename")'>/dev/null<<<"$ws"; then
