@@ -48,6 +48,11 @@ export GCM_CREDENTIAL_STORE='plaintext'
 # GDK_SCALE="1.5"; # Gnome only supports non-fractional scaling by default. "2" is too much for 2560x1440 and "1" is too little.
 # QT_SCALE_FACTOR="1.5";
 
+### ZSH
+export ZDOTDIR=~/.config/zsh
+# . $ZDOTDIR/param
+# cp ~/.config/zsh-history /tmp/.zsh-history
+
 ### BASH
 export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 export HISTSIZE=1000

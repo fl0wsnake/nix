@@ -116,12 +116,19 @@
   users.users.nix = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.bash;
+    shell = pkgs.zsh;
   };
-
-  users.defaultUserShell = pkgs.bash;
-
-  programs.bash.blesh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+  # programs.bash.blesh.enable = true;
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+    ohMyZsh = {
+      enable = true;
+      plugins = [ "globalias" ];
+    };
+  };
 
   programs.starship.enable = true;
 
@@ -241,6 +248,9 @@
     tlp
     acpi
     ### Files
+    chkdisk
+    syncthing
+    syncthingtray-minimal
     ntfs3g
     ffmpeg-full
     inotify-tools
@@ -260,8 +270,8 @@
     nnn
     bat
     ### Internet
+    onedrive
     wget
-    # qbittorrent
     transmission_3-gtk
     vivaldi
     dropbox
@@ -397,15 +407,28 @@
       script = "wlsunset -S 4:30 -s 20:00";
       serviceConfig = { Restart = "always"; };
     };
-    desktop-portals = { # for starting sway from tty and not a display manager
-      wantedBy = [ "graphical-session.target" ];
-      script = ''
-        systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY
-        systemctl --user start xdg-desktop-portal
-        systemctl --user start xdg-desktop-portal-gtk
-        systemctl --user start xdg-desktop-portal-wlr
-      '';
+    syncthing-headless = {
+      wantedBy = [ "default.target" ];
+      path = with pkgs; [ syncthing ];
+      script = "syncthing";
+      serviceConfig = { Restart = "always"; };
     };
+    # syncthing-gui = { # TODO tray not founc
+    #   wantedBy = [ "graphical-session.target" ];
+    #   after = [ "graphical-session.target" ];
+    #   path = with pkgs; [ syncthingtray ];
+    #   script = "syncthingtray";
+    #   serviceConfig = { Restart = "always"; };
+    # };
+    # desktop-portals = { # for starting sway from tty and not a display manager
+    #   wantedBy = [ "graphical-session.target" ];
+    #   script = ''
+    #     systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY
+    #     systemctl --user start xdg-desktop-portal
+    #     systemctl --user start xdg-desktop-portal-gtk
+    #     systemctl --user start xdg-desktop-portal-wlr
+    #   '';
+    # };
   };
   services.udisks2.enable = true; # required for udiskie
 

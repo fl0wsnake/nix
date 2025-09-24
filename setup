@@ -20,6 +20,7 @@ paths=(
   ~/.config/scripts
   ~/.config/vimiv
   ~/.config/waybar
+  ~/.config/zsh
   ~/.fuzzy-home-ignore
   ~/.gitconfig
   ~/.ignore # for ripgrep
