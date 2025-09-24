@@ -1,3 +1,7 @@
+# OPTIONS
+setopt AUTOCD NO_HUP
+setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY
+
 alias a='file="$(~/.config/scripts/fuzzy-home)" && nnn "$file" && . "$NNN_TMPFILE"'
 alias F='file="$(~/.config/scripts/fuzzy-ignored)" && nnn "$file" && . "$NNN_TMPFILE"'
 alias f='file="$(~/.config/scripts/fuzzy)" && nnn "$file" && . "$NNN_TMPFILE"'
@@ -9,9 +13,10 @@ alias D="cd $RICE"
 alias c=calc
 alias d=dict
 alias e="$EDITOR"
-alias h='$EDITOR $HISTFILE'
+alias h="$EDITOR $HISTFILE"
 alias o=xdg-open
-alias x="$EXPLORER"
+alias x="$EXPLORER;. /tmp/.nnn.lastd"
+alias R='cd $(git rev-parse --show-toplevel)'
 
 # Multiple letters
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
@@ -25,10 +30,10 @@ alias md=mkdir
 alias kat='killall -15 -r'
 alias ka='killall -r'
 alias jr='journalctl --since today --reverse'
-alias gs='git status'
+alias gs='(R && git status)'
 alias gp='git push'
-alias gd='git diff --staged'
-alias gc='git commit -v'
+alias gd='(R && git diff --staged)'
+alias gc='(R && git commit -v)'
 alias ga='git add -A'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias dun='nix-env --uninstall'
@@ -41,57 +46,17 @@ alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Wi
 
 # eval "$(fzf --bash)" # for <C-r> history search
 
+. "$ZDOTDIR"/modules/custom-commands
+
 # KEYMAPS
-open-history() {
-  $EDITOR "$HISTFILE"
-}
-zle -N open-history
-bindkey "^[h" open-history
-
-man-command() {
-  line_first_word=$(awk '{print $1;}'<<<"$BUFFER")
-  if type -p "$line_first_word" &>/dev/null; then
-    man "$line_first_word"
-  fi
-}
-zle -N man-command
+bindkey "^[h" edit-history
 bindkey "^[m" man-command
-
-yank-line() {
-  wl-copy -n<<<"$BUFFER"
-}
-zle -N yank-line
 bindkey "^[c" yank-line
-
-
-toggle_sudo_prefix() {
-  BUFFER_ARRAY=($(echo $BUFFER))
-  if [[ ${BUFFER_ARRAY[1]} == 'sudo' ]]; then
-    BUFFER=$(echo "$BUFFER" | sed -E 's/^\s*sudo\s*//')
-  else
-    BUFFER="sudo $BUFFER"
-  fi
-}
-zle -N toggle_sudo_prefix
-bindkey "^[s" toggle_sudo_prefix
-
-edit_command_line() {
-  tmp_file=$(mktemp)
-  echo "$BUFFER" > "$tmp_file"
-  $EDITOR +'se ft=sh' "$tmp_file"
-  BUFFER="$(<"$tmp_file")"
-  rm "$tmp_file"
-}
-zle -N edit_command_line
-bindkey "^[e" edit_command_line
-
-zshrc-edit() {
-	$EDITOR "$ZDOTDIR"/.zshrc
-	. "$ZDOTDIR"/.zshrc
-}
-zle -N zshrc-edit
-
-bindkey '^[z' zshrc-edit # TODO
+bindkey "^[s" toggle-sudo-prefix
+bindkey "^[e" edit-command-line
+bindkey '^[z' zshrc-edit
+bindkey '^[x' explorer
+bindkey ' ' globalias
 
 # COMMANDS
 subs_set_default() {
@@ -118,13 +83,11 @@ subs_set_default_file() {
   mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
-
 mkvify() {
   for file in "$@"; do 
     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }
-
 mtp() {
   set +e
   fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
@@ -135,7 +98,3 @@ mtp() {
     # pid=$!
   done
 }
-
-# OPTIONS
-setopt AUTOCD NO_HUP
-setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY

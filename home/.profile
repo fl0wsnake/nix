@@ -50,13 +50,14 @@ export GCM_CREDENTIAL_STORE='plaintext'
 
 ### ZSH
 export ZDOTDIR=~/.config/zsh
+export SAVEHIST=$HISTFILESIZE
 # . $ZDOTDIR/param
 # cp ~/.config/zsh-history /tmp/.zsh-history
 
 ### BASH
 export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
-export HISTSIZE=1000
-export HISTFILESIZE=2000
+export HISTSIZE=100000
+export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
 
 ### [nnn](https://github.com/jarun/nnn)

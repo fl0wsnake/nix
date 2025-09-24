@@ -119,7 +119,6 @@
     shell = pkgs.zsh;
   };
   users.defaultUserShell = pkgs.zsh;
-  # programs.bash.blesh.enable = true;
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
@@ -129,6 +128,8 @@
       plugins = [ "globalias" ];
     };
   };
+
+  programs.bash.blesh.enable = true;
 
   programs.starship.enable = true;
 

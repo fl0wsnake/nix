@@ -1,38 +1,64 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+edit-history() {
+  $EDITOR "$HISTFILE"
+}
+zle -N edit-history
 
 man-command() {
-	word_command=$(awk '{print $1;}'<<<"$BUFFER")
-	if type -p "$word_command" &>/dev/null; then
-		man "$word_command"
-	fi
+  line_first_word=$(awk '{print $1;}'<<<"$BUFFER")
+  if type -p "$line_first_word" &>/dev/null; then
+    man "$line_first_word"
+  fi
 }
 zle -N man-command
 
+yank-line() {
+  wl-copy -n<<<"$BUFFER"
+}
+zle -N yank-line
+
+toggle-sudo-prefix() {
+  BUFFER_ARRAY=($(echo $BUFFER))
+  if [[ ${BUFFER_ARRAY[1]} == 'sudo' ]]; then
+    buflen=${#BUFFER}
+    CURSOR=$((CURSOR-5))
+    BUFFER=$(echo "$BUFFER" | sed -E 's/^\s*sudo\s*//')
+  else
+    BUFFER="sudo $BUFFER"
+    CURSOR=$((CURSOR+5))
+  fi
+}
+zle -N toggle-sudo-prefix
+
+edit-command-line() {
+  tmp_file=$(mktemp)
+  echo "$BUFFER" > "$tmp_file"
+  $EDITOR +'se ft=sh' "$tmp_file"
+  BUFFER="$(<"$tmp_file")"
+  rm "$tmp_file"
+}
+zle -N edit-command-line
+
 zshrc-edit() {
-	$EDITOR "$ZDOTDIR"/.zshrc
-	. "$ZDOTDIR"/.zshrc
+  if [ -f "$ZDOTDIR"/.zshrc ]; then
+    $EDITOR "$ZDOTDIR"/.zshrc
+    . "$ZDOTDIR"/.zshrc
+  else
+    $EDITOR ~/.zshrc
+  fi
+  . "$ZDOTDIR"/.zshrc
 }
 zle -N zshrc-edit
 
 explorer() { # https://github.com/jarun/nnn/discussions/1817
-	command $EXPLORER <"$TTY"
+  command $EXPLORER <"$TTY"
   zle .redisplay
 }
 zle -N explorer
 
 globalias() {
-	# zle expand-word # expands subcommands like `echo $(cat .profile)` which is awfull
-	zle _expand_alias # TODO: triggers completion-next
-	zle self-insert
+  zle _expand_alias
+  zle self-insert
 }
 zle -N globalias
-
-yank-line() {
-	wl-copy -n<<<"$BUFFER"
-}
-zle -N yank-line
-
-zsh-history() {
-	$EDITOR "$HISTFILE"
-}
-zle -N zsh-history
