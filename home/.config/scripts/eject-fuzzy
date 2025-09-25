@@ -15,6 +15,6 @@ lsblk --json -I8 -oPATH,MOUNTPOINTS \
 	| jq -r ".blockdevices[]|select((.path|test(\"$blk_base_path\")) and .mountpoints[])|.mountpoints[]" \
 	| while read -r mountpoint; do
 	kill -s 9 $(lsof -t "$mountpoint") 2>/dev/null || true
-	umount "$blk_path"
+	sudo umount "$blk_path"
 done
 udisksctl power-off -b "$blk_path"

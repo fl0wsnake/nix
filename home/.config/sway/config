@@ -313,6 +313,6 @@ exec eww open bar
 exec $BROWSER
 exec dropbox
 exec watch-udiskie
-exec syncthingtray
+# exec syncthingtray
 
 workspace $1_workspace
