@@ -1,5 +1,5 @@
 ### MTPFS
-export MTPFS=/run/media/$USER/mtp
+export MTPFS='/run/media/$USER/|mtp'
 sudo mkdir -p "$MTPFS"
 sudo chown $USER $MTPFS
 
@@ -10,7 +10,7 @@ export TRASH=~/.local/share/Trash/files
 ### from .nix
 export XDG_RUNTIME_DIR="/run/user/$UID"
 export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
-export PATH="$PATH:$HOME/.config/scripts"
+export PATH="$PATH:$HOME/.config/scripts:$HOME/.local/bin"
 
 ### Default apps
 export SHELL_COMM="$(grep -Po '[^\/]+$'<<<"$SHELL")" # $SHELL is defined by nixos
@@ -65,24 +65,25 @@ export NNN_TMPFILE=/tmp/.nnn.lastd
 export NNN_SCOPE=1
 export NNN_USE_EDITOR=1
 export NNN_TRASH=1
-export NNN_OPTS='HRAJxE'
+export NNN_OPTS='rHRAJxE'
 export NNN_ORDER="t:$HOME/Downloads;t:/tmp;t:$SCREENSHOTS;t:/var/log"
 export NNN_FIFO=/tmp/.nnn.fifo
 export NNN_SEL='/tmp/.nnn.sel'
 export NNN_PLUG;NNN_PLUG=$(tr -d '\n' <<<"
 m:mtpmount;
 d:diffs;
-p:preview-tabbed;
-P:preview-tui;
+e:preview-tabbed;
+E:preview-tui;
 r:rsynccp;
 R:renamer;
-v:-!vimiv --command 'toggle thumbnail' *;
+v:-!mvg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . 2>/dev/null && rm /home/nix/.local/share/vimiv/tags/a*;
 >:-!mogrify -rotate 90 '\$PWD/\$nnn'*;
 <:-!mogrify -rotate -90 '\$PWD/\$nnn'*;
 s:-!echo -n>$NNN_SEL*;
 n:-!nautilus . &*;
 y:-!wl-copy \$(sed s@^$HOME@~@ <<<\"\$PWD/\$nnn\")*;
 Y:-!wl-copy \$(sed s@^$HOME@~@ <<<\"\$PWD\")*;
+p:-!cpg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . 2>/dev/null*;
 P:!printf '%s' '0c\$(dirname \"\$(wl-paste)\")' >\$NNN_PIPE*;
 a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
@@ -91,11 +92,9 @@ F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
 d:$HOME/Downloads;
 m:/run/media/$USER;
-M:/run/user/$UID/gvfs;
-o:$TODOS;
-s:$SYNC;
+b:$SYNC;
 S:$SCREENSHOTS;
 t:/tmp;
-T:$TRASH;
+s:$HOME/Syncthing;
 w:$HOME/WS;
 ")

@@ -57,7 +57,9 @@
     settings = {
       default_session = { # for flatpak dbus interaction
         command = ''
-          bash -c 'eval "$(dbus-launch --sh-syntax --exit-with-session)" && exec sway'
+          bash -c 'eval $(dbus-launch --sh-syntax --exit-with-session)
+          export DBUS_SESSION_BUS_ADDRESS
+          exec sway'
         '';
         user = "nix";
       };
@@ -119,14 +121,10 @@
     shell = pkgs.zsh;
   };
   users.defaultUserShell = pkgs.zsh;
-  programs.zsh = {
+  programs.zsh = { # bash's alias expansion isn't good enough
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-    ohMyZsh = {
-      enable = true;
-      plugins = [ "globalias" ];
-    };
   };
 
   programs.bash.blesh.enable = true;
@@ -149,38 +147,15 @@
   # Install firefox.
   programs.firefox.enable = true;
 
-  # users.defaultUserShell = pkgs.zsh;
-  # programs.zsh = {
-  #   enable = true;
-  #   autosuggestions = {enable = true;};
-  #   syntaxHighlighting = {enable = true;};
-  #   # ohMyZsh = {
-  #   #   enable = true;
-  #   #   plugins = [
-  #   #    "zsh-expand"
-  #   #   # {
-  #   #   #   name = "zsh-expand";
-  #   #   #   src = pkgs.fetchFromGitHub {
-  #   #   #     owner = "MenkeTechnologies";
-  #   #   #     repo = "zsh-expand.git";
-  #   #   #   };
-  #   #   # }
-  #   #   ];
-  #   # };
-  # };
-
   programs.tmux = { enable = true; };
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   environment.variables = {
+    USER = "nix";
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
     PATH = "$HOME/.npm/bin:$PATH";
-    # XDG_RUNTIME_DIR = "/run/user/$UID";
-    # XDG_CURRENT_DESKTOP = "hyprland"; # Helps applications know they're on Sway
-    # XDG_SESSION_TYPE = "wayland"; # Explicitly state the session type
   };
 
   programs.sway = {
@@ -198,16 +173,12 @@
     enable = true;
     packages =
       [ "app.zen_browser.zen" "com.github.tchx84.Flatseal" "com.viber.Viber" ];
-    # overrides = {
-    #   "app.zen_browser.zen".Context = {
-    #     filesystems = [ "host" "home" "/tmp" "xdg-config" "xdg-data" ];
-    #   };
-    # };
   };
 
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
+    os-prober
     ### Code
     (python3.withPackages (p: with p; [ yt-dlp curl-cffi ]))
     gnumake # for vim-jsdoc
@@ -224,6 +195,7 @@
     rustc
     eww
     ### System
+    expect # for unbuffering vimiv | wl-copy
     go-mtpfs # only one mtp tool that works
     xorg.xev # print input codes
     rclone
@@ -249,9 +221,8 @@
     tlp
     acpi
     ### Files
-    chkdisk
     syncthing
-    syncthingtray-minimal
+    syncthingtray
     ntfs3g
     ffmpeg-full
     inotify-tools
@@ -315,11 +286,6 @@
     hyprsunset
     waybar
     i3status-rust
-    ### Trash
-    # zsh-completions zsh-syntax-highlighting nix-zsh-completions
-    # ncurses # for tui app colors
-    # gnumake # for bin/make
-    #  wget
   ];
 
   services.dictd = {
@@ -372,10 +338,13 @@
     dropbox-headless = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
+      environment = { };
       serviceConfig = {
         ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
         Restart = "always";
-        ExecCondition = "/bin/sh -c '! [ -n \"\${WAYLAND_DISPLAY}\" ]'";
+        ExecCondition =
+          "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
+
       };
     };
     udiskie-headless = {
@@ -391,7 +360,8 @@
         done
       '';
       serviceConfig = {
-        ExecCondition = "/bin/sh -c '! [ -n \"\${WAYLAND_DISPLAY}\" ]'";
+        ExecCondition =
+          "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
         Restart = "always";
       };
     };
@@ -408,53 +378,32 @@
       script = "wlsunset -S 4:30 -s 20:00";
       serviceConfig = { Restart = "always"; };
     };
-    syncthing-headless = {
+    syncthing-1 = {
+      after = [ "network.target" ];
       wantedBy = [ "default.target" ];
-      path = with pkgs; [ syncthing ];
-      script = "syncthing";
-      serviceConfig = { Restart = "always"; };
+      serviceConfig = with config.environment.variables; {
+        ExecStart = ''
+          ${pkgs.syncthing}/bin/syncthing --no-browser --no-restart --logflags=0 \
+            --gui-address '0.0.0.0:8384' \
+            --home '/home/${USER}/.config/syncthing-1'
+        '';
+      };
     };
-    # syncthing-gui = { # TODO tray not founc
-    #   wantedBy = [ "graphical-session.target" ];
-    #   after = [ "graphical-session.target" ];
-    #   path = with pkgs; [ syncthingtray ];
-    #   script = "syncthingtray";
-    #   serviceConfig = { Restart = "always"; };
-    # };
-    # desktop-portals = { # for starting sway from tty and not a display manager
-    #   wantedBy = [ "graphical-session.target" ];
-    #   script = ''
-    #     systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY
-    #     systemctl --user start xdg-desktop-portal
-    #     systemctl --user start xdg-desktop-portal-gtk
-    #     systemctl --user start xdg-desktop-portal-wlr
-    #   '';
-    # };
+    syncthing-2 = {
+      after = [ "network.target" ];
+      wantedBy = [ "default.target" ];
+      serviceConfig = with config.environment.variables; {
+        ExecStart = ''
+          ${pkgs.syncthing}/bin/syncthing --no-browser --no-restart --logflags=0 \
+            --gui-address '0.0.0.0:8385' \
+            --home '/home/${USER}/.config/syncthing-2'
+        '';
+      };
+    };
   };
-  services.udisks2.enable = true; # required for udiskie
+  networking.firewall.allowedTCPPorts = [ 8384 8385 22000 22001 ];
 
-  # # services.displayManager.defaultSession = "gnome";
-  # services.xserver = {
-  #   enable = true;
-  #   displayManager = {
-  #     gdm = {
-  #       enable = true;
-  #       # wayland = true;
-  #     };
-  #   };
-  #   xkb = {
-  #     layout = "us";
-  #     variant = "";
-  #   };
-  #   # desktopManager.gnome = {
-  #   #   enable = true;
-  #   #   extraGSettingsOverridePackages = [ pkgs.mutter ];
-  #   #   extraGSettingsOverrides = ''
-  #   #     [org.gnome.mutter]
-  #   #     experimental-features=['scale-monitor-framebuffer']
-  #   #       '';
-  #   # };
-  # };
+  services.udisks2.enable = true; # required for udiskie
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

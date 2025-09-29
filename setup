@@ -18,6 +18,9 @@ paths=(
   ~/.config/nnn
   ~/.config/nvim
   ~/.config/scripts
+  ~/.config/syncthing-1/config.xml
+  ~/.config/syncthing-2/config.xml
+  ~/.config/syncthingtray.ini
   ~/.config/vimiv
   ~/.config/waybar
   ~/.config/zsh
@@ -25,6 +28,7 @@ paths=(
   ~/.gitconfig
   ~/.ignore # for ripgrep
   ~/.lesskey
+  ~/.local/bin
   ~/.profile
   ~/.tmux.conf
 )
@@ -36,7 +40,8 @@ printf "%s\n" "${paths[@]}" | while read -r path; do
       echo "$path"
       echo "No config to backup: $path"; exit 1
     else
-      echo "Backing up $path to $(readlink -e "$path_bac")"
+      mkdir -p "$(dirname "$path_bac")"
+      echo "Backing up $path to $(readlink -f "$path_bac")"
       mv "$path" "$path_bac"
     fi
   fi

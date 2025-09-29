@@ -21,10 +21,10 @@ alias R='cd $(git rev-parse --show-toplevel)'
 # Multiple letters
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
-alias se="sudo $EDITOR"
+alias se="sudo -e"
 alias scl='systemctl --user'
-alias rsync='rsync -vhaP'
-alias rsync-mtp='rsync -vhaP --no-perms --no-owner --no-group'
+alias rsync='rsync -avhP'
+alias rsync-mtp='rsync -avhP --no-perms --no-owner --no-group'
 alias pkill='pkill -c'
 alias md=mkdir
 alias kat='killall -15 -r'
@@ -34,6 +34,7 @@ alias gs='(R && git status)'
 alias gp='git push'
 alias gd='(R && git diff --staged)'
 alias gc='(R && git commit -v)'
+alias gcl='git clone --recurse-submodules -j8'
 alias ga='git add -A'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias dun='nix-env --uninstall'
@@ -43,11 +44,11 @@ alias drs="dr && shutdown now"
 alias drb="dr && reboot"
 alias di='nix-env -i'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
+alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
 
-# eval "$(fzf --bash)" # for <C-r> history search
+. "$ZDOTDIR"/modules/keymaps
 
-. "$ZDOTDIR"/modules/custom-commands
-
+# `^` for `ctrl`, `^[` for `alt`
 # KEYMAPS
 bindkey "^[h" edit-history
 bindkey "^[m" man-command
@@ -56,7 +57,19 @@ bindkey "^[s" toggle-sudo-prefix
 bindkey "^[e" edit-command-line
 bindkey '^[z' zshrc-edit
 bindkey '^[x' explorer
-bindkey ' ' globalias
+bindkey ' ' expand-alias
+
+# BASH STANDARD BINDINGS
+bindkey '^[.' insert-last-word
+bindkey '^n' down-history
+bindkey '^p' up-history
+bindkey '^[[Z' reverse-menu-complete # shift-tab
+bindkey '^@' forward-word # ctrl-space
+bindkey '^f' end-of-line
+bindkey '^H' backward-kill-word # ctrl-backspace
+bindkey '^[[3;5~' kill-word          # ctrl-del
+bindkey '^[[1;5C' forward-word       # right
+bindkey '^[[1;5D' backward-word      # left
 
 # COMMANDS
 subs_set_default() {
@@ -98,3 +111,5 @@ mtp() {
     # pid=$!
   done
 }
+
+# eval "$(fzf --bash)" # for <C-r> history search
