@@ -23,8 +23,9 @@ alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias se="sudo -e"
 alias scl='systemctl --user'
-alias rsync='rsync -avhP'
-alias rsync-mtp='rsync -avhP --no-perms --no-owner --no-group'
+alias cp='rsync -aP'
+alias rsync='rsync -aP'
+alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias pkill='pkill -c'
 alias md=mkdir
 alias kat='killall -15 -r'
@@ -74,7 +75,7 @@ bindkey '^[[1;5D' backward-word      # left
 # COMMANDS
 subs_set_default() {
   if [[ -z "$*" || -d "$*" ]]; then
-    find "$@" -name '*.mkv' -type f -maxdepth 1 | while read -r file; do
+    find "$@" -name '*.mkv' -type f | while read -r file; do
       echo "$file"
       subs_set_default_file "$file"
     done

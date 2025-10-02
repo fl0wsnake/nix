@@ -26,13 +26,13 @@ return {
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
-      local lspconfig = require('lspconfig')
+      -- local lspconfig = require('lspconfig')
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities.textDocument.completion.completionItem.snippetSupport = true
       vim.lsp.enable('bashls')
-      lspconfig.jsonls.setup { capabilities = capabilities, }
-      lspconfig.ts_ls.setup {}
-      lspconfig.nil_ls.setup {
+      vim.lsp.config('jsonls', { capabilities = capabilities, })
+      vim.lsp.config("ts_ls", {})
+      vim.lsp.config("nil_ls", {
         settings = {
           ["nil"] = {
             formatting = {
@@ -40,8 +40,8 @@ return {
             },
           }
         }
-      }
-      lspconfig.lua_ls.setup {
+      })
+      vim.lsp.config("lua_ls", {
         capabilities = capabilities,
         settings = {
           Lua = {
@@ -59,8 +59,9 @@ return {
               },
               checkThirdParty = false,
             },
-          } }
-      }
+          }
+        }
+      })
     end
   },
   {

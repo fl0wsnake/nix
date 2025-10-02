@@ -151,7 +151,7 @@ bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window_pid || $B
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window_pid || (telegram-desktop; flatpak run com.viber.Viber)"
+bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window_pid || (flatpak run com.viber.Viber && telegram-desktop)"
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F

@@ -403,7 +403,17 @@
   };
   networking.firewall.allowedTCPPorts = [ 8384 8385 22000 22001 ];
 
-  services.udisks2.enable = true; # required for udiskie
+  services.udisks2 = {
+    enable = true; # required for udiskie
+    settings = {
+      "mount_options.conf" = {
+        defaults = {
+          ntfs_drivers =
+            "ntfs-3g,ntfs3"; # fix error mounting my ntfs formatted `WD My Passport`
+        };
+      };
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
