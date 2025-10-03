@@ -74,20 +74,21 @@
    )
   )
 
+  (deflisten watch-battery 'watch-battery')
   (defwidget battery []
    (box :class
-    {EWW_BATTERY.BAT0.status == "Charging" ? "warning":
-    EWW_BATTERY.BAT0.capacity < 40 ? "critical":
+    {watch-battery.status == "Charging" ? "warning":
+    watch-battery.capacity < 40 ? "critical":
     "normal"}
-    {EWW_BATTERY.BAT0.status == "Charging" ? "" : 
-    EWW_BATTERY.BAT0.status == "Discharging" ? 
-    (EWW_BATTERY.BAT0.capacity > 80 ? "" : 
-     EWW_BATTERY.BAT0.capacity > 60 ? "" : 
-     EWW_BATTERY.BAT0.capacity > 40 ? "" : 
-     EWW_BATTERY.BAT0.capacity > 20 ? "" : 
+    {watch-battery.status == "Charging" ? "" : 
+    watch-battery.status == "Discharging" ? 
+    (watch-battery.capacity > 80 ? "" : 
+     watch-battery.capacity > 60 ? "" : 
+     watch-battery.capacity > 40 ? "" : 
+     watch-battery.capacity > 20 ? "" : 
      "") : 
     ""}
-    {EWW_BATTERY.BAT0.capacity}
+    {watch-battery.capacity}"/"{watch-battery.charge_stop}
    )
   )
 

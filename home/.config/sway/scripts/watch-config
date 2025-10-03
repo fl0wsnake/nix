@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+inotifywait -mqe modify ~/.config/sway | while read -r _; do 
+  swaymsg reload
+done

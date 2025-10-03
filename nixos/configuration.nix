@@ -180,6 +180,7 @@
   environment.systemPackages = with pkgs; [
     os-prober
     ### Code
+    zig
     (python3.withPackages (p: with p; [ yt-dlp curl-cffi ]))
     gnumake # for vim-jsdoc
     bash-language-server
@@ -264,7 +265,7 @@
     sxiv
     zathura
     nil
-    nixfmt-classic
+    nixfmt
     lua-language-server
     ### Text
     calc

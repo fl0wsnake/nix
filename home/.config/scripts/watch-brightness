@@ -1,17 +1,22 @@
 #!/bin/sh
 
 app_name=$(basename "$0")
-path='/sys/class/backlight/intel_backlight/brightness'
-max=$(calc "$(brightnessctl m)^0.25")
+
+file='/sys/class/backlight/intel_backlight/brightness'
+mult_inv=$(calc '1/4')
+max_abs=$(calc "$(brightnessctl m)")
+min_abs=2
+min_rel=$(calc "($min_abs/$max_abs)^$mult_inv") 
+# to smooth out change at low value
 
 brightness ()
 {
-  echo $(calc "floor(($(cat "$path")^0.25 * 100 / $max - 18)*100/82)") # accounting for brightnessctl exponent
+  echo $(calc "floor((($(brightnessctl g)/$max_abs)^$mult_inv-$min_rel)/(1-$min_rel)*100)")
 }
 
 echo "$(brightness)"
 
-inotifywait -mqe modify "$path" | while read -r _; do
+inotifywait -mqe modify "$file" | while read -r _; do
   brightness="$(brightness)"
   notify-send -a "$app_name" "$brightness"
   echo "$brightness"

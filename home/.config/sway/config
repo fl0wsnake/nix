@@ -273,8 +273,8 @@ bindsym --locked XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@
 bindsym --locked XF86AudioRaiseVolume exec wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 10%+
 bindsym --locked XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
-bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 5%+
-bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl -e4 -n2 set 20%+
+bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 20%-
 # bindsym --locked XF86Display exec brightnessctl -e4 -n2 set 5%+
 bindsym --locked XF86WLAN exec fusermount -u "$MTPFS"; exec go-mtpfs "$MTPFS"&
 
@@ -312,5 +312,7 @@ exec $BROWSER
 exec dropbox
 exec watch-udiskie
 exec QT_QPA_PLATFORM=xcb syncthingtray --wait
+
+exec $SWAY_SCRIPTS/watch-config
 
 workspace $1_workspace
