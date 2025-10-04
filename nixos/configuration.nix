@@ -5,7 +5,10 @@
 { config, pkgs, ... }:
 
 {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   imports = [
     # Include the results of the hardware scan.
@@ -55,7 +58,8 @@
   services.greetd = {
     enable = true;
     settings = {
-      default_session = { # for flatpak dbus interaction
+      default_session = {
+        # for flatpak dbus interaction
         command = ''
           bash -c 'eval $(dbus-launch --sh-syntax --exit-with-session)
           export DBUS_SESSION_BUS_ADDRESS
@@ -74,7 +78,8 @@
     percentageAction = 20;
     criticalPowerAction = "PowerOff";
   };
-  security.polkit = { # for criticalPowerAction
+  security.polkit = {
+    # for criticalPowerAction
     enable = true;
     extraConfig = ''
       polkit.addRule(function(action, subject) {
@@ -117,11 +122,15 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nix = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     shell = pkgs.zsh;
   };
   users.defaultUserShell = pkgs.zsh;
-  programs.zsh = { # bash's alias expansion isn't good enough
+  programs.zsh = {
+    # bash's alias expansion isn't good enough
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
@@ -147,7 +156,9 @@
   # Install firefox.
   programs.firefox.enable = true;
 
-  programs.tmux = { enable = true; };
+  programs.tmux = {
+    enable = true;
+  };
 
   nixpkgs.config.allowUnfree = true;
 
@@ -166,13 +177,20 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = with pkgs; [ xdg-desktop-portal-wlr xdg-desktop-portal-gtk ];
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
   };
 
-  services.flatpak = { # from nix-flatpak
+  services.flatpak = {
+    # from nix-flatpak
     enable = true;
-    packages =
-      [ "app.zen_browser.zen" "com.github.tchx84.Flatseal" "com.viber.Viber" ];
+    packages = [
+      "app.zen_browser.zen"
+      "com.github.tchx84.Flatseal"
+      "com.viber.Viber"
+    ];
   };
 
   services.dbus.enable = true;
@@ -181,7 +199,12 @@
     os-prober
     ### Code
     zig
-    (python3.withPackages (p: with p; [ yt-dlp curl-cffi ]))
+    (python3.withPackages (
+      p: with p; [
+        yt-dlp
+        curl-cffi
+      ]
+    ))
     gnumake # for vim-jsdoc
     bash-language-server
     vscode-langservers-extracted # lsps: css html eslint json markdown
@@ -302,12 +325,14 @@
     npmrc = "ignore-scripts=true";
   };
 
-  programs.dconf.profiles.user.databases = [{
-    settings."org/gnome/desktop/interface" = {
-      gtk-theme = "Adwaita-dark"; # Your chosen dark GTK theme
-      color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
-    };
-  }];
+  programs.dconf.profiles.user.databases = [
+    {
+      settings."org/gnome/desktop/interface" = {
+        gtk-theme = "Adwaita-dark"; # Your chosen dark GTK theme
+        color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
+      };
+    }
+  ];
 
   services.logind.settings.Login = {
     HandleLidSwitch = "ignore";
@@ -320,10 +345,12 @@
   fonts = {
     # enableDefaultPackages = true; # TODO remove
     fontDir.enable = true; # TODO remove
-    packages = with pkgs;
-      [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation
-      (builtins.attrValues pkgs.nerd-fonts);
-    fontconfig = { enable = true; };
+    packages =
+      with pkgs;
+      [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+    fontconfig = {
+      enable = true;
+    };
   };
 
   hardware.graphics = {
@@ -339,19 +366,31 @@
     dropbox-headless = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
-      environment = { };
       serviceConfig = {
         ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
         Restart = "always";
-        ExecCondition =
-          "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
+        ExecCondition = "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
 
+      };
+    };
+    onedrive = {
+      wantedBy = [ "default.target" ];
+      path = [pkgs.onedrive];
+      script = "onedrive --monitor";
+      serviceConfig = {
+        Restart = "always";
       };
     };
     udiskie-headless = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
-      path = with pkgs; [ bash udiskie alacritty nnn xdg-utils ];
+      path = with pkgs; [
+        bash
+        udiskie
+        alacritty
+        nnn
+        xdg-utils
+      ];
       script = ''
         udiskie | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
@@ -361,23 +400,28 @@
         done
       '';
       serviceConfig = {
-        ExecCondition =
-          "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
+        ExecCondition = "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
         Restart = "always";
       };
     };
     clip = {
       wantedBy = [ "graphical-session.target" ];
-      path = with pkgs; [ wl-clipboard clipman ];
-      script =
-        "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.variables.CLIP_HIST}";
-      serviceConfig = { Restart = "always"; };
+      path = with pkgs; [
+        wl-clipboard
+        clipman
+      ];
+      script = "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.variables.CLIP_HIST}";
+      serviceConfig = {
+        Restart = "always";
+      };
     };
     wlsunset = {
       wantedBy = [ "graphical-session.target" ];
       path = with pkgs; [ wlsunset ];
       script = "wlsunset -S 4:30 -s 20:00";
-      serviceConfig = { Restart = "always"; };
+      serviceConfig = {
+        Restart = "always";
+      };
     };
     syncthing-1 = {
       after = [ "network.target" ];
@@ -402,15 +446,19 @@
       };
     };
   };
-  networking.firewall.allowedTCPPorts = [ 8384 8385 22000 22001 ];
+  networking.firewall.allowedTCPPorts = [
+    8384
+    8385
+    22000
+    22001
+  ];
 
   services.udisks2 = {
     enable = true; # required for udiskie
     settings = {
       "mount_options.conf" = {
         defaults = {
-          ntfs_drivers =
-            "ntfs-3g,ntfs3"; # fix error mounting my ntfs formatted `WD My Passport`
+          ntfs_drivers = "ntfs-3g,ntfs3"; # fix error mounting my ntfs formatted `WD My Passport`
         };
       };
     };
