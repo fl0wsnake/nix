@@ -129,8 +129,7 @@
     shell = pkgs.zsh;
   };
   users.defaultUserShell = pkgs.zsh;
-  programs.zsh = {
-    # bash's alias expansion isn't good enough
+  programs.zsh = { # bash's alias expansion isn't good enough
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
@@ -231,7 +230,6 @@
     wireplumber
     brightnessctl
     htop
-    psmisc # *pstree* for cwd, *killall* also
     udiskie
     ### Media
     mkvtoolnix-cli
@@ -259,13 +257,14 @@
     nautilus
     renameutils
     ### Terminals
+    kitty
     alacritty
     ghostty
     ### TUIs
-    neovim
     nnn
     bat
     ### Internet
+    nix-search-cli
     onedrive
     wget
     transmission_3-gtk
@@ -303,6 +302,7 @@
     grim
     libnotify
     mako # notification daemon for libnotify
+    pango # for mako
     dconf # for dark theme in apps
     hyprpaper
     wl-clipboard

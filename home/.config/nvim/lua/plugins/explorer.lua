@@ -1,6 +1,6 @@
 return {
   'https://github.com/stevearc/oil.nvim',
-  init = function()
+init = function()
     require('oil').setup({ -- https://github.com/stevearc/oil.nvim?tab=readme-ov-file#options
       delete_to_trash = true,
       view_options = {

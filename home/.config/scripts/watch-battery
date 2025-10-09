@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 bat_path="/sys/class/power_supply/BAT0"
-model_path="$bat_path/model_name"
+watch_path="$bat_path/model_name"
+watch_path2="$bat_path/charge_control_start_threshold"
 status_path="$bat_path/status"
 capacity_path="$bat_path/capacity"
 charge_stop_path="$bat_path/charge_control_end_threshold"
@@ -20,16 +21,27 @@ bat_read
 print
 
 while true; do
-  inotifywait -qe CLOSE "$model_path" >/dev/null
+  inotifywait -qe CLOSE "$bat_path/model_name" -e CLOSE_WRITE "$bat_path/charge_control_end_threshold" >/dev/null
   bat_read
-  while [[ "$status" == "Not charging" && $charge_stop -gt $capacity ]]; do
-    sleep 0.2
-    bat_read
-  done
-  while [[ "$status" == "Charging" && $charge_stop -lt $capacity ]]; do
-    sleep 0.2
-    bat_read
-  done
   print
+  if [[ "$status" == "Not charging" && $charge_stop -gt $capacity ]]; then
+    while true; do
+      sleep 0.2
+      bat_read
+      if [[ "$status" == "Charging" || ! $charge_stop -gt $capacity ]]; then
+        print
+        break
+      fi
+    done
+  elif [[ "$status" == "Charging" && $charge_stop -lt $capacity ]]; then
+    while true; do
+      sleep 0.2
+      bat_read
+      if [[ "$status" == "Not charging" || ! $charge_stop -lt $capacity ]]; then
+        print
+        break
+      fi
+    done
+  fi
 done
 

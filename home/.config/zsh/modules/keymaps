@@ -58,7 +58,9 @@ explorer() { # https://github.com/jarun/nnn/discussions/1817
 zle -N explorer
 
 expand-alias() {
-  zle _expand_alias
+  if [[ ! $LASTWIDGET =~ 'autosuggest-suggest|expand-or-complete' ]]; then
+    zle _expand_alias
+  fi
   zle self-insert
 }
 zle -N expand-alias

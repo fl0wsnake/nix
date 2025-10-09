@@ -27,9 +27,9 @@ alias cp='rsync -aP'
 alias rsync='rsync -aP'
 alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias pkill='pkill -c'
+alias ka='pkill -fc'
 alias md=mkdir
 alias kat='killall -15 -r'
-alias ka='killall -r'
 alias jr='journalctl --since today --reverse'
 alias gs='(R && git status)'
 alias gp='git push'
@@ -39,18 +39,18 @@ alias gcl='git clone --recurse-submodules -j8'
 alias ga='git add -A'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias dun='nix-env --uninstall'
-alias ds="nix search nixpkgs"
+alias ds="nix-search"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias drs="dr && shutdown now"
 alias drb="dr && reboot"
 alias di='nix-env -i'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
+alias pg='pgrep -fa'
+
 
 . "$ZDOTDIR"/modules/keymaps
-
 # `^` for `ctrl`, `^[` for `alt`
-# KEYMAPS
 bindkey "^[h" edit-history
 bindkey "^[m" man-command
 bindkey "^[c" yank-line
@@ -73,6 +73,20 @@ bindkey '^[[1;5C' forward-word       # right
 bindkey '^[[1;5D' backward-word      # left
 
 # COMMANDS
+
+# ka() {
+#   pgrep_res=$(pgrep -fa "$@")
+#   if [[ -n "$pgrep_res" ]]; then
+#     echo "$pgrep_res";
+#     echo "\nkill listed processes? (y/n)";
+#     read -sq
+#     case $REPLY in
+#       y) pkill -fc "$@";;
+#       *) echo 'Aborted';;
+#     esac
+#   fi
+# }
+
 subs_set_default() {
   if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -name '*.mkv' -type f | while read -r file; do

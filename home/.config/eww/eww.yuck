@@ -69,7 +69,7 @@
 
 
   (defwidget cpu []
-   (box :class {EWW_CPU.avg>48?"critical":EWW_CPU.avg>16?"warning":"normal"}
+   (box :class {EWW_CPU.avg>48?"critical":EWW_CPU.avg>12?"warning":"normal"}
     " "{round(EWW_CPU.avg, 0)}
    )
   )
