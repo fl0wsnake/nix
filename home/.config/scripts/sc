@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-sudo tlp setcharge $(($1 - 4)) $1

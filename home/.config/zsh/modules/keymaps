@@ -57,10 +57,14 @@ explorer() { # https://github.com/jarun/nnn/discussions/1817
 }
 zle -N explorer
 
-expand-alias() {
-  if [[ ! $LASTWIDGET =~ 'autosuggest-suggest|expand-or-complete' ]]; then
+expand-alias() { # zshall docs state possibility of disabling completion bahvior of _expand_alias via styles but they are lying.
+  if [[ -n ${aliases[${LBUFFER##* }]} ]]; then
+    zle self-insert
+    CURSOR=$((CURSOR-1))
     zle _expand_alias
+  else
+    zle self-insert
   fi
-  zle self-insert
 }
 zle -N expand-alias
+

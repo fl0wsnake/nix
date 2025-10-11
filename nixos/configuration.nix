@@ -48,23 +48,17 @@
     LC_TIME = "uk_UA.UTF-8";
   };
 
-  xdg.mime.enable = true; # This is usually true by default
-  xdg.mime.defaultApplications = {
-    "text/html" = [ "vivaldi.desktop" ];
-    "x-scheme-handler/http" = [ "vivaldi.desktop" ];
-    "x-scheme-handler/https" = [ "vivaldi.desktop" ];
-  };
-
   services.greetd = {
     enable = true;
     settings = {
       default_session = {
         # for flatpak dbus interaction
-        command = ''
-          bash -c 'eval $(dbus-launch --sh-syntax --exit-with-session)
-          export DBUS_SESSION_BUS_ADDRESS
-          exec sway'
-        '';
+        # command = ''
+        #   bash -c 'eval $(dbus-launch --sh-syntax --exit-with-session)
+        #   export DBUS_SESSION_BUS_ADDRESS
+        #   exec sway'
+        # '';
+        command = "${pkgs.sway}/bin/sway";
         user = "nix";
       };
     };
@@ -115,9 +109,6 @@
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nix = {
@@ -197,6 +188,7 @@
   environment.systemPackages = with pkgs; [
     os-prober
     ### Code
+    tree-sitter
     zig
     (python3.withPackages (
       p: with p; [
@@ -232,6 +224,7 @@
     htop
     udiskie
     ### Media
+    gimp3
     mkvtoolnix-cli
     libreoffice-fresh
     vlc
@@ -261,6 +254,7 @@
     alacritty
     ghostty
     ### TUIs
+    neovim
     nnn
     bat
     ### Internet
@@ -363,28 +357,22 @@
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
-    dropbox-headless = {
-      wantedBy = [ "default.target" ];
-      after = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.dropbox}/bin/dropbox 2>/dev/null ";
-        Restart = "always";
-        ExecCondition = "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
-
-      };
-    };
-    onedrive = {
-      wantedBy = [ "default.target" ];
-      path = [pkgs.onedrive];
-      script = "onedrive --monitor";
+    dropbox = {
+      wantedBy = [ "graphical-session.target" ];
+      script = ''
+        while ! ${pkgs.procps}/bin/pgrep eww; do
+          sleep 1;
+        done
+        ${pkgs.dropbox}/bin/dropbox
+      '';
       serviceConfig = {
         Restart = "always";
       };
     };
-    udiskie-headless = {
-      wantedBy = [ "default.target" ];
-      after = [ "graphical-session.target" ];
+    udiskie = {
+      wantedBy = [ "graphical-session.target" ];
       path = with pkgs; [
+        procps
         bash
         udiskie
         alacritty
@@ -392,7 +380,10 @@
         xdg-utils
       ];
       script = ''
-        udiskie | while read l; do 
+        while ! pgrep eww; do
+          sleep 1;
+        done
+        udiskie --smart-tray | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
             alacritty -e bash -c "nnn \"$mount_dir\"; bash"
@@ -400,7 +391,14 @@
         done
       '';
       serviceConfig = {
-        ExecCondition = "/bin/sh -c 'if [ -n \"\${WAYLAND_DISPLAY}\" ]; then exit 1; fi'";
+        Restart = "always";
+      };
+    };
+    onedrive = {
+      wantedBy = [ "default.target" ];
+      path = [pkgs.onedrive];
+      script = "onedrive --monitor";
+      serviceConfig = {
         Restart = "always";
       };
     };

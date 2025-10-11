@@ -11,4 +11,4 @@ done &
 
 inotifywait -mqe modify ~/.config/mako | while read -r _; do 
   makoctl reload
-done &
+done

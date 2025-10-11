@@ -2,10 +2,13 @@
 
 DIR="$(readlink -f "$(dirname "$0")")" || exit
 
+# Cloud
 ln -sTv ~/.config/rclone/rclone.conf $SYNC/.config/rclone.conf 2>/dev/null
 
+# NixOS
 sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 
+# Home
 paths=(
   ~/.bash_profile # to prevent tmux from running ~/.profile
   ~/.bashrc
@@ -14,6 +17,7 @@ paths=(
   ~/.config/eww
   ~/.config/hypr
   ~/.config/i3status-rust
+  ~/.config/mako
   ~/.config/mimeapps.list
   ~/.config/nnn
   ~/.config/nvim
@@ -31,6 +35,7 @@ paths=(
   ~/.local/bin
   ~/.profile
   ~/.tmux.conf
+  ~/.zprofile
 )
 
 printf "%s\n" "${paths[@]}" | while read -r path; do 

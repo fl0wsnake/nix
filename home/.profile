@@ -11,6 +11,7 @@ export TRASH=~/.local/share/Trash/files
 export XDG_RUNTIME_DIR="/run/user/$UID"
 export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
 export PATH="$PATH:$HOME/.config/scripts:$HOME/.local/bin"
+export NIX_BUILD_CORES=0 # works at least for `nix-collect-garbage`
 
 ### Default apps
 export SHELL_COMM="$(grep -Po '[^\/]+$'<<<"$SHELL")" # $SHELL is defined by nixos

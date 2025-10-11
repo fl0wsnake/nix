@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+charge_stop=$(cat '/sys/class/power_supply/BAT0/charge_control_end_threshold')
+
+charge_points=(45 60 85 100)
+
+if [[ "$*" -lt 0 ]]; then
+  summand=-1
+else
+  summand=1
+fi
+
+if [ ! $charge_stop -gt 45 ]; then
+  charge_point_cur=0
+elif [ ! $charge_stop -gt 60 ]; then
+  charge_point_cur=1
+elif [ ! $charge_stop -gt 85 ]; then
+  charge_point_cur=2
+else
+  charge_point_cur=3
+fi
+
+charge_point_new=$((charge_point_cur + summand))
+case $charge_point_new in
+  -1)
+    charge_point_new=0
+    ;;
+  "${#charge_points[@]}")
+    charge_point_new=$((charge_point_new - 1))
+    ;;
+esac
+
+charge_stop_new=${charge_points[$charge_point_new]}
+
+sudo tlp setcharge $(($charge_stop_new - 4)) "$charge_stop_new"

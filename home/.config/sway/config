@@ -9,16 +9,20 @@ set $up k
 set $right l
 set $term alacritty
 
-set $focused_window_pid swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused).pid' 2>/dev/null
+set $focused_window swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
+set $focused_window_pid $focused_window | jq '.pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
 set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"
 
-font Monospace 10
-# for_window [class=".*"] title_format "%title"
-for_window [class="^floating$"] floating enable
-
+font Monospace 12
+workspace_layout tabbed
+titlebar_border_thickness 0
+titlebar_padding 0
+title_align center
+for_window [app_id="floating"] floating enable
 client.focused #000000 #fe8019 #000000
-hide_edge_borders smart
+# the --i3 flag removes title for single windows
+hide_edge_borders --i3 smart
 smart_borders on
 
 # TODO remove?
@@ -79,7 +83,7 @@ seat * hide_cursor when-typing enable
 input "1:1:AT_Translated_Set_2_keyboard" {
   repeat_delay 225
   repeat_rate 20
-  xkb_layout 'us,ua'
+  xkb_layout 'us,ua,ru'
   # xkb_options 'grp:win_space_toggle,caps:ctrl_modifier'
   xkb_options grp:caps_toggle
 }
@@ -88,10 +92,11 @@ input type:touchpad {
   natural_scroll enabled
 }
 
-bindsym $mod+Return exec $TERMINAL -e bash -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec wofi --show drun
-bindsym $mod+Control+Return exec $TERMINAL -e bash -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+x exec $TERMINAL -e bash -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 
 floating_modifier $mod normal
 
@@ -145,19 +150,19 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 # bindsym $mod+0 workspace number 10
 
 set $a_workspace 10:A
-bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window_pid || $TERMINAL -e $EDITOR +Wiki"
+bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR +Wiki"
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window_pid || $BROWSER"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || $BROWSER"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window_pid || (flatpak run com.viber.Viber && telegram-desktop)"
+bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (flatpak run com.viber.Viber && telegram-desktop)"
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
-bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window_pid || transmission-gtk"
+bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window || transmission-gtk"
 bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
 bindsym --to-code $mod+f+Control exec $sway_scripts/move_workspace $current_ws_name $f_workspace
 set $g_workspace 14:G
@@ -213,9 +218,12 @@ bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
 
 bindsym --to-code $mod+q kill
 bindsym --to-code $mod+Shift+q exec kill -15 $($focused_window_pid)
+bindsym --to-code $mod+Control+q exec $focused_window | wl-copy
+# swaymsg -t get_tree | jq '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
 # bindsym --to-code $mod+w fullscreen toggle
 bindsym --to-code $mod+w layout toggle tabbed split
-bindsym --to-code $mod+Shift+w floating toggle
+bindsym --to-code $mod+Shift+w fullscreen toggle
+bindsym --to-code $mod+Control+w floating toggle
 bindsym --to-code $mod+c exec clipman pick --tool wofi --histpath=$CLIP_HIST
 bindsym --to-code $mod+b exec blueman-manager
 
@@ -280,8 +288,8 @@ bindsym --locked XF86MonBrightnessDown exec brightnessctl -e4 -n2 set 20%-
 # bindsym --locked XF86Display exec brightnessctl -e4 -n2 set 5%+
 bindsym --locked XF86WLAN exec fusermount -u "$MTPFS"; exec go-mtpfs "$MTPFS"&
 
-bindsym --locked XF86Tools exec sudo tlp setcharge 40 44
-bindsym --locked XF86Bluetooth exec sudo tlp setcharge 81 85
+bindsym --locked XF86Tools exec $SCRIPTS/setcharge -1
+bindsym --locked XF86Bluetooth exec $SCRIPTS/setcharge 1
 bindsym --locked XF86Keyboard exec killall eject-fuzzy; exec $TERMINAL --class=floating -e eject-fuzzy
 bindsym --locked XF86Favorites exec sudo systemctl suspend
 
@@ -308,13 +316,13 @@ exec swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' || sudo mod
 # Apps
 exec eww open bar
 exec $BROWSER
-exec dropbox
-exec watch-udiskie
-exec QT_QPA_PLATFORM=xcb syncthingtray --wait
+# exec dropbox
+# exec watch-udiskie
+exec sh -c 'while ! pgrep eww; do sleep 1; done; QT_QPA_PLATFORM=xcb syncthingtray --wait'
 
 exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
-exec man configuration.nix
+exec $TERMINAL -e sh -c man configuration.nix
 
 workspace $1_workspace
