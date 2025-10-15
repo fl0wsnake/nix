@@ -46,7 +46,7 @@
 
    (deflisten watch-kblayout '$SWAY_SCRIPTS/watch-kblayout')
    (defwidget kblayout []
-    (box watch-kblayout)
+    (box :class { watch-kblayout != 'English (US)' ? "warning" : "normal" } watch-kblayout)
    )
 
    (deflisten watch-brightness 'watch-brightness')

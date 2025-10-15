@@ -186,6 +186,14 @@
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
+    ffmpegthumbnailer
+    pistol
+    wezterm
+    ctpv
+    lf
+    ranger
+    viu
+    catimg
     os-prober
     ### Code
     tree-sitter
@@ -224,6 +232,7 @@
     htop
     udiskie
     ### Media
+    imagemagick # rotate images from nnn
     gimp3
     mkvtoolnix-cli
     libreoffice-fresh
@@ -258,6 +267,7 @@
     nnn
     bat
     ### Internet
+    chromium
     nix-search-cli
     onedrive
     wget
@@ -314,10 +324,10 @@
     ];
   };
 
-  programs.npm = {
-    enable = true;
-    npmrc = "ignore-scripts=true";
-  };
+  # programs.npm = { # TODO remove cause using a local file
+  #   enable = true;
+  #   npmrc = "ignore-scripts=true";
+  # };
 
   programs.dconf.profiles.user.databases = [
     {
@@ -375,18 +385,19 @@
         procps
         bash
         udiskie
-        alacritty
+        kitty
         nnn
         xdg-utils
       ];
       script = ''
+        . ~/.config/nnn/config
         while ! pgrep eww; do
           sleep 1;
         done
         udiskie --smart-tray | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
-            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
+            kitty -e bash -c "nnn \"$mount_dir\"; bash"
           fi
         done
       '';

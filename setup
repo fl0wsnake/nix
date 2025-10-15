@@ -17,9 +17,12 @@ paths=(
   ~/.config/eww
   ~/.config/hypr
   ~/.config/i3status-rust
+  ~/.config/kitty
+  ~/.config/lf
   ~/.config/mako
   ~/.config/mimeapps.list
-  ~/.config/nnn
+  ~/.config/nnn/config
+  ~/.config/nnn/plugins
   ~/.config/nvim
   ~/.config/scripts
   ~/.config/syncthing-1/config.xml
@@ -27,12 +30,15 @@ paths=(
   ~/.config/syncthingtray.ini
   ~/.config/vimiv
   ~/.config/waybar
-  ~/.config/zsh
+  ~/.config/zsh/modules
+  ~/.config/zsh/.zshrc
   ~/.fuzzy-home-ignore
   ~/.gitconfig
   ~/.ignore # for ripgrep
   ~/.lesskey
   ~/.local/bin
+  ~/.local/share/lf/marks
+  ~/.npmrc
   ~/.profile
   ~/.tmux.conf
   ~/.zprofile

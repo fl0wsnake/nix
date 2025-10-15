@@ -136,6 +136,7 @@ vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua')
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
+vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', '<leader>l', function() vim.cmd('h lspconfig-all | on') end, Silent)
 
 require("config.lazy")

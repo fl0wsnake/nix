@@ -14,12 +14,12 @@ export PATH="$PATH:$HOME/.config/scripts:$HOME/.local/bin"
 export NIX_BUILD_CORES=0 # works at least for `nix-collect-garbage`
 
 ### Default apps
-export SHELL_COMM="$(grep -Po '[^\/]+$'<<<"$SHELL")" # $SHELL is defined by nixos
+export SHELL_COMM=${SHELL##*\/} # $SHELL is defined by nixos
 export EDITOR="nvim"
 export VISUAL="nvim"
 export MANPAGER='nvim +Man!'
 export EXPLORER="nnn"
-export TERMINAL="alacritty"
+export TERMINAL="kitty"
 export BROWSER="flatpak run app.zen_browser.zen"
 export HYPR_BORDER_SIZE=2 # for hacking hypr's window cycling
 
@@ -49,6 +49,9 @@ export GCM_CREDENTIAL_STORE='plaintext'
 # GDK_SCALE="1.5"; # Gnome only supports non-fractional scaling by default. "2" is too much for 2560x1440 and "1" is too little.
 # QT_SCALE_FACTOR="1.5";
 
+### KITTY
+export TMPDIR=/tmp
+
 ### ZSH
 export ZDOTDIR=~/.config/zsh
 export SAVEHIST=$HISTFILESIZE
@@ -61,42 +64,5 @@ export HISTSIZE=100000
 export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
 
-### [nnn](https://github.com/jarun/nnn)
-export NNN_TMPFILE=/tmp/.nnn.lastd
-export NNN_SCOPE=1
-export NNN_USE_EDITOR=1
-export NNN_TRASH=1
-export NNN_OPTS='rHRAJxE'
-export NNN_ORDER="t:$HOME/Downloads;t:/tmp;t:$SCREENSHOTS;t:/var/log"
-export NNN_FIFO=/tmp/.nnn.fifo
-export NNN_SEL='/tmp/.nnn.sel'
-export NNN_PLUG;NNN_PLUG=$(tr -d '\n' <<<"
-m:mtpmount;
-d:diffs;
-e:preview-tabbed;
-E:preview-tui;
-r:rsynccp;
-R:renamer;
-v:-!mvg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.local/share/vimiv/tags/a*;
->:-!mogrify -rotate 90 '\$PWD/\$nnn'*;
-<:-!mogrify -rotate -90 '\$PWD/\$nnn'*;
-s:-!echo -n>$NNN_SEL*;
-n:-!nautilus . &*;
-y:-!wl-copy \$(sed s@^$HOME@~@ <<<\"\$PWD/\$nnn\")*;
-Y:-!wl-copy \$(sed s@^$HOME@~@ <<<\"\$PWD\")*;
-v:-!rsync -avhP \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.local/share/vimiv/tags/a*;
-P:!printf '%s' '0c\$(dirname \"\$(wl-paste)\")' >\$NNN_PIPE*;
-a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-")
-export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
-d:$HOME/Downloads;
-m:/run/media/$USER;
-b:$SYNC;
-S:$SCREENSHOTS;
-t:/tmp;
-s:$HOME/Syncthing;
-w:$HOME/WS;
-w:$WIKI;
-")
+### nnn
+. "$HOME/.config/nnn/config"

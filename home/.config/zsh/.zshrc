@@ -73,21 +73,7 @@ bindkey '^[[1;5C' forward-word       # right
 bindkey '^[[1;5D' backward-word      # left
 
 # COMMANDS
-
-# ka() {
-#   pgrep_res=$(pgrep -fa "$@")
-#   if [[ -n "$pgrep_res" ]]; then
-#     echo "$pgrep_res";
-#     echo "\nkill listed processes? (y/n)";
-#     read -sq
-#     case $REPLY in
-#       y) pkill -fc "$@";;
-#       *) echo 'Aborted';;
-#     esac
-#   fi
-# }
-
-subs_set_default() {
+subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -name '*.mkv' -type f | while read -r file; do
       echo "$file"
@@ -111,12 +97,12 @@ subs_set_default_file() {
   mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
-mkvify() {
+mkvify() { Samsung Smart TV does not support .avi
   for file in "$@"; do 
-    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+    ($TERMINAL bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }
-mtp() {
+mtp() { # go-mtpfs is the only one that works for android and still only on 2 attempt
   set +e
   fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
   # pid=$!
@@ -124,6 +110,18 @@ mtp() {
     # kill $pid
     fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
     # pid=$!
+  done
+}
+probe() { # Samsung Smart TV does not support some audio codecs
+  for i in "$@"; do
+    echo "--> $i"
+    ffprobe 2>&1 "$i" | grep -P '^ *Stream #'
+  done
+}
+mystery_fix() {
+  for input in "$@"; do
+    # ffmpeg -i "$input" -c:v copy -c:a ac3 -b:a 384k "$(dirname $input)/_$(basename $input)"
+    ffmpeg -i "$input" -c:v copy -c:a copy "$(dirname $input)/_$(basename $input)"
   done
 }
 

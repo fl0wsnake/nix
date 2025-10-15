@@ -2,11 +2,11 @@
 
 inotifywait -mqe modify ~/.config/sway | while read -r _; do 
   swaymsg reload
+  eww reload
 done &
 
 inotifywait -mqe modify ~/.config/eww | while read -r _; do 
-  pkill eww
-  eww open bar
+  eww reload
 done &
 
 inotifywait -mqe modify ~/.config/mako | while read -r _; do 

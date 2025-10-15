@@ -1,7 +1,32 @@
 # xdg-mime query default application/x-bittorrent = transmission-gtk.desktop
 # xdg-mime query filetype FILE.torrent = application/x-bittorrent
+# .desktop files should be placed under $XDG_DATA_HOME/applications or ~/.local/share/applications
 
 [Default Applications]
+; text/plain=editor.desktop
+; text/x-java=editor.desktop
+; text/x-shellscript=editor.desktop
+; text/x-script.python=editor.desktop
+; text/html=editor.desktop
+; inode/x-empty=editor.desktop
+; application/json=editor.desktop
+; application/javascript=editor.desktop
+
+application/vnd.ms-excel=libreoffice.desktop
+
+video/x-matroska=vlc.desktop
+video/x-msvideo=vlc.desktop
+video/webm=vlc.desktop
+video/mp4=vlc.desktop
+video/3gpp=vlc.desktop
+application/octet-stream=vlc.desktop
+
+image/png=vimiv.desktop
+image/jpeg=vimiv.desktop
+image/bmp=vimiv.desktop
+
+application/pdf=org.pwmt.zathura.desktop
+
 x-scheme-handler/http=app.zen_browser.zen.desktop
 x-scheme-handler/https=app.zen_browser.zen.desktop
 text/html=app.zen_browser.zen.desktop
@@ -9,11 +34,16 @@ x-scheme-handler/about=app.zen_browser.zen.desktop
 x-scheme-handler/unknown=app.zen_browser.zen.desktop
 
 application/x-bittorrent=transmission-gtk.desktop
+x-scheme-handler/magnet=transmission-gtk.desktop
 
-x-scheme-handler/tg=org.telegram.desktop.desktop
-x-scheme-handler/tonsite=org.telegram.desktop.desktop
+x-scheme-handler/tg=org.telegram.desktop
+x-scheme-handler/tonsite=org.telegram.desktop
+
 x-scheme-handler/viber=viber.desktop
 
 [Added Associations]
-x-scheme-handler/tg=org.telegram.desktop.desktop;
-x-scheme-handler/tonsite=org.telegram.desktop.desktop;
+x-scheme-handler/tg=org.telegram.desktop
+x-scheme-handler/tonsite=org.telegram.desktop
+
+x-scheme-handler/viber=viber.desktop
+
