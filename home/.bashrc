@@ -109,7 +109,7 @@ subs_set_default_file() {
 
 mkvify() {
   for file in "$@"; do 
-    ($TERMINAL bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }
 

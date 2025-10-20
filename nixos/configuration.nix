@@ -120,7 +120,8 @@
     shell = pkgs.zsh;
   };
   users.defaultUserShell = pkgs.zsh;
-  programs.zsh = { # bash's alias expansion isn't good enough
+  programs.zsh = {
+    # bash's alias expansion isn't good enough
     enable = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
@@ -164,6 +165,37 @@
     wrapperFeatures.gtk = true;
   };
 
+  xdg.mime.defaultApplications = {
+    # "application/vnd.ms-excel" = [];
+    #
+    # "video/x-matroska" = [];
+    # "video/x-msvideo" = [];
+    # "video/webm" = [];
+    # "video/mp4" = [];
+    # "video/3gpp" = [];
+    # "application/octet-stream" = [];
+    #
+    # "image/png" = [];
+    # "image/jpeg" = [];
+    # "image/bmp" = [];
+    #
+    # "application/pdf" = [];
+    #
+    "x-scheme-handler/http" = [ "app.zen_browser.zen.desktop" ];
+    "x-scheme-handler/https" = [ "app.zen_browser.zen.desktop" ];
+    "text/html" = [ "app.zen_browser.zen.desktop" ];
+    "x-scheme-handler/about" = [ "app.zen_browser.zen.desktop" ];
+    "x-scheme-handler/unknown" = [ "app.zen_browser.zen.desktop" ];
+    #
+    # "application/x-bittorrent" = [];
+    # "x-scheme-handler/magnet" = [];
+    #
+    # "x-scheme-handler/tg" = [];
+    # "x-scheme-handler/tonsite" = [];
+    #
+    # "x-scheme-handler/viber" = [];
+  };
+
   xdg.portal = {
     enable = true;
     wlr.enable = true;
@@ -186,14 +218,7 @@
   services.dbus.enable = true;
 
   environment.systemPackages = with pkgs; [
-    ffmpegthumbnailer
-    pistol
-    wezterm
-    ctpv
     lf
-    ranger
-    viu
-    catimg
     os-prober
     ### Code
     tree-sitter
@@ -232,6 +257,8 @@
     htop
     udiskie
     ### Media
+    xfce.thunar
+    python313Packages.grip # uses github API
     imagemagick # rotate images from nnn
     gimp3
     mkvtoolnix-cli
@@ -259,8 +286,7 @@
     nautilus
     renameutils
     ### Terminals
-    kitty
-    alacritty
+    alacritty # kitty has crap scrollback and does not use a -e flag for exec
     ghostty
     ### TUIs
     neovim
@@ -407,7 +433,7 @@
     };
     onedrive = {
       wantedBy = [ "default.target" ];
-      path = [pkgs.onedrive];
+      path = [ pkgs.onedrive ];
       script = "onedrive --monitor";
       serviceConfig = {
         Restart = "always";

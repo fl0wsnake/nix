@@ -92,11 +92,11 @@ input type:touchpad {
   natural_scroll enabled
 }
 
-bindsym $mod+Return exec $TERMINAL sh -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec wofi --show drun
-bindsym $mod+Control+Return exec $TERMINAL sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+x exec $TERMINAL sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+e exec $TERMINAL sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 
 floating_modifier $mod normal
 
@@ -150,7 +150,7 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 # bindsym $mod+0 workspace number 10
 
 set $a_workspace 10:A
-bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL $EDITOR +Wiki"
+bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR +Wiki"
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
@@ -217,7 +217,7 @@ bindsym $mod+comma split v
 bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
 
 bindsym --to-code $mod+q kill
-bindsym --to-code $mod+Shift+q exec kill -15 $($focused_window_pid)
+bindsym --to-code $mod+Shift+q exec kill -9 $($focused_window_pid)
 bindsym --to-code $mod+Control+q exec $focused_window | wl-copy
 # swaymsg -t get_tree | jq '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
 # bindsym --to-code $mod+w fullscreen toggle
@@ -290,7 +290,7 @@ bindsym --locked XF86WLAN exec fusermount -u "$MTPFS"; exec go-mtpfs "$MTPFS"&
 
 bindsym --locked XF86Tools exec $SCRIPTS/setcharge -1
 bindsym --locked XF86Bluetooth exec $SCRIPTS/setcharge 1
-bindsym --locked XF86Keyboard exec killall eject-fuzzy; exec $TERMINAL --class=floating eject-fuzzy
+bindsym --locked XF86Keyboard exec killall eject-fuzzy; exec $TERMINAL --class=floating -e eject-fuzzy
 bindsym --locked XF86Favorites exec sudo systemctl suspend
 
 bindsym --locked XF86AudioNext exec playerctl next
@@ -323,6 +323,6 @@ exec sh -c 'while ! pgrep eww; do sleep 1; done; QT_QPA_PLATFORM=xcb syncthingtr
 exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
-exec $TERMINAL sh -c man configuration.nix
+exec $TERMINAL -e sh -c man configuration.nix
 
 workspace $1_workspace

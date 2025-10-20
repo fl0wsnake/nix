@@ -35,7 +35,7 @@ end
 local function GFiles()
   vim.call('fzf#run', {
     dir = root(),
-    source = 'rg --files --smart-case --color=never -.',
+    source = 'rg --ignore-file=.git --files --smart-case --color=never -.',
     options = {
       "--preview", "bat --style=plain --color=always {1} ",
     },
@@ -93,7 +93,7 @@ return {
       end)
       vim.keymap.set('', '<leader>a', function()
         vim.fn['fzf#run']({
-          source = 'fd -LH -d8 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore',
+          source = 'fd -HE .git -d8 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore',
           sink = 'cd ~|e'
         })
       end)

@@ -1,3 +1,14 @@
+-- function K()
+--   if vim.o.filetype == 'help' then -- default is `split h`
+--     vim.cmd(string.format('sil! h %s', vim.fn.expand('<cword>')))
+--     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-w>", true, false, true) .. 'T', 'x', false)
+--   elseif vim.o.filetype == 'man' then -- keep default
+--     vim.cmd('sil! norm! K')
+--   else
+--     vim.lsp.buf.hover() -- add lsp support
+--   end
+-- end
+
 vim.keymap.set('n', '<a-cr>', function() vim.diagnostic.jump { count = 1, float = true } end)
 vim.keymap.set('n', '<s-a-cr>', function() vim.diagnostic.jump { count = -1, float = true } end)
 vim.keymap.set('n', '<localleader>D', vim.lsp.buf.declaration)
@@ -28,10 +39,9 @@ return {
     init = function()
       -- local lspconfig = require('lspconfig')
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
-      vim.lsp.enable('bashls')
-      vim.lsp.config('jsonls', { capabilities = capabilities, })
-      vim.lsp.config("ts_ls", {})
+      vim.lsp.enable({
+        "bashls", "jsonls", "ts_ls", "nil_ls", "lua_ls"
+      })
       vim.lsp.config("nil_ls", {
         settings = {
           ["nil"] = {
@@ -41,27 +51,75 @@ return {
           }
         }
       })
-      vim.lsp.config("lua_ls", {
-        capabilities = capabilities,
-        settings = {
-          Lua = {
+      vim.lsp.config('lua_ls', {
+        on_init = function(client)
+          if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if
+                path ~= vim.fn.stdpath('config')
+                and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+            then
+              return
+            end
+          end
+
+          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
             runtime = {
+              -- Tell the language server which version of Lua you're using (most
+              -- likely LuaJIT in the case of Neovim)
               version = 'LuaJIT',
-            },
-            diagnostics = {
-              globals = { 'vim', 'it', 'describe', 'before_each', 'after_each' },
-            },
-            workspace = {
-              library = {
-                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-                [vim.fn.stdpath("data") .. "/lazy/"] = true
+              -- Tell the language server how to find Lua modules same way as Neovim
+              -- (see `:h lua-module-load`)
+              path = {
+                'lua/?.lua',
+                'lua/?/init.lua',
               },
-              checkThirdParty = false,
             },
-          }
+            -- Make the server aware of Neovim runtime files
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                vim.env.VIMRUNTIME
+                -- Depending on the usage, you might want to add additional paths
+                -- here.
+                -- '${3rd}/luv/library'
+                -- '${3rd}/busted/library'
+              }
+              -- Or pull in all of 'runtimepath'.
+              -- NOTE: this is a lot slower and will cause issues when working on
+              -- your own configuration.
+              -- See https://github.com/neovim/nvim-lspconfig/issues/3189
+              -- library = {
+              --   vim.api.nvim_get_runtime_file('', true),
+              -- }
+            }
+          })
+        end,
+        settings = {
+          Lua = {}
         }
       })
+      -- vim.lsp.config("lua_ls", {
+      --   capabilities = capabilities,
+      --   settings = {
+      --     Lua = {
+      --       runtime = {
+      --         version = 'LuaJIT',
+      --       },
+      --       diagnostics = {
+      --         globals = { 'vim', 'it', 'describe', 'before_each', 'after_each' },
+      --       },
+      --       workspace = {
+      --         library = {
+      --           [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+      --           [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+      --           [vim.fn.stdpath("data") .. "/lazy/"] = true
+      --         },
+      --         checkThirdParty = false,
+      --       },
+      --     }
+      --   }
+      -- })
     end
   },
   {

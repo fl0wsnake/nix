@@ -19,7 +19,7 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export MANPAGER='nvim +Man!'
 export EXPLORER="nnn"
-export TERMINAL="kitty"
+export TERMINAL="alacritty"
 export BROWSER="flatpak run app.zen_browser.zen"
 export HYPR_BORDER_SIZE=2 # for hacking hypr's window cycling
 

@@ -24,6 +24,8 @@ vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall'
 -- vim.g.netrw_list_hide = '\\.\\./,\\./' # TODO: remove
 -- vim.keymap.set("", "<A-x>", function() vim.cmd('Ex') end, Silent)
 -- vim.g.netrw_banner = 0
+vim.keymap.set("", "<leader>e", function() vim.cmd.file(io.popen('readlink -f ' .. vim.fn.expand('%')):read()) end,
+  Silent)
 vim.keymap.set("", "<leader>y",
   function()
     vim.fn.system(string.format("wl-copy '%s'",
@@ -33,6 +35,7 @@ vim.keymap.set("", "<leader>y",
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
 vim.keymap.set("", "<C-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
 vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end, Silent)
+vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end, Silent)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
 })
@@ -88,7 +91,8 @@ vim.keymap.set("n", "<s-a-s>", "vip:'<,'>!sort -r<cr>", Silent)
 vim.o.list = true
 vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
 
-vim.cmd('set number relativenumber nowrap scrolloff=999 sidescrolloff=10')
+-- TODO removing number relativenumber
+vim.cmd('set nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
 })
@@ -139,4 +143,5 @@ vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', '<leader>l', function() vim.cmd('h lspconfig-all | on') end, Silent)
 
+require("config.utils")
 require("config.lazy")

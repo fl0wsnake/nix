@@ -16,7 +16,7 @@ alias o=xdg-open
 alias j='journalctl --since today --reverse'
 alias h="$EDITOR $HISTFILE"
 alias e="$EDITOR"
-alias d=dict
+# alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
 alias c=calc
 
 # Multiple letters
@@ -35,11 +35,12 @@ alias gs='(R && git status)'
 alias gp='git push'
 alias gd='(R && git diff --staged)'
 alias gc='(R && git commit -v)'
+alias gco='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
 alias ga='git add -A'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias dun='nix-env --uninstall'
-alias ds="nix-search"
+alias ds="nix-search -d"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias drs="dr && shutdown now"
 alias drb="dr && reboot"
@@ -99,7 +100,7 @@ subs_set_default_file() {
 }
 mkvify() { Samsung Smart TV does not support .avi
   for file in "$@"; do 
-    ($TERMINAL bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }
 mtp() { # go-mtpfs is the only one that works for android and still only on 2 attempt
