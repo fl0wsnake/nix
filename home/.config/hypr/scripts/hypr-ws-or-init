@@ -1,6 +1,0 @@
-#!/bin/sh
-
-hyprctl dispatch workspace "$1"
-if [ $(hyprctl activeworkspace -j | jq .windows) == 0 ]; then 
-  hyprctl dispatch exec "${@:2}"
-fi

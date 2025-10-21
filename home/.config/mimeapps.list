@@ -3,6 +3,7 @@
 # .desktop files should be placed under $XDG_DATA_HOME/applications or ~/.local/share/applications
 
 [Default Applications]
+
 ; text/plain=editor.desktop
 ; text/x-java=editor.desktop
 ; text/x-shellscript=editor.desktop
@@ -27,11 +28,11 @@ image/bmp=vimiv.desktop
 
 application/pdf=org.pwmt.zathura.desktop
 
-x-scheme-handler/http=app.zen_browser.zen.desktop
-x-scheme-handler/https=app.zen_browser.zen.desktop
-text/html=app.zen_browser.zen.desktop
-x-scheme-handler/about=app.zen_browser.zen.desktop
-x-scheme-handler/unknown=app.zen_browser.zen.desktop
+x-scheme-handler/http=app.zen_browser.zen.desktop;chromium-browser.desktop
+x-scheme-handler/https=app.zen_browser.zen.desktop;chromium-browser.desktop
+text/html=app.zen_browser.zen.desktop;chromium-browser.desktop
+x-scheme-handler/about=app.zen_browser.zen.desktop;chromium-browser.desktop
+x-scheme-handler/unknown=app.zen_browser.zen.desktop;chromium-browser.desktop
 
 application/x-bittorrent=transmission-gtk.desktop
 x-scheme-handler/magnet=transmission-gtk.desktop
@@ -46,4 +47,10 @@ x-scheme-handler/tg=org.telegram.desktop
 x-scheme-handler/tonsite=org.telegram.desktop
 
 x-scheme-handler/viber=viber.desktop
+
+x-scheme-handler/http=app.zen_browser.zen.desktop
+x-scheme-handler/https=app.zen_browser.zen.desktop
+text/html=app.zen_browser.zen.desktop
+x-scheme-handler/about=app.zen_browser.zen.desktop
+x-scheme-handler/unknown=app.zen_browser.zen.desktop
 

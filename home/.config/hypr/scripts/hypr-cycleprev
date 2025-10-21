@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-hyprctl dispatch layoutmsg cycleprev
-if hyprctl activewindow -j | jq -e ".at[0]==$HYPR_BORDER_SIZE"; then
-  hyprctl dispatch layoutmsg cycleprev
-fi

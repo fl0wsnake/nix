@@ -26,8 +26,8 @@ hide_edge_borders --i3 smart
 smart_borders on
 
 # TODO remove?
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+# exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+# exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 
 # bar {
 # # icon_theme Adwaita
@@ -324,5 +324,8 @@ exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
 exec $TERMINAL -e sh -c man configuration.nix
+
+# exec systemctl --user import-environment PATH
+# exec systemctl --user restart xdg-desktop-portal.service
 
 workspace $1_workspace

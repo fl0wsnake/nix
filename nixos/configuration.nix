@@ -13,7 +13,6 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./blue-light-filter.nix
   ];
 
   # Bootloader.
@@ -153,11 +152,11 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.variables = {
+  environment.sessionVariables = {
     USER = "nix";
+    # XDG_CURRENT_DESKTOP = "sway"; # TODO: remove if links are still opened in flatpak. Might have been needed for xdg-desktop-portal
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
-    PATH = "$HOME/.npm/bin:$PATH";
   };
 
   programs.sway = {
@@ -199,10 +198,7 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-wlr
-      xdg-desktop-portal-gtk
-    ];
+    extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
   };
 
   services.flatpak = {
@@ -213,6 +209,11 @@
       "com.github.tchx84.Flatseal"
       "com.viber.Viber"
     ];
+    overrides = {
+      global = {
+        Context.filesystems = [ "home" ]; # for zen user conf
+      };
+    };
   };
 
   services.dbus.enable = true;
@@ -445,7 +446,7 @@
         wl-clipboard
         clipman
       ];
-      script = "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.variables.CLIP_HIST}";
+      script = "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.sessionVariables.CLIP_HIST}";
       serviceConfig = {
         Restart = "always";
       };
@@ -461,7 +462,7 @@
     syncthing-1 = {
       after = [ "network.target" ];
       wantedBy = [ "default.target" ];
-      serviceConfig = with config.environment.variables; {
+      serviceConfig = with config.environment.sessionVariables; {
         ExecStart = ''
           ${pkgs.syncthing}/bin/syncthing --no-browser --no-restart --logflags=0 \
             --gui-address '0.0.0.0:8384' \
@@ -472,7 +473,7 @@
     syncthing-2 = {
       after = [ "network.target" ];
       wantedBy = [ "default.target" ];
-      serviceConfig = with config.environment.variables; {
+      serviceConfig = with config.environment.sessionVariables; {
         ExecStart = ''
           ${pkgs.syncthing}/bin/syncthing --no-browser --no-restart --logflags=0 \
             --gui-address '0.0.0.0:8385' \
@@ -488,12 +489,20 @@
     22001
   ];
 
+  # fix flatpak apps not using xdg-open correctly
+  systemd.user.services.xdg-desktop-portal = {
+    # NOTE: conflicting definition does not include xdg-open nor app.zen_browser.zen, setting `after` to `default.target` didn't help
+    environment = pkgs.lib.mkForce {
+      PATH = "$PATH:/run/current-system/sw/bin:/var/lib/flatpak/exports/bin";
+    };
+  };
+
   services.udisks2 = {
     enable = true; # required for udiskie
     settings = {
       "mount_options.conf" = {
         defaults = {
-          ntfs_drivers = "ntfs-3g,ntfs3"; # fix error mounting my ntfs formatted `WD My Passport`
+          ntfs_drivers = "ntfs-3g,ntfs3"; # fix error mounting ntfs formatted `WD My Passport`
         };
       };
     };

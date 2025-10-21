@@ -6,13 +6,15 @@ vim.keymap.set('x', '<localleader>b', 'mms*v`]o`[s*`m', rb)    -- Bold
 
 return {
 
-  -- 'https://github.com/Nedra1998/nvim-mdlink',
-  -- init = function()
-  --   require('nvim-mdlink').setup({
-  --     keymap = true,
-  --     cmp = true
-  --   })
-  -- end
+  {
+    'https://github.com/Nedra1998/nvim-mdlink',
+    init = function()
+      require('nvim-mdlink').setup({
+        keymap = true,
+        cmp = true
+      })
+    end
+  },
 
   {
     'https://github.com/preservim/vim-markdown',

@@ -15,13 +15,12 @@ export NIX_BUILD_CORES=0 # works at least for `nix-collect-garbage`
 
 ### Default apps
 export SHELL_COMM=${SHELL##*\/} # $SHELL is defined by nixos
-export EDITOR="nvim"
-export VISUAL="nvim"
+export EDITOR='nvim'
+export VISUAL='nvim'
 export MANPAGER='nvim +Man!'
 export EXPLORER="nnn"
-export TERMINAL="alacritty"
-export BROWSER="flatpak run app.zen_browser.zen"
-export HYPR_BORDER_SIZE=2 # for hacking hypr's window cycling
+export TERMINAL='alacritty'
+export BROWSER='app.zen_browser.zen'
 
 ### Sync
 export SYNC="$HOME/Dropbox"
@@ -33,7 +32,6 @@ export SCREENSHOTS="${SYNC}/Screenshots"
 
 ### Dirs
 export SCRIPTS="$HOME/.config/scripts"
-# export HYPR_SCRIPTS="$HOME/.config/scripts"
 export SWAY_SCRIPTS="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"
