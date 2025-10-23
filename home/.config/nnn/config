@@ -8,6 +8,7 @@ export NNN_OPTS='rHRAJxE'
 export NNN_ORDER="t:$HOME/Syncthing/Phone;t:$HOME/.local/share/Trash;t:$HOME/Downloads;t:/tmp;t:$SCREENSHOTS;t:/var/log"
 export NNN_FIFO=/tmp/.nnn.fifo
 export NNN_SEL='/tmp/.nnn.sel'
+# [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
 export NNN_PLUG;NNN_PLUG=$(tr -d '\n' <<<"
 m:mtpmount;
 d:diffs;
@@ -15,15 +16,15 @@ e:preview-tabbed;
 ;:preview-tui;
 r:rsynccp;
 R:renamer;
-v:-!mvg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.local/share/vimiv/tags/a*;
->:-!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
-<:-!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
-s:-!echo -n>$NNN_SEL*;
-n:-!nautilus . &*;
-y:-!wl-copy \$(printf '%q' '\$(sed s@^$HOME@~@ <<<\"\$PWD/\$nnn\"))'*;
-Y:-!wl-copy \$(pruntf '%q' '\$(sed s@^$HOME@~@ <<<\"\$PWD\"))'*;
-v:-!rsync -avhP \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.local/share/vimiv/tags/a*;
-P:!printf '%s' '0c\$(dirname \"\$(wl-paste)\")' >\$NNN_PIPE*;
+v:!mvg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.local/share/vimiv/tags/a*;
+>:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
+<:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
+s:!echo -n>$NNN_SEL*;
+n:!nautilus . &*;
+y:!wl-copy \$(printf '%q' \"\$(sed 's|^$HOME|~|' <<<\"\$PWD/\$nnn\")\")*;
+Y:!wl-copy \$(pruntf '%q' \"\$(sed 's|^$HOME|~|' <<<\"\$PWD\")\")'*;
+v:!\$($SCRIPTS/vimiv-tag-paste) && rm /home/nix/.local/share/vimiv/tags/a*;
+p:!printf '0c%s' '\$(wl-paste|sed \"s|^~|$HOME|\")' >\$NNN_PIPE*;
 a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;

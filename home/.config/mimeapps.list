@@ -15,12 +15,12 @@
 
 application/vnd.ms-excel=libreoffice.desktop
 
-video/x-matroska=vlc.desktop
-video/x-msvideo=vlc.desktop
-video/webm=vlc.desktop
-video/mp4=vlc.desktop
-video/3gpp=vlc.desktop
-application/octet-stream=vlc.desktop
+video/x-matroska=mpv-smart.desktop;vlc.desktop
+video/x-msvideo=mpv-smart.desktop;vlc.desktop
+video/webm=mpv-smart.desktop;vlc.desktop
+video/mp4=mpv-smart.desktop;vlc.desktop
+video/3gpp=mpv-smart.desktop;vlc.desktop
+application/octet-stream=mpv-smart.desktop;vlc.desktop
 
 image/png=vimiv.desktop
 image/jpeg=vimiv.desktop

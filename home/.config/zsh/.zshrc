@@ -1,5 +1,7 @@
 # OPTIONS
-setopt AUTOCD NO_HUP KSH_ARRAYS
+setopt KSH_ARRAYS # for bash-like 0-indexed arrays
+typeset -A zle_bracketed_paste # fix KSH_ARRAYS causing a stray `~` after pasted text
+setopt NOHISTEXPAND AUTOCD NO_HUP
 setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY
 
 alias a='file="$(~/.config/scripts/fuzzy-home)" && nnn "$file" && . "$NNN_TMPFILE"'
@@ -18,6 +20,7 @@ alias h="$EDITOR $HISTFILE"
 alias e="$EDITOR"
 # alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
 alias c=calc
+alias T="$HOME/.local/share/Trash/files"
 
 # Multiple letters
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
@@ -29,6 +32,7 @@ alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias pk='pkill -fc'
 alias pkill='pkill -c'
 alias pg='pgrep -fa'
+alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
 alias md=mkdir
 alias kat='killall -15 -r'
 alias gs='(R && git status)'
@@ -40,6 +44,7 @@ alias gcl='git clone --recurse-submodules -j8'
 alias ga='git add -A'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias dun='nix-env --uninstall'
+alias du='du -hs'
 alias ds="nix-search -d"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias drs="dr && shutdown now"
@@ -49,8 +54,9 @@ alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Wi
 alias cp='rsync -aP'
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
 
-
 . "$ZDOTDIR"/modules/keymaps
+# . "$ZDOTDIR"/modules/expand-dots
+
 # `^` for `ctrl`, `^[` for `alt`
 bindkey "^[h" edit-history
 bindkey "^[m" man-command
@@ -117,12 +123,6 @@ probe() { # Samsung Smart TV does not support some audio codecs
   for i in "$@"; do
     echo "--> $i"
     ffprobe 2>&1 "$i" | grep -P '^ *Stream #'
-  done
-}
-mystery_fix() {
-  for input in "$@"; do
-    # ffmpeg -i "$input" -c:v copy -c:a ac3 -b:a 384k "$(dirname $input)/_$(basename $input)"
-    ffmpeg -i "$input" -c:v copy -c:a copy "$(dirname $input)/_$(basename $input)"
   done
 }
 

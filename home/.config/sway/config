@@ -318,12 +318,12 @@ exec eww open bar
 exec $BROWSER
 # exec dropbox
 # exec watch-udiskie
-exec sh -c 'while ! pgrep eww; do sleep 1; done; QT_QPA_PLATFORM=xcb syncthingtray --wait'
+exec "sh -c 'while ! pgrep eww; do sleep 1; done; QT_QPA_PLATFORM=xcb syncthingtray --wait'"
 
 exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
-exec $TERMINAL -e sh -c man configuration.nix
+exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
 
 # exec systemctl --user import-environment PATH
 # exec systemctl --user restart xdg-desktop-portal.service

@@ -16,8 +16,28 @@
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.enable = false;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    devices = [ "nodev" ];
+    useOSProber = true;
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 30d";
+  };
+
+  system.autoUpgrade = {
+    enable = true;
+    dates = "daily";
+  };
+
+  nix.optimise.automatic = true;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -51,12 +71,6 @@
     enable = true;
     settings = {
       default_session = {
-        # for flatpak dbus interaction
-        # command = ''
-        #   bash -c 'eval $(dbus-launch --sh-syntax --exit-with-session)
-        #   export DBUS_SESSION_BUS_ADDRESS
-        #   exec sway'
-        # '';
         command = "${pkgs.sway}/bin/sway";
         user = "nix";
       };
@@ -118,10 +132,11 @@
     ];
     shell = pkgs.zsh;
   };
+  # bash's alias expansion isn't good enough
   users.defaultUserShell = pkgs.zsh;
   programs.zsh = {
-    # bash's alias expansion isn't good enough
     enable = true;
+    enableBashCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
   };
@@ -153,8 +168,8 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
+    PATH = "$HOME/.npm/bin:$PATH";
     USER = "nix";
-    # XDG_CURRENT_DESKTOP = "sway"; # TODO: remove if links are still opened in flatpak. Might have been needed for xdg-desktop-portal
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
   };
@@ -218,7 +233,14 @@
 
   services.dbus.enable = true;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-1.1.05"
+  ];
+
   environment.systemPackages = with pkgs; [
+    efibootmgr
+    grub2
+    ventoy
     lf
     os-prober
     ### Code
@@ -351,11 +373,6 @@
     ];
   };
 
-  # programs.npm = { # TODO remove cause using a local file
-  #   enable = true;
-  #   npmrc = "ignore-scripts=true";
-  # };
-
   programs.dconf.profiles.user.databases = [
     {
       settings."org/gnome/desktop/interface" = {
@@ -374,8 +391,7 @@
   };
 
   fonts = {
-    # enableDefaultPackages = true; # TODO remove
-    fontDir.enable = true; # TODO remove
+    # fontDir.enable = true; # TODO remove if it didn't break anything
     packages =
       with pkgs;
       [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
@@ -412,19 +428,19 @@
         procps
         bash
         udiskie
-        kitty
+        alacritty
         nnn
         xdg-utils
       ];
       script = ''
-        . ~/.config/nnn/config
+        . /home/${config.environment.sessionVariables.USER}/.config/nnn/config
         while ! pgrep eww; do
           sleep 1;
         done
         udiskie --smart-tray | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
-            kitty -e bash -c "nnn \"$mount_dir\"; bash"
+            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
           fi
         done
       '';

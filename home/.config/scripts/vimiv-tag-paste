@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [[ -z "$*" ]]; then
+  tag='a'
+else
+  tag="$*"
+fi
+
+cat "/home/nix/.local/share/vimiv/tags/$tag" | tail +3 | xargs -d '\n' -I{} mv -vf "{}" .

@@ -105,6 +105,10 @@ vim.api.nvim_create_autocmd("BufReadPost", { -- Jump to last visited pos per fil
   end
 })
 
+--- Windows
+vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
+vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
+
 --- Tabs
 vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)

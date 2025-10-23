@@ -1,5 +1,6 @@
 .cache
 .cargo/registry
+.config/chromium
 .config/transmission/*
 .config/vivaldi
 Documents/ViberDownloads
