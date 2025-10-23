@@ -15,7 +15,6 @@ paths=(
   ~/.blerc
   ~/.config/alacritty
   ~/.config/eww
-  ~/.config/hypr
   ~/.config/i3status-rust
   ~/.config/kitty
   ~/.config/lf
@@ -28,10 +27,10 @@ paths=(
   ~/.config/syncthing-1/config.xml
   ~/.config/syncthing-2/config.xml
   ~/.config/syncthingtray.ini
+  ~/.config/transmission/settings.json
   ~/.config/vimiv
   ~/.config/waybar
-  ~/.config/zsh/modules
-  ~/.config/zsh/.zshrc
+  ~/.config/zsh
   ~/.fuzzy-home-ignore
   ~/.gitconfig
   ~/.ignore # for ripgrep

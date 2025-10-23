@@ -8,9 +8,11 @@ return {
   {
     'https://github.com/airblade/vim-gitgutter',
     init = function()
-      vim.o.updatetime = 100
-      vim.keymap.set('', '<s-c-cr>', '[c', { remap = true })
-      vim.keymap.set('', '<c-cr>', ']c', { remap = true })
+      vim.o.updatetime = 100 -- fix unreasonably big delay
+      vim.keymap.set('', '<a-g>', '<Plug>(GitGutterPreviewHunk)')
+      vim.keymap.set('', '<leader>gd', function() vim.cmd('GitGutterDiffOrig') end)
+      vim.keymap.set('', '<s-c-cr>', '<Plug>(GitGutterPrevHunk)')
+      vim.keymap.set('', '<c-cr>', '<Plug>(GitGutterNextHunk)')
     end
   },
   {},

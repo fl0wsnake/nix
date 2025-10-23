@@ -16,15 +16,8 @@
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = false;
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.loader.grub = {
-    enable = true;
-    efiSupport = true;
-    devices = [ "nodev" ];
-    useOSProber = true;
-  };
 
   nix.gc = {
     automatic = true;
