@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+socket=/tmp/udiskie-dir-mounted.sock
+
+socat -s - UNIX-CONNECT:$socket,forever \
+| while read -r dir_mounted; do
+  $TERMINAL -e sh -c "$EXPLORER \"$dir_mounted\"; $SHELL"
+done

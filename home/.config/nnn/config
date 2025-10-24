@@ -21,10 +21,10 @@ v:!mvg \$(cat /home/nix/.local/share/vimiv/tags/a | tail +3) . && rm /home/nix/.
 <:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
 s:!echo -n>$NNN_SEL*;
 n:!nautilus . &*;
-y:!wl-copy \$(printf '%q' \"\$(sed 's|^$HOME|~|' <<<\"\$PWD/\$nnn\")\")*;
-Y:!wl-copy \$(pruntf '%q' \"\$(sed 's|^$HOME|~|' <<<\"\$PWD\")\")'*;
+y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
+Y:!printf '%q' \"\$PWD\" | sed 's|^$HOME|~|' | wl-copy*;
 v:!\$($SCRIPTS/vimiv-tag-paste) && rm /home/nix/.local/share/vimiv/tags/a*;
-p:!printf '0c%s' '\$(wl-paste|sed \"s|^~|$HOME|\")' >\$NNN_PIPE*;
+p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
 a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;

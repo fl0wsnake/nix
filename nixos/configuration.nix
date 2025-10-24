@@ -19,6 +19,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.tmp.useTmpfs = true;
+  boot.tmp.tmpfsSize = "20%";
+
   nix.gc = {
     automatic = true;
     dates = "daily";
@@ -165,6 +168,17 @@
     USER = "nix";
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
+    # ### Sync
+    # SYNC = "$HOME/Dropbox";
+    # SCRIPTS_SYNC = "$SYNC/.config/scripts";
+    # WIKI = "$SYNC/Wiki";
+    # TODOS = "$SYNC/Todos";
+    # SCREENSHOTS = "$SYNC/Screenshots";
+    # ### Dirs
+    # SCRIPTS = "$HOME/.config/scripts";
+    # SWAY_SCRIPTS = "$HOME/.config/sway/scripts";
+    # SYNC_MOBILE = "$HOME/OneDrive";
+    # RICE = "$HOME/.config/nixos-rice";
   };
 
   programs.sway = {
@@ -231,6 +245,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    unrar
     efibootmgr
     grub2
     ventoy
@@ -403,12 +418,22 @@
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
-    dropbox = {
-      wantedBy = [ "graphical-session.target" ];
+    tray-ready = {
+      wantedBy = [ "default.target" ];
+      after = [ "graphical-session.target" ];
       script = ''
-        while ! ${pkgs.procps}/bin/pgrep eww; do
-          sleep 1;
-        done
+        if [ -n $DISPLAY ]; then
+          while ! pgrep eww; do
+            sleep 1;
+          done
+        fi
+      '';
+      serviceConfig.Type = "oneshot";
+    };
+    dropbox = {
+      wantedBy = [ "default.target" ];
+      after = [ "tray-ready.service" ];
+      script = ''
         ${pkgs.dropbox}/bin/dropbox
       '';
       serviceConfig = {
@@ -416,27 +441,22 @@
       };
     };
     udiskie = {
-      wantedBy = [ "graphical-session.target" ];
+      wantedBy = [ "default.target" ];
+      after = [ "tray-ready.service" ];
       path = with pkgs; [
         procps
-        bash
         udiskie
-        alacritty
-        nnn
-        xdg-utils
+        socat
       ];
       script = ''
-        . /home/${config.environment.sessionVariables.USER}/.config/nnn/config
-        while ! pgrep eww; do
-          sleep 1;
-        done
         udiskie --smart-tray | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
-            alacritty -e bash -c "nnn \"$mount_dir\"; bash"
+            echo "$mount_dir"
           fi
-        done
+        done | socat -s - UNIX-LISTEN:/tmp/udiskie-dir-mounted.sock,fork
       '';
+      # environment = config.environment.sessionVariables;
       serviceConfig = {
         Restart = "always";
       };
@@ -490,7 +510,24 @@
         '';
       };
     };
+    trash-empty = {
+      wantedBy = [ "timers.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.trash-cli}/bin/trash-empty 28";
+      };
+    };
   };
+  systemd.user.timers = {
+    trash-empty = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = "daily";
+        Persistent = true;
+      };
+    };
+  };
+
   networking.firewall.allowedTCPPorts = [
     8384
     8385

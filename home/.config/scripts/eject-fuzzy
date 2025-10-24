@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 
-# `jq` inserts a `;` for `fzf` to hide device PATH 
-# and joins by `,` for `column` to make a nice table.
 blk_path=$(
-lsblk --json -I8 -oPATH,LABEL,SIZE,FSUSE% \
-	| jq -r '.blockdevices[]|select(.label)|.label=";"+.label|map(values)|join(",")' \
-	| column -t -s, \
-	| fzf -d';' --with-nth 2.. \
-	| grep -o '^\S*' \
-) || exit
+  lsblk --json -I8 -oPATH,LABEL,SIZE,FSUSE% \
+    | jq -r '.blockdevices[]|select(."fsuse%")|map(values)|join(",")' \
+    | column -t -s, \
+    | fzf -d';' --with-nth 1.. \
+    | grep -o '^\S*' \
+    ) || exit
 blk_base_path=$(grep -o '/dev/sd[a-zA-Z]*'<<<"$blk_path")
 
 lsblk --json -I8 -oPATH,MOUNTPOINTS \
-	| jq -r ".blockdevices[]|select((.path|test(\"$blk_base_path\")) and .mountpoints[])|.mountpoints[]" \
-	| while read -r mountpoint; do
-	kill -s 9 $(lsof -t "$mountpoint") 2>/dev/null || true
-	sudo umount "$blk_path"
+  | jq -r ".blockdevices[]|select((.path|test(\"$blk_base_path\")) and .mountpoints[])|.mountpoints[]" \
+  | while read -r mountpoint; do
+kill -s 9 $(lsof -t "$mountpoint") 2>/dev/null || true
+sudo umount "$blk_path"
 done
-udisksctl power-off -b "$blk_path"
+# udisksctl power-off -b "$blk_path"

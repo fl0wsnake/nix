@@ -43,7 +43,7 @@ return {
         "bashls", "jsonls", "ts_ls", "nil_ls", "lua_ls"
       })
       vim.lsp.config.bashls = {
-        filetypes = { "sh", "bash", "zsh" }
+        filetypes = { "sh", "bash" }
       }
       vim.lsp.config("nil_ls", {
         settings = {

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+eww open bar
+while ! pgrep eww; do 
+  sleep 1
+done
+QT_QPA_PLATFORM=xcb syncthingtray --wait &
