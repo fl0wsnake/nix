@@ -17,6 +17,7 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.consoleMode = "auto";
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.tmp.useTmpfs = true;
@@ -352,6 +353,7 @@
     lua-language-server
     ### Text
     calc
+    xq
     jq
     diffutils
     translate-shell

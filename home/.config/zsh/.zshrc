@@ -24,6 +24,7 @@ alias T="$HOME/.local/share/Trash/files"
 
 # Multiple letters
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
+alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias se="sudo -e"
 alias scl='systemctl --user'
@@ -33,6 +34,7 @@ alias pk='pkill -fc'
 alias pkill='pkill -c'
 alias pg='pgrep -fa'
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
+alias nowin='sudo efibootmgr -N'
 alias md=mkdir
 alias kat='killall -15 -r'
 alias gs='(R && git status)'
@@ -82,7 +84,7 @@ bindkey '^[[1;5D' backward-word      # left
 # COMMANDS
 subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then
-    find "$@" -name '*.mkv' -type f | while read -r file; do
+    find "$@" -maxdepth 1 -name '*.mkv' -type f | while read -r file; do
       echo "$file"
       subs_set_default_file "$file"
     done

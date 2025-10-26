@@ -35,7 +35,7 @@ m:/run/media/$USER;
 b:$SYNC;
 S:$SCREENSHOTS;
 t:/tmp;
-t:$HOME/.local/share/Trash/files;
+T:$HOME/.local/share/Trash/files;
 s:$HOME/Syncthing;
 w:$HOME/WS;
 w:$WIKI;

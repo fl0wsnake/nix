@@ -27,7 +27,6 @@ paths=(
   ~/.config/syncthing-1/config.xml
   ~/.config/syncthing-2/config.xml
   ~/.config/syncthingtray.ini
-  ~/.config/transmission/settings.json
   ~/.config/vimiv
   ~/.config/waybar
   ~/.config/zsh
