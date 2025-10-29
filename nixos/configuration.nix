@@ -17,11 +17,13 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.consoleMode = "auto";
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # boot.tmp = {
+  #   # cleanOnBoot = true;
+  #   useTmpfs = true;
+  # };
   boot.tmp.useTmpfs = true;
-  boot.tmp.tmpfsSize = "20%";
 
   nix.gc = {
     automatic = true;
@@ -78,8 +80,8 @@
     enable = true;
     usePercentageForPolicy = true;
     percentageLow = 40;
-    percentageCritical = 30;
-    percentageAction = 20;
+    percentageCritical = 40;
+    percentageAction = 40;
     criticalPowerAction = "PowerOff";
   };
   security.polkit = {
@@ -169,53 +171,12 @@
     USER = "nix";
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
-    # ### Sync
-    # SYNC = "$HOME/Dropbox";
-    # SCRIPTS_SYNC = "$SYNC/.config/scripts";
-    # WIKI = "$SYNC/Wiki";
-    # TODOS = "$SYNC/Todos";
-    # SCREENSHOTS = "$SYNC/Screenshots";
-    # ### Dirs
-    # SCRIPTS = "$HOME/.config/scripts";
-    # SWAY_SCRIPTS = "$HOME/.config/sway/scripts";
-    # SYNC_MOBILE = "$HOME/OneDrive";
-    # RICE = "$HOME/.config/nixos-rice";
+    NIX_BUILD_CORES = 0;
   };
 
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
-  };
-
-  xdg.mime.defaultApplications = {
-    # "application/vnd.ms-excel" = [];
-    #
-    # "video/x-matroska" = [];
-    # "video/x-msvideo" = [];
-    # "video/webm" = [];
-    # "video/mp4" = [];
-    # "video/3gpp" = [];
-    # "application/octet-stream" = [];
-    #
-    # "image/png" = [];
-    # "image/jpeg" = [];
-    # "image/bmp" = [];
-    #
-    # "application/pdf" = [];
-    #
-    "x-scheme-handler/http" = [ "app.zen_browser.zen.desktop" ];
-    "x-scheme-handler/https" = [ "app.zen_browser.zen.desktop" ];
-    "text/html" = [ "app.zen_browser.zen.desktop" ];
-    "x-scheme-handler/about" = [ "app.zen_browser.zen.desktop" ];
-    "x-scheme-handler/unknown" = [ "app.zen_browser.zen.desktop" ];
-    #
-    # "application/x-bittorrent" = [];
-    # "x-scheme-handler/magnet" = [];
-    #
-    # "x-scheme-handler/tg" = [];
-    # "x-scheme-handler/tonsite" = [];
-    #
-    # "x-scheme-handler/viber" = [];
   };
 
   xdg.portal = {
@@ -225,7 +186,7 @@
   };
 
   services.flatpak = {
-    # from nix-flatpak
+    # requires nix-flatpak
     enable = true;
     packages = [
       "app.zen_browser.zen"
@@ -246,11 +207,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    unrar
-    efibootmgr
-    grub2
-    ventoy
-    lf
+    nil
     os-prober
     ### Code
     tree-sitter
@@ -275,7 +232,9 @@
     rustc
     eww
     ### System
-    expect # for unbuffering vimiv | wl-copy
+    efibootmgr # for winboot
+    ventoy
+    expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
     go-mtpfs # only one mtp tool that works
     xorg.xev # print input codes
     rclone
@@ -304,6 +263,7 @@
     tlp
     acpi
     ### Files
+    unrar
     syncthing
     syncthingtray
     ntfs3g
@@ -329,7 +289,7 @@
     nix-search-cli
     onedrive
     wget
-    transmission_3-gtk
+    transmission_4-gtk
     vivaldi
     dropbox
     ### Deps
@@ -348,12 +308,11 @@
     tabbed
     sxiv
     zathura
-    nil
+    nixd
     nixfmt
     lua-language-server
     ### Text
     calc
-    xq
     jq
     diffutils
     translate-shell
@@ -374,6 +333,15 @@
     waybar
     i3status-rust
   ];
+
+  services.transmission = {
+    # enable = true;
+    settings = {
+      umask = "000";
+      watch-dir-enabled = true;
+      watch-dir = "/home/nix/Downloads";
+    };
+  };
 
   services.dictd = {
     enable = true;
@@ -423,17 +391,19 @@
     tray-ready = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
+      path = [ pkgs.systemd ];
       script = ''
         if [ -n $DISPLAY ]; then
-          while ! pgrep eww; do
+          while ! pgrep eww >/dev/null; do
             sleep 1;
           done
+          systemd-notify --ready
         fi
       '';
-      serviceConfig.Type = "oneshot";
+      serviceConfig.Type = "notify";
     };
     dropbox = {
-      wantedBy = [ "default.target" ];
+      wantedBy = [ "tray-ready.service" ];
       after = [ "tray-ready.service" ];
       script = ''
         ${pkgs.dropbox}/bin/dropbox
@@ -443,7 +413,7 @@
       };
     };
     udiskie = {
-      wantedBy = [ "default.target" ];
+      wantedBy = [ "tray-ready.service" ];
       after = [ "tray-ready.service" ];
       path = with pkgs; [
         procps
@@ -451,14 +421,13 @@
         socat
       ];
       script = ''
-        udiskie --smart-tray | while read l; do 
+        udiskie -s | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
             echo "$mount_dir"
           fi
         done | socat -s - UNIX-LISTEN:/tmp/udiskie-dir-mounted.sock,fork
       '';
-      # environment = config.environment.sessionVariables;
       serviceConfig = {
         Restart = "always";
       };
@@ -531,8 +500,10 @@
   };
 
   networking.firewall.allowedTCPPorts = [
+    # Syncthing WebUI
     8384
     8385
+    # Syncthing discovery
     22000
     22001
   ];

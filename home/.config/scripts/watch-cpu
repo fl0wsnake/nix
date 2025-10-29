@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+avg_busy=$((100/$(getconf _NPROCESSORS_ONLN)))
+bar=25
+
+mpstat --dec=0 2 | awk 'NR >= 4{print 100-$12; fflush()}' | while read -r avg; do
+  if [[ $avg -gt $avg_busy ]]; then
+    echo '{"avg":'"$avg"',"top":"'"$(top -b -n 1 | tail +8 | awk -v ORS=' ' '{if(int($9)>'$bar'){if($12!="top"){print $12}}else{exit}}')"'"}'
+  else
+    echo '{"avg":'"$avg"',"top":""}'
+  fi
+done

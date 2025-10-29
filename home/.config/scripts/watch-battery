@@ -16,7 +16,6 @@ bat_read
 print
 
 while true; do
-  echo waiting
   inotifywait -qe CLOSE "$bat_path/model_name" -e CLOSE_WRITE "$bat_path/charge_control_end_threshold" >/dev/null
   bat_read
   print

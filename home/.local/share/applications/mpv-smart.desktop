@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=mpv-smart
+Exec=mpv-smart %U
+Terminal=false
+Type=Application
+Icon=mpv
+Categories=AudioVideo;Player;
+MimeType=video/3gpp;video/mp4;video/mpeg;video/quicktime;video/webm;video/x-matroska;video/x-msvideo;

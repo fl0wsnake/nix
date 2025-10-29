@@ -23,6 +23,7 @@
    (volume) sep
    (brightness) sep
    (cpu) sep
+   (ram) sep
    (battery) sep
    (network) sep
    time sep
@@ -59,7 +60,7 @@
     (box { (watch-volume.mute == "yes" ? "󰖁" : 
                         watch-volume.vol < 33 ? "󰕿" :
                         watch-volume.vol < 67 ? "󰖀" :
-                        "󰕾") + " " + watch-volume.vol })
+                        "󰕾") + watch-volume.vol })
    )
 
    (deflisten watch-network 'watch-network')
@@ -68,15 +69,20 @@
      watch-network))
 
 
+  (deflisten watch-cpu 'watch-cpu')
   (defwidget cpu []
-   (box :class {EWW_CPU.avg>48?"critical":EWW_CPU.avg>12?"warning":"normal"}
-    " "{round(EWW_CPU.avg, 0)}
+   (box :space-evenly false :class {watch-cpu.avg>48?"critical":watch-cpu.avg>12?"warning":"normal"}
+    " "{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
    )
+  )
+
+  (defwidget ram []
+   (box " "{floor(EWW_RAM.available_mem/1024/1024/1024)})
   )
 
   (deflisten watch-battery 'watch-battery')
   (defwidget battery []
-   (box :class
+   (box :space-evenly false :class
     {watch-battery.status == "Charging" ? "warning":
     watch-battery.capacity < 40 ? "critical":
     "normal"}

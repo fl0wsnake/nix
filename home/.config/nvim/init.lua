@@ -141,6 +141,7 @@ vim.cmd("cnoreabbrev <expr> h (getcmdtype() == ':' && getcmdline() == 'h' ? 'H' 
 --- Bookmarks
 vim.cmd('command! Wiki e $WIKI/index.md') -- for external use
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
+vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)

@@ -14,30 +14,39 @@ alias o=xdg-open
 alias x="$EXPLORER"
 
 # Multiple letters
-alias scl='systemctl --user'
-alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
-alias di='nix-env -i'
-alias drb="dr && reboot"
-alias drs="dr && shutdown now"
-alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
-alias ds="nix search nixpkgs"
-alias dun='nix-env --uninstall'
-alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
-alias ga='git add -A'
-alias gc='git commit -v'
-alias gd='git diff --staged'
-alias gp='git push'
-alias gs='git status'
-alias jr='journalctl --since today --reverse'
-alias ka='killall -r'
-alias kat='killall -15 -r'
-alias md=mkdir
-alias pkill='pkill -c'
-alias rsync-mtp='rsync -vhaP --no-perms --no-owner --no-group'
-alias rsync='rsync -vhaP'
-alias se="sudo $EDITOR"
-alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
+alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
+alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
+alias se="sudo -e"
+alias scl='systemctl --user'
+alias rsync='rsync -aP'
+alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
+alias pk='pkill -fc'
+alias pkill='pkill -c'
+alias pg='pgrep -fa'
+alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
+alias nowin='sudo efibootmgr -N'
+alias md=mkdir
+alias kat='killall -15 -r'
+alias gs='(R && git status)'
+alias gp='git push'
+alias gd='(R && git diff --staged)'
+alias gc='(R && git commit -v)'
+alias gco='git checkout'
+alias gcl='git clone --recurse-submodules -j8'
+alias ga='git add -A'
+alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
+alias dun='nix-env --uninstall'
+alias du='du -hs'
+alias ds="nix-search -d"
+alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
+alias drs="dr && shutdown now"
+alias drb="dr && reboot"
+alias di='nix-env -i'
+alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
+alias cp='rsync -aP'
+alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
+alias bootfix='NIXOS_INSTALL_BOOTLOADER=1 /run/current-system/bin/switch-to-configuration boot'
 
 # eval "$(fzf --bash)" # for <C-r> history search
 

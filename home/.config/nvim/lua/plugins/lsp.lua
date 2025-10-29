@@ -37,23 +37,12 @@ return {
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
-      -- local lspconfig = require('lspconfig')
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
       vim.lsp.enable({
-        "bashls", "jsonls", "ts_ls", "nil_ls", "lua_ls"
+        "bashls", "jsonls", "ts_ls", "nixd", "lua_ls"
       })
       vim.lsp.config.bashls = {
         filetypes = { "sh", "bash" }
       }
-      vim.lsp.config("nil_ls", {
-        settings = {
-          ["nil"] = {
-            formatting = {
-              command = { "nixfmt" },
-            },
-          }
-        }
-      })
       vim.lsp.config('lua_ls', {
         on_init = function(client)
           if client.workspace_folders then

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+socket=/tmp/udiskie-dir-mounted.sock
+
+while true; do
+  socat -s - UNIX-CONNECT:$socket,forever \
+    | while read -r dir_mounted; do
+      if ! swaymsg -t get_tree | jq -e '.nodes|map(.nodes|map(.nodes|map(.nodes)))|flatten[]|select(.app_id=="udiskie-explorer")' >/dev/null; then
+        $TERMINAL --class 'udiskie-explorer' -e sh -c "$EXPLORER \"$dir_mounted\"; $SHELL" &
+      fi
+    done
+done

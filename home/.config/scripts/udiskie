@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-udiskie | while read l; do 
-mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
-if [[ -d "$mount_dir" ]]; then
-  alacritty -e sh -c "nnn \"$mount_dir\"; bash"
-fi
-done

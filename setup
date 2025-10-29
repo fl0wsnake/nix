@@ -34,8 +34,8 @@ paths=(
   ~/.gitconfig
   ~/.ignore # for ripgrep
   ~/.lesskey
-  ~/.local/bin
   ~/.local/share/lf/marks
+  ~/.local/share/applications
   ~/.npmrc
   ~/.profile
   ~/.tmux.conf

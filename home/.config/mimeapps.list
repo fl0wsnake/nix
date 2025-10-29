@@ -4,34 +4,34 @@
 
 [Default Applications]
 
-; text/plain=editor.desktop
-; text/x-java=editor.desktop
-; text/x-shellscript=editor.desktop
-; text/x-script.python=editor.desktop
-; text/html=editor.desktop
-; inode/x-empty=editor.desktop
-; application/json=editor.desktop
-; application/javascript=editor.desktop
+application/javascript=editor.desktop
+application/json=editor.desktop
+inode/x-empty=editor.desktop
+text/plain=editor.desktop
+text/x-dbus-service=editor.desktop
+text/x-java=editor.desktop
+text/x-script.python=editor.desktop
+text/x-shellscript=editor.desktop
 
 application/vnd.ms-excel=libreoffice.desktop
 
+application/octet-stream=mpv-smart.desktop;vlc.desktop
+video/3gpp=mpv-smart.desktop;vlc.desktop
+video/mp4=mpv-smart.desktop;vlc.desktop
+video/webm=mpv-smart.desktop;vlc.desktop
 video/x-matroska=mpv-smart.desktop;vlc.desktop
 video/x-msvideo=mpv-smart.desktop;vlc.desktop
-video/webm=mpv-smart.desktop;vlc.desktop
-video/mp4=mpv-smart.desktop;vlc.desktop
-video/3gpp=mpv-smart.desktop;vlc.desktop
-application/octet-stream=mpv-smart.desktop;vlc.desktop
 
-image/png=vimiv.desktop
-image/jpeg=vimiv.desktop
 image/bmp=vimiv.desktop
+image/jpeg=vimiv.desktop
+image/png=vimiv.desktop
 
 application/pdf=org.pwmt.zathura.desktop
 
-x-scheme-handler/http=app.zen_browser.zen.desktop;chromium-browser.desktop
-x-scheme-handler/https=app.zen_browser.zen.desktop;chromium-browser.desktop
 text/html=app.zen_browser.zen.desktop;chromium-browser.desktop
 x-scheme-handler/about=app.zen_browser.zen.desktop;chromium-browser.desktop
+x-scheme-handler/http=app.zen_browser.zen.desktop;chromium-browser.desktop
+x-scheme-handler/https=app.zen_browser.zen.desktop;chromium-browser.desktop
 x-scheme-handler/unknown=app.zen_browser.zen.desktop;chromium-browser.desktop
 
 application/x-bittorrent=transmission-gtk.desktop
@@ -43,6 +43,8 @@ x-scheme-handler/tonsite=org.telegram.desktop
 x-scheme-handler/viber=viber.desktop
 
 [Added Associations]
+text/x-dbus-service=editor.desktop
+
 x-scheme-handler/tg=org.telegram.desktop
 x-scheme-handler/tonsite=org.telegram.desktop
 

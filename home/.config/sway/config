@@ -218,7 +218,8 @@ bindsym $mod+comma+Shift sway-msg input type:keyboard xkb_layout 'us,ru'
 
 bindsym --to-code $mod+q kill
 bindsym --to-code $mod+Shift+q exec kill -9 $($focused_window_pid)
-bindsym --to-code $mod+Control+q exec $focused_window | wl-copy
+# bindsym --to-code $mod+Control+q exec $focused_window_pid | wl-copy
+bindsym --to-code $mod+Control+Shift+q exec $focused_window | wl-copy
 # swaymsg -t get_tree | jq '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
 # bindsym --to-code $mod+w fullscreen toggle
 bindsym --to-code $mod+w layout toggle tabbed split
@@ -322,7 +323,7 @@ exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
 exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
-exec $SWAY_SCRIPTS/dir-mounted-explore
+exec $SWAY_SCRIPTS/watch-udiskie
 
 # exec systemctl --user import-environment PATH
 # exec systemctl --user restart xdg-desktop-portal.service

@@ -1,13 +1,14 @@
-### Trash
+### TRASH
 export TRASH=~/.local/share/Trash/files
 
-### from .nix
-export XDG_RUNTIME_DIR="/run/user/$UID"
-export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
-export PATH="$PATH:$HOME/.config/scripts:$HOME/.local/bin"
-export NIX_BUILD_CORES=0 # works at least for `nix-collect-garbage`
+### HARDWARE
+export CPU_COUNT=$((100/$(getconf _NPROCESSORS_ONLN)))
 
-### Default apps
+### from .nix
+# export XDG_RUNTIME_DIR="/run/user/$UID"
+# export XDG_SESSION_TYPE='wayland' # Explicitly state the session type
+
+### DEFAULT APPS
 export SHELL_COMM=${SHELL##*\/} # $SHELL is defined by nixos
 export EDITOR='nvim'
 export VISUAL='nvim'
@@ -16,7 +17,7 @@ export EXPLORER="nnn"
 export TERMINAL='alacritty'
 export BROWSER='app.zen_browser.zen'
 
-### Sync
+### SYNC
 export SYNC="$HOME/Dropbox"
 . "$SYNC/.config/.profile"
 export SCRIPTS_SYNC="${SYNC}/.config/scripts"
@@ -24,13 +25,14 @@ export WIKI="${SYNC}/Wiki"
 export TODOS="${SYNC}/Todos"
 export SCREENSHOTS="${SYNC}/Screenshots"
 
-### Dirs
+### DIRS
 export SCRIPTS="$HOME/.config/scripts"
+export PATH="$PATH:$SCRIPTS"
 export SWAY_SCRIPTS="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"
 
-### Opts
+### OPTS
 export GTK_THEME=Adwaita:dark # make Firefox-like apps dark themed (like Zen)
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"
 export GREP_COLORS='always'
@@ -56,5 +58,5 @@ export HISTSIZE=100000
 export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
 
-### nnn
+### NNN
 . "$HOME/.config/nnn/config"

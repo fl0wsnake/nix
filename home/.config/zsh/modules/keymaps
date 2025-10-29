@@ -59,9 +59,9 @@ zle -N explorer
 
 expand-alias() { # zshall docs state possibility of disabling completion bahvior of _expand_alias via styles but they are lying.
   if [[ -n ${aliases[${LBUFFER##* }]} ]]; then
-    zle self-insert
+    zle self-insert # exit completion mode unconditionally
     CURSOR=$((CURSOR-1))
-    zle _expand_alias
+    zle _expand_alias || zle self-insert && zle delete-char # if word coincided with alias
   else
     zle self-insert
   fi
