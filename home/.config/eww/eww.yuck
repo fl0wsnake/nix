@@ -34,58 +34,52 @@
 
   (defvar sep "|")
 
-   (deflisten watch-wm-workspaces :initial "{\"active_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-workspaces")
+   (deflisten watch-wm-workspaces :initial "{\"current_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-workspaces")
    (defwidget wm-workspaces []
     (box
         :spacing 0
     (for ws in {watch-wm-workspaces.wss}
      (box 
-      :class { watch-wm-workspaces.active_ws == ws ? "active_ws" : "" } 
-      ws)
+      :class { watch-wm-workspaces.current_ws == ws.name ? "current_ws" : ws.urgent ? "urgent" : "" } 
+      {ws.name})
      ))
     )
 
    (deflisten watch-kblayout '$SWAY_SCRIPTS/watch-kblayout')
    (defwidget kblayout []
-    (box :class { watch-kblayout != 'English (US)' ? "warning" : "normal" } watch-kblayout)
-   )
-
-   (deflisten watch-brightness 'watch-brightness')
-   (defwidget brightness []
-    (box "" watch-brightness)
+    (box :class { watch-kblayout != 'English (US)' ? "mod" : "norm" } watch-kblayout)
    )
 
    (deflisten watch-volume :initial "{\"vol\": 0, \"mute\": \"no\"}" 'watch-volume')
    (defwidget volume []
-    (box { (watch-volume.mute == "yes" ? "󰖁" : 
+    (box :class {watch-volume.vol>0?"mod":"norm"}{ (watch-volume.mute == "yes" ? "󰖁" : 
                         watch-volume.vol < 33 ? "󰕿" :
                         watch-volume.vol < 67 ? "󰖀" :
                         "󰕾") + watch-volume.vol })
    )
 
-   (deflisten watch-network 'watch-network')
-   (defwidget network []
-    (box 
-     watch-network))
-
+   (deflisten watch-brightness 'watch-brightness')
+   (defwidget brightness []
+    (box :class "norm" "" watch-brightness)
+   )
 
   (deflisten watch-cpu 'watch-cpu')
   (defwidget cpu []
-   (box :space-evenly false :class {watch-cpu.avg>48?"critical":watch-cpu.avg>12?"warning":"normal"}
+   (box :space-evenly false :class {watch-cpu.avg>12?"mod":"norm"}
     " "{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
    )
   )
 
   (defwidget ram []
-   (box " "{floor(EWW_RAM.available_mem/1024/1024/1024)})
+   (box :class "norm" " "{floor(EWW_RAM.available_mem/1024/1024/1024)})
   )
 
   (deflisten watch-battery 'watch-battery')
   (defwidget battery []
    (box :space-evenly false :class
-    {watch-battery.status == "Charging" ? "warning":
+    {watch-battery.status == "Charging" ? "mod":
     watch-battery.capacity < 40 ? "critical":
-    "normal"}
+    "norm"}
     {watch-battery.status == "Charging" ? "" : 
     watch-battery.status == "Discharging" ? 
     (watch-battery.capacity > 80 ? "" : 
@@ -97,6 +91,10 @@
     {watch-battery.capacity}"/"{watch-battery.charge_stop}
    )
   )
+
+   (deflisten watch-network 'watch-network')
+   (defwidget network []
+    (box :class {watch-network == '' ? "mod" : "norm"} {watch-network != '' ?"󰖩 "+watch-network:"󰖪 "}))
 
   (defpoll time :interval "10s" 
    "date '+%H:%M'")

@@ -1,5 +1,5 @@
 function set_terminal_title() {
-	echo -en "\e]2;$(sed s@^$HOME@~@<<<$PWD)" # it had \a at the end on the Internet where I found it
+  echo -en "\e]2;$(sed s@^$HOME@~@<<<$PWD)" # it had \a at the end on the Internet where I found it
 }
 autoload -U add-zsh-hook && add-zsh-hook precmd set_terminal_title
 
@@ -17,12 +17,13 @@ alias D="cd $RICE"
 # 1 letter
 alias c=calc
 alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
-alias e="$EDITOR"
+alias e=nvim-smart
 alias h="$EDITOR $HISTFILE"
 alias j='journalctl --since today --reverse'
 alias o=xdg-open
 alias R='cd $(git rev-parse --show-toplevel)'
 alias T="$HOME/.local/share/Trash/files"
+alias t=/tmp
 alias x="$EXPLORER;. /tmp/.nnn.lastd"
 
 # 2+ letters
@@ -36,6 +37,7 @@ alias drs="dr && shutdown now"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias du='du -hs'
 alias dun='nix-env --uninstall'
+alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias ga='git add -A'
 alias gcl='git clone --recurse-submodules -j8'
@@ -48,7 +50,7 @@ alias kat='killall -15 -r'
 alias md=mkdir
 alias nowin='sudo efibootmgr -N'
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
-alias pg='pgrep -fa'
+alias pg='pgrep -fal'
 alias pkill='pkill -c'
 alias pk='pkill -fc'
 alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
@@ -56,6 +58,7 @@ alias rsync='rsync -aP'
 alias scl='systemctl --user'
 alias sdn='shutdown now'
 alias se="sudo -e"
+alias tr='trans :uk'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'

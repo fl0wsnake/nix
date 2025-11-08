@@ -4,14 +4,17 @@
 
 [Default Applications]
 
-application/javascript=editor.desktop
-application/json=editor.desktop
-inode/x-empty=editor.desktop
-text/plain=editor.desktop
-text/x-dbus-service=editor.desktop
-text/x-java=editor.desktop
-text/x-script.python=editor.desktop
-text/x-shellscript=editor.desktop
+application/javascript=nvim-smart.desktop
+application/json=nvim-smart.desktop
+application/x-shellscript=nvim-smart.desktop
+inode/x-empty=nvim-smart.desktop
+text/plain=nvim-smart.desktop
+# text/plain=app.zen_browser.zen.desktop
+text/x-dbus-service=nvim-smart.desktop
+text/x-dbus-service=nvim-smart.desktop
+text/x-java=nvim-smart.desktop
+text/x-script.python=nvim-smart.desktop
+text/x-shellscript=nvim-smart.desktop
 
 application/vnd.ms-excel=libreoffice.desktop
 
@@ -43,7 +46,17 @@ x-scheme-handler/tonsite=org.telegram.desktop
 x-scheme-handler/viber=viber.desktop
 
 [Added Associations]
-text/x-dbus-service=editor.desktop
+
+application/javascript=nvim-smart.desktop
+application/json=nvim-smart.desktop
+application/x-shellscript=nvim-smart.desktop
+inode/x-empty=nvim-smart.desktop
+text/plain=nvim-smart.desktop
+text/x-dbus-service=nvim-smart.desktop
+text/x-dbus-service=nvim-smart.desktop
+text/x-java=nvim-smart.desktop
+text/x-script.python=nvim-smart.desktop
+text/x-shellscript=nvim-smart.desktop
 
 x-scheme-handler/tg=org.telegram.desktop
 x-scheme-handler/tonsite=org.telegram.desktop

@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
 
 get_workspaces() {
-  swaymsg -t get_workspaces -r | jq -c 'sort_by(.name|split(":")[0]) | map(.name|split(":")[1])'
+  swaymsg -t get_workspaces -r | jq -c 'sort_by(.name|split(":")[0]) | map({"name":.name|split(":")[1], urgent:.urgent})'
 }
 
-active_ws='31:1'
+current_ws=$(swaymsg -t get_tree | jq -r '.nodes[]|select(.active).current_workspace|split(":")[1]')
 wss="$(get_workspaces)"
 
-echo "{\"active_ws\":\"$active_ws\",\"wss\":$wss}"
+echo "{\"current_ws\":\"$current_ws\",\"wss\":$wss}"
 
 swaymsg -mt subscribe '["workspace"]' | while read -r ws; do
-if jq -e 'select(.change=="focus" or .change=="rename")'>/dev/null<<<"$ws"; then
-  active_ws="$(jq -r '.current.name|split(":")[1]'<<<"$ws")"
+change=$(jq -r '.change' <<<"$ws")
+if [[ $change == "focus" || $change == "rename" ]]; then
+  current_ws="$(jq -r '.current.name|split(":")[1]'<<<"$ws")"
   wss="$(get_workspaces)"
-  echo "{\"active_ws\":\"$active_ws\",\"wss\":$wss}"
-elif jq -e 'select(.change=="init")'>/dev/null<<<"$ws"; then
+  echo "{\"current_ws\":\"$current_ws\",\"wss\":$wss}"
+elif [[ $change == "init" || $change == "urgent" ]]; then
   wss="$(get_workspaces)"
-  echo "{\"active_ws\":\"$active_ws\",\"wss\":$wss}"
+  echo "{\"current_ws\":\"$current_ws\",\"wss\":$wss}"
 fi
 done

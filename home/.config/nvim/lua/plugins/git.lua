@@ -1,15 +1,15 @@
 return {
-  -- {
-  --   'https://github.com/tpope/vim-fugitive',
-  --   init = function()
-  --     vim.keymap.set("", "<leader>gd", function() vim.cmd('Gvdiffsplit') end)
-  --   end
-  -- },
+  { -- for blame
+    'https://github.com/tpope/vim-fugitive',
+    init = function()
+      vim.keymap.set("", "<leader>gb", function() vim.cmd('Git blame') end)
+    end
+  },
   {
     'https://github.com/airblade/vim-gitgutter',
     init = function()
       vim.o.updatetime = 100 -- fix unreasonably big delay
-      vim.keymap.set('', '<a-g>', '<Plug>(GitGutterPreviewHunk)')
+      vim.keymap.set('', '<a-z>', '<Plug>(GitGutterPreviewHunk)')
       vim.keymap.set('', '<leader>gd', function() vim.cmd('GitGutterDiffOrig') end)
       vim.keymap.set('', '<s-c-cr>', '<Plug>(GitGutterPrevHunk)')
       vim.keymap.set('', '<c-cr>', '<Plug>(GitGutterNextHunk)')

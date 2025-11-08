@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+sock=/tmp/.nvim.sock
+
+if [[ -e $sock ]]; then 
+  if [[ -e $* ]]; then 
+    exec nvim --server $sock --remote-tab "$@"
+  else 
+    exec nvim "$@";
+  fi;
+else
+  exec nvim --listen $sock "$@";
+fi 

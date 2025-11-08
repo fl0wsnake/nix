@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -e
+
+model_dir="$HOME/.local/share/piper/models"
+
+if [ ! -e "$model_dir" ]; then
+  mkdir -p "$model_dir"
+fi
+
+input=$(cat)
+
+case $(langdetect <<<"$input") in
+  uk*) model=uk_UA-ukrainian_tts-medium ;;
+  ru*) model=ru_RU-denis-medium ;;
+  en*|*) model=en_US-amy-medium ;;
+esac
+
+url_base="$(sed -nr 's|^(.*)_(.*)-(.*)-(.*)|https://huggingface.co/rhasspy/piper-voices/resolve/main/\1/\1_\2/\3/\4|p' <<<$model)"
+
+cd "$model_dir"
+if [ ! -e "$model_dir/$model.onnx" ]; then
+  curl -LO "$url_base/$model.onnx"
+fi
+if [ ! -e "$model_dir/$model.onnx.json" ]; then
+  curl -LO "$url_base/$model.onnx.json"
+fi
+
+piper -f - -m "$model_dir/$model.onnx" <<<"$input" | mpv -

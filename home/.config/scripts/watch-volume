@@ -2,17 +2,23 @@
 
 app_name=$(basename "$0")
 
-get_sink_status() {
+print_sink_status() {
   volume=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -Po '\d+(?=%)' | head -1)
   mute=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -Po '(?<=Mute: ).*')
   echo "{\"vol\":$volume,\"mute\":\"$mute\"}"
 }
 
-get_sink_status
+print_sink_status
 
+skips_left=0
 pactl subscribe | while read -r event; do
-if echo "$event" | grep -q "^Event 'change' on sink"; then
-  get_sink_status
+if echo "$event" | grep -q "^Event 'new' on client "; then
+  if [[ skips_left -gt 0 ]]; then
+    skips_left=$((skips_left-1))
+    continue
+  fi
+  print_sink_status
+  skips_left=2
   notify-send -a "$app_name" "$volume"
 fi
 done

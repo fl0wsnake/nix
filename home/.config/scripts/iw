@@ -2,6 +2,6 @@
 
 ${@:2} &
 inotifywait -qme MODIFY "$(dirname "$1")" | while read _; do 
-  kill `pgrep "${@:2}"`
+  pkill "${@:2}" 2>/dev/null
   ${@:2} &
 done

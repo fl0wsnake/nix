@@ -48,8 +48,12 @@ vim.keymap.set("", "<leader>x", function()
   end
 end, Silent)
 
---- Typing
+--- TYPING
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>', Silent)
+vim.keymap.set("", "j", 'gj', Silent)
+vim.keymap.set("", "k", 'gk', Silent)
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent)
+vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
 --- Disable mouse
 vim.opt.mouse = ''
 vim.keymap.set({ 'n', 'i' }, '<Up>', '<nop>')
@@ -68,12 +72,14 @@ vim.keymap.set("", "<A-w>", function()
   vim.cmd('set wrap!')
   print("wrap == " .. tostring(vim.o.wrap))
 end, Silent)
---- Disable comment line wrapping
-vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil" | set formatoptions-=cro | endif' })
+--- Disable autocommeting next line
+vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil" | set formatoptions-=ro | endif' })
 
 --- Editing
-vim.cmd('set cindent') -- Formats .nix files same as `=`
+vim.cmd('set cindent') -- Format .nix files same as `=`
 vim.cmd('set expandtab shiftwidth=2')
+vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
+vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
 --- Line swapping
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
 vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi", Silent)
@@ -133,10 +139,11 @@ vim.api.nvim_set_keymap('', '<C-7>', '7gt', Silent)
 vim.api.nvim_set_keymap('', '<C-8>', '8gt', Silent)
 vim.api.nvim_set_keymap('', '<C-9>', '9gt', Silent)
 
---- Vim
+--- CMD ABBREVIATIONS
 vim.cmd("command! -nargs=1 -complete=help H h <args> | on")
-vim.cmd("cnoreabbrev <expr> h (getcmdtype() == ':' && getcmdline() == 'h' ? 'H' : 'h')")
--- vim.keymap.set('', '<leader>h', ':H ', Silent)
+vim.cmd("cnoreabbrev <expr> h (getcmdtype() == ':' && getcmdline()=~'^h' ? 'H' : 'h')")
+vim.cmd("command! -nargs=1 -complete=shellcmd M Man <args> | on")
+vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'M' : 'm')")
 
 --- Bookmarks
 vim.cmd('command! Wiki e $WIKI/index.md') -- for external use

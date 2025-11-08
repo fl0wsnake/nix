@@ -20,7 +20,7 @@ titlebar_border_thickness 0
 titlebar_padding 0
 title_align center
 for_window [app_id="floating"] floating enable
-client.focused #000000 #fe8019 #000000
+client.focused #000000 #E57316 #000000
 # the --i3 flag removes title for single windows
 hide_edge_borders --i3 smart
 smart_borders on
@@ -85,7 +85,7 @@ input "1:1:AT_Translated_Set_2_keyboard" {
   repeat_rate 20
   xkb_layout 'us,ua'
   # xkb_options 'grp:win_space_toggle,caps:ctrl_modifier'
-  xkb_options grp:caps_toggle
+  xkb_options grp:caps_toggle,grp:win_space_toggle
 }
 input type:touchpad {
   tap enabled
@@ -97,6 +97,7 @@ bindsym $mod+Shift+Return exec wofi --show drun
 bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+p exec $TERMINAL -e sh -c "htop"
 
 floating_modifier $mod normal
 
@@ -154,11 +155,11 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || $BROWSER"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$SWAY_SCRIPTS/zen-run"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (flatpak run com.viber.Viber && telegram-desktop)"
+bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (com.viber.Viber && telegram-desktop)"
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
@@ -227,6 +228,7 @@ bindsym --to-code $mod+Shift+w fullscreen toggle
 bindsym --to-code $mod+Control+w floating toggle
 bindsym --to-code $mod+c exec clipman pick --tool wofi --histpath=$CLIP_HIST
 bindsym --to-code $mod+b exec blueman-manager
+bindsym --to-code $mod+t exec $SCRIPTS/syncthing-open
 
 # Swap focus between the tiling area and the floating area
 bindsym $mod+space focus mode_toggle

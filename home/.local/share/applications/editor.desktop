@@ -1,5 +1,0 @@
-[Desktop Entry]
-Name=Editor
-Encoding=UTF-8
-Type=Application
-Exec=/usr/bin/alacritty -e /usr/bin/nvim %U

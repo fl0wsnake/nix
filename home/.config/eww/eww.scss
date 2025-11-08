@@ -12,14 +12,72 @@ window {
   // font: Monospace 12;
 }
 
-.warning {
-  color: #ff0;
+$red: #d65d5d;
+$orange: #e69252;
+$yellow: #e5c053;
+$green: #6fb779;
+$cyan: #5b9bd5;
+$blue: #6f82c2;
+$violet: #a782c4;
+
+.system-widgets > .norm:nth-child(1) {
+  color: $red;
+}
+.system-widgets > .mod:nth-child(1) {
+  background-color: $red;
 }
 
-.critical {
-  color: #f00;
+.system-widgets > .norm:nth-child(3) {
+  color: $orange;
+}
+.system-widgets > .mod:nth-child(3) {
+  background-color: $orange;
 }
 
-.active_ws {
-  color: turquoise;
+.system-widgets > .norm:nth-child(5) {
+  color: $yellow;
+}
+.system-widgets > .mod:nth-child(5) {
+  background-color: $yellow;
+}
+
+.system-widgets > .norm:nth-child(7) {
+  color: $green;
+}
+.system-widgets > .mod:nth-child(7) {
+  background-color: $green;
+}
+
+.system-widgets > .norm:nth-child(9) {
+  color: $cyan;
+}
+.system-widgets > .mod:nth-child(9) {
+  background-color: $cyan;
+}
+
+.system-widgets > .norm:nth-child(11) {
+  color: $blue;
+}
+.system-widgets > .mod:nth-child(11) {
+  background-color: $blue;
+}
+
+.system-widgets > .norm:nth-child(13) {
+  color: $violet;
+}
+.system-widgets > .mod:nth-child(13) {
+  background-color: $violet;
+}
+
+.mod {
+  color: black;
+  background-color: $cyan;
+}
+
+.current_ws {
+  color: $cyan;
+}
+
+.urgent {
+  color: $red;
 }

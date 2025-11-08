@@ -21,7 +21,6 @@ while true; do
   print
   if [[ "$status" == "Not charging" && $capacity -lt $((charge_stop - 4)) ]]; then
     while true; do
-      echo sleeping
       sleep 0.5
       bat_read
       if [[ "$status" == "Charging" || ! $capacity -lt $((charge_stop - 4)) ]]; then

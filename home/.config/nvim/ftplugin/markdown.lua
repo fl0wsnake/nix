@@ -4,6 +4,18 @@ local url_re_str = vim.fn.escape(
 local url_re = vim.regex(url_re_str)
 local url_re_precise = vim.regex(string.format('^%s$', url_re_str))
 
+local function root_get()
+  local dir = vim.fn.expand('%:p:h')
+  while true do
+    local file = io.open(dir .. '/index.md', 'r')
+    if file ~= nil and file:close() then return dir end
+    if dir == os.getenv('HOME') then return dir end
+    dir = dir:match("(.*)/")
+  end
+end
+local root = root_get()
+print(root)
+
 local function mdlink_extract_link(line, col)
   local mdlink_pat = '()%[.-%]%((.-)%)()'
   local iter = line:gmatch(mdlink_pat)
@@ -41,7 +53,7 @@ local function mdlinkify(line_idx, col)
       local path = cfile
       local ext = vim.fn.fnamemodify(path, ':e')
       local title = cfile
-      if ext == '' then
+      if ext == '' and not vim.fn.filereadable(path) then
         path = path .. '.md'
       elseif ext == 'md' then
         title = path:gsub('.md$', '')
@@ -95,7 +107,7 @@ local function link_action()
   local col = vim.fn.col('.')
   local link = mdlink_extract_link(line_str, col)
   if link then
-    if url_re_precise:match_str(link) or not vim.fn.fnamemodify(link, ':e') == 'md' then
+    if url_re_precise:match_str(link) or not string.match(link, '^' .. root) then
       vim.ui.open(link)
     else
       vim.cmd('tabe ' .. link)

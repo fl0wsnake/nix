@@ -207,7 +207,8 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    nil
+    python313Packages.langdetect
+    piper-tts
     os-prober
     ### Code
     tree-sitter
@@ -248,6 +249,7 @@
     htop
     udiskie
     ### Media
+    shotcut
     xfce.thunar
     python313Packages.grip # uses github API
     imagemagick # rotate images from nnn
@@ -421,7 +423,7 @@
         socat
       ];
       script = ''
-        udiskie -s | while read l; do 
+        udiskie | while read l; do 
           mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
           if [[ -d "$mount_dir" ]]; then
             echo "$mount_dir"

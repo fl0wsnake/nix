@@ -4,7 +4,7 @@ nmcli -g NAME connection show --active | head -1
 
 nmcli monitor | while read -r line; do
   if [[ "$line" == "There's no primary connection" ]]; then
-    echo "󰖪"
+    echo
   else 
     c=$(sed -nr "s/^'(.*)' is now the primary connection/\1/p"<<<"$line")
     if [[ -n "$c" ]]; then

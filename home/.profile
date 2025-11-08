@@ -27,7 +27,7 @@ export SCREENSHOTS="${SYNC}/Screenshots"
 
 ### DIRS
 export SCRIPTS="$HOME/.config/scripts"
-export PATH="$PATH:$SCRIPTS"
+export PATH="$SCRIPTS:$PATH"
 export SWAY_SCRIPTS="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"

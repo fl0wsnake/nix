@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+nix-shell -p python313Packages.langdetect \
+  --run "python3 -c 'from langdetect import detect; import sys; print(detect(sys.stdin.read()))'"
