@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# cat ~/WS/piper-test.txt | piper-tts
+
 set -e
 
 model_dir="$HOME/.local/share/piper/models"
@@ -8,7 +10,7 @@ if [ ! -e "$model_dir" ]; then
   mkdir -p "$model_dir"
 fi
 
-input=$(cat)
+input="$(cat)"
 
 case $(langdetect <<<"$input") in
   uk*) model=uk_UA-ukrainian_tts-medium ;;
@@ -26,4 +28,6 @@ if [ ! -e "$model_dir/$model.onnx.json" ]; then
   curl -LO "$url_base/$model.onnx.json"
 fi
 
-piper -f - -m "$model_dir/$model.onnx" <<<"$input" | mpv -
+echo "$input"
+
+echo "$input" | piper -f - -m "$model_dir/$model.onnx" | mpv -

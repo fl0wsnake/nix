@@ -76,14 +76,6 @@
     };
   };
 
-  services.upower = {
-    enable = true;
-    usePercentageForPolicy = true;
-    percentageLow = 40;
-    percentageCritical = 40;
-    percentageAction = 40;
-    criticalPowerAction = "PowerOff";
-  };
   security.polkit = {
     # for criticalPowerAction
     enable = true;
@@ -207,9 +199,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    python313Packages.langdetect
-    piper-tts
-    os-prober
     ### Code
     tree-sitter
     zig
@@ -232,22 +221,6 @@
     cargo
     rustc
     eww
-    ### System
-    efibootmgr # for winboot
-    ventoy
-    expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
-    go-mtpfs # only one mtp tool that works
-    xorg.xev # print input codes
-    rclone
-    lsof
-    pulseaudioFull # for pactl: watch-volume
-    pavucontrol # for combining audio sinks (2 bluetooth earpods)
-    glib
-    socat
-    wireplumber
-    brightnessctl
-    htop
-    udiskie
     ### Media
     shotcut
     xfce.thunar
@@ -260,17 +233,20 @@
     libva
     vlc-bittorrent
     ### Social
+    whatsie
     telegram-desktop
     ### Hardware
     tlp
     acpi
     ### Files
     unrar
+    unzip
     syncthing
     syncthingtray
     ntfs3g
     ffmpeg-full
     inotify-tools
+    tig
     git
     vimiv-qt
     trash-cli
@@ -286,7 +262,7 @@
     neovim
     nnn
     bat
-    ### Internet
+    ### Network
     chromium
     nix-search-cli
     onedrive
@@ -314,13 +290,31 @@
     nixfmt
     lua-language-server
     ### Text
+    python313Packages.langdetect
+    piper-tts
     calc
     jq
     diffutils
     translate-shell
     dict
     fzf
-    ### WM
+    ### WM/System
+    batsignal
+    efibootmgr # for auto Win reboot
+    ventoy
+    expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
+    go-mtpfs # only one mtp tool that works
+    xorg.xev # print input codes
+    rclone
+    lsof
+    pulseaudioFull # for pactl: watch-volume
+    pavucontrol # for combining audio sinks (2 bluetooth earpods)
+    glib
+    socat
+    wireplumber
+    brightnessctl
+    htop
+    udiskie
     wlsunset
     clipman
     grim
@@ -328,7 +322,6 @@
     mako # notification daemon for libnotify
     pango # for mako
     dconf # for dark theme in apps
-    hyprpaper
     wl-clipboard
     wofi
     hyprsunset
@@ -362,6 +355,10 @@
     }
   ];
 
+  powerManagement.resumeCommands = ''
+    sudo modprobe -r psmouse && sudo modprobe psmouse
+  '';
+
   services.logind.settings.Login = {
     HandleLidSwitch = "ignore";
     HandleLidSwitchDocked = "ignore";
@@ -390,6 +387,16 @@
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
+    batsignal = {
+      wantedBy = [ "default.target" ];
+      path = [ pkgs.batsignal ];
+      script = ''
+        ${pkgs.batsignal}/bin/batsignal -w 40 -c 40 -d 40 -D 'shutdown now'
+      '';
+      serviceConfig = {
+        Restart = "always";
+      };
+    };
     tray-ready = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];

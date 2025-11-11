@@ -5,3 +5,5 @@
 	helper = /run/current-system/sw/bin/git-credential-manager
 [credential "https://dev.azure.com"]
 	useHttpPath = true
+[color]
+	ui = auto

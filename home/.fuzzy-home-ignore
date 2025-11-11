@@ -16,6 +16,7 @@ Dropbox/Subtitles/*/**
 !.local/share
 .local/share/*
 !.local/share/applications
+!.local/share/piper
 .mozilla
 .nix-defexpr
 .nix-profile
