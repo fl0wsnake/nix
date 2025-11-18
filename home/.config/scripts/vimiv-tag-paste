@@ -2,14 +2,6 @@
 
 set -e
 
-if [[ -z "$*" ]]; then
-  tag='1'
-else
-  tag="$*"
-fi
+cat "$VIMIV_TAGFILE" | tail +3 | xargs -d '\n' -I{} mv -vf "{}" .
 
-tagfile="/home/nix/.local/share/vimiv/tags/$tag"
-
-cat "$tagfile" | tail +3 | xargs -d '\n' -I{} mv -vf "{}" .
-
-trash "$tagfile" || rm -vf "$tagfile"
+trash "$VIMIV_TAGFILE" || rm -vf "$VIMIV_TAGFILE"

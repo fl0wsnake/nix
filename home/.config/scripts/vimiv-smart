@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if ! pgrep vimiv >/dev/null; then
+  trash "$VIMIV_TAGFILE" || rm -vf "$VIMIV_TAGFILE"
+fi
+
+vimiv "$@"

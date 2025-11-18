@@ -41,7 +41,7 @@ vim.keymap.set("", "<leader>y",
   end,
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
-vim.keymap.set("", "<C-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
+vim.keymap.set("", "<C-s>", function() if vim.o.ft ~= 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
 vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end, Silent)
 vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end, Silent)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {

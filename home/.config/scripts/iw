@@ -1,7 +1,7 @@
 #!/bin/sh
 
-${@:2} &
-inotifywait -qme MODIFY "$(dirname "$1")" | while read _; do 
-  pkill "${@:2}" 2>/dev/null
-  ${@:2} &
+"${@:2}" &
+inotifywait -rqme MODIFY "$(dirname "$1")" | while read _; do 
+  pkill ""${@:2}"" 2>/dev/null
+  "${@:2}" &
 done

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+ls_res=$(\ls -r "$(dirname "$@")")
+nsxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$ls_res")" - <<<"$ls_res"

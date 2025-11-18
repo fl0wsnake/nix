@@ -414,7 +414,10 @@
     tray-ready = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
-      path = [ pkgs.systemd ];
+      path = with pkgs; [
+        systemd
+        procps
+      ];
       script = ''
         if [ -n $DISPLAY ]; then
           while ! pkill -0 eww >/dev/null; do
