@@ -32,15 +32,31 @@ local function lines() -- reimplementing because BLines turns search upside down
   })
 end
 
-local function GFiles()
+local function GitFiles()
   vim.call('fzf#run', {
     dir = root(),
-    source = 'rg --ignore-file=.git --files --smart-case --color=never -.',
+    source = 'rg --files --smart-case --color=never -.',
     options = {
       "--preview", "bat --style=plain --color=always {1} ",
     },
     sink = 'e',
   })
+end
+
+local function GitFileLines()
+  vim.cmd(string.format('sil lcd %s', root()))
+  vim.fn['fzf#vim#grep'](
+    "rg --line-number --no-heading --smart-case --color=always -. -- ^",
+    vim.fn['fzf#vim#with_preview']()
+  )
+end
+
+local function PluginLines()
+  vim.cmd(string.format('sil lcd %s', vim.fn.stdpath("data")))
+  vim.fn['fzf#vim#grep'](
+    'rg --line-number --no-heading --smart-case --color=always -. -- ^',
+    vim.fn['fzf#vim#with_preview']()
+  )
 end
 
 local function helptags()
@@ -72,25 +88,13 @@ return {
     init = function()
       vim.g.fzf_layout = { window = 'enew' }
       vim.keymap.set('', '<leader>f', function() vim.cmd('Files') end)
-      vim.keymap.set('', '<leader>r', GFiles) -- TODO change to `call fzf#run({'sink': 'tabedit'})`
+      vim.keymap.set('', '<leader>r', GitFiles)
       vim.keymap.set('', '<leader>h', function() vim.cmd('History') end)
       vim.keymap.set('', '<leader>m', helptags)
       vim.keymap.set('', '<leader>sf', function() vim.cmd('Rg') end)
-      vim.keymap.set('', '<leader>sl', function() lines() end)
-      vim.keymap.set('', '<leader>sr', function() -- Search Root
-        vim.cmd(string.format('sil lcd %s', root()))
-        vim.fn['fzf#vim#grep'](
-          "rg --line-number --no-heading --smart-case --color=always -. -- ^",
-          vim.fn['fzf#vim#with_preview']()
-        )
-      end)
-      vim.keymap.set('', '<leader>sp', function() -- Search Plugins
-        vim.cmd(string.format('sil lcd %s', vim.fn.stdpath("data")))
-        vim.fn['fzf#vim#grep'](
-          'rg --line-number --no-heading --smart-case --color=always -. -- ^',
-          vim.fn['fzf#vim#with_preview']()
-        )
-      end)
+      vim.keymap.set('', '<leader>sl', lines)
+      vim.keymap.set('', '<leader>sr', GitFileLines)
+      vim.keymap.set('', '<leader>sp', PluginLines)
       vim.keymap.set('', '<leader>a', function()
         vim.fn['fzf#run']({
           source = 'fd -HE .git -d8 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore',

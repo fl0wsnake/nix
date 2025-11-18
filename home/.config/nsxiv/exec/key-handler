@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+imgs="$(cat)"
+
+case "$@" in
+  'h'|'C-h') mogrify -rotate -90 "$imgs"
+    ;;
+  'l'|'C-l') mogrify -rotate 90 "$imgs"
+    ;;
+  'j'|'C-j'|'k'|'C-k') mogrify -rotate 180 "$imgs"
+    ;;
+  'Return'|'C-Return') kill "$("$SWAY_SCRIPTS"/focused-window-pid)"; nsxiv -t "$(dirname "$imgs")"
+    ;;
+  'x'|'C-x') trash "$imgs"
+    ;;
+esac

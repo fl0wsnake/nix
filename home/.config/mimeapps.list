@@ -25,9 +25,10 @@ video/webm=mpv-smart.desktop;vlc.desktop
 video/x-matroska=mpv-smart.desktop;vlc.desktop
 video/x-msvideo=mpv-smart.desktop;vlc.desktop
 
-image/bmp=vimiv.desktop
-image/jpeg=vimiv.desktop
-image/png=vimiv.desktop
+# nsxiv is very smart when loading thumbnails for big dirs, vimiv is the opposite
+image/bmp=nsxiv.desktop;vimiv.desktop;
+image/jpeg=nsxiv.desktop;vimiv.desktop;
+image/png=nsxiv.desktop;vimiv.desktop;
 
 application/pdf=org.pwmt.zathura.desktop
 

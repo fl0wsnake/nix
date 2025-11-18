@@ -33,6 +33,7 @@ export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"
 
 ### OPTS
+export NVIM_SOCK=/tmp/.nvim.sock
 export GTK_THEME=Adwaita:dark # make Firefox-like apps dark themed (like Zen)
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"
 export GREP_COLORS='always'

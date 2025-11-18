@@ -40,6 +40,13 @@ return {
       vim.lsp.enable({
         "bashls", "jsonls", "ts_ls", "nixd", "lua_ls"
       })
+      vim.lsp.config.ts_ls = {
+        settings = {
+          codeActionsOnSave = {
+            ["source.addMissingImports"] = true
+          }
+        }
+      }
       vim.lsp.config.bashls = {
         filetypes = { "sh", "bash" }
       }

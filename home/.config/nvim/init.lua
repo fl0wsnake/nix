@@ -12,13 +12,21 @@ vim.cmd([[
 
 -- vim.cmd('highlight Cursor guibg=white')
 
+vim.o.encoding = 'utf-8'
 vim.o.fileencoding = 'utf-8'
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
 --- Process integration
 vim.cmd('set termguicolors title titlestring=%t')
---- Filesystem
+--- FILESYSTEM
+vim.api.nvim_create_autocmd(
+  { "BufWritePre" },
+  {
+    callback = function()
+      if vim.fn.filereadable(vim.fn.expand('%:p:h')) == 0 then io.popen('mkdir -p ' .. vim.fn.expand('%:p:h')) end
+    end
+  })
 vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall')
 -- vim.o.statusline = '%<%{v:lua.MyStatus()} %m%r%=%l,%L'
 -- vim.g.netrw_list_hide = '\\.\\./,\\./' # TODO: remove
@@ -75,9 +83,11 @@ end, Silent)
 --- Disable autocommeting next line
 vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil" | set formatoptions-=ro | endif' })
 
---- Editing
+--- EDITING
 vim.cmd('set cindent') -- Format .nix files same as `=`
 vim.cmd('set expandtab shiftwidth=2')
+vim.keymap.set("n", "<a-c>", "gcc", { noremap = true, silent = true })
+-- Auto formatting
 vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
 vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
 --- Line swapping
@@ -88,10 +98,10 @@ vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
 --- Sorting
-vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>", Silent)
-vim.keymap.set("n", "<a-s>", "vip:'<,'>!sort<cr>", Silent)
-vim.keymap.set("v", "<s-a-s>", ":'<,'>!sort -r<cr>", Silent)
-vim.keymap.set("n", "<s-a-s>", "vip:'<,'>!sort -r<cr>", Silent)
+vim.keymap.set("v", "<a-t>", ":'<,'>!sort<cr>", Silent)
+vim.keymap.set("n", "<a-t>", "vip:'<,'>!sort<cr>", Silent)
+vim.keymap.set("v", "<a-s-t>", ":'<,'>!sort -r<cr>", Silent)
+vim.keymap.set("n", "<a-s-t>", "vip:'<,'>!sort -r<cr>", Silent)
 
 --- Presentation
 vim.o.list = true

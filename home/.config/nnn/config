@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
+
+export NNN_COMM='nnn -Tr;. /tmp/.nnn.lastd' # Tr isn't handled by NNN_OPTS
+
 ### [nnn](https://github.com/jarun/nnn)
 export NNN_TMPFILE=/tmp/.nnn.lastd
 export NNN_SCOPE=1
 export NNN_USE_EDITOR=1
 export NNN_TRASH=1
 export NNN_OPTS='rHRAJxE'
-export NNN_ORDER="t:$HOME/Syncthing/Phone;t:$HOME/.local/share/Trash;t:$HOME/Downloads;t:/tmp;t:$SCREENSHOTS;t:/var/log"
+export NNN_ORDER="t:$HOME/Syncthing/Phone;t:$HOME/.local/share/Trash/files;t:$HOME/.local/share/Trash/info;t:$HOME/Downloads;t:/tmp;"
 export NNN_FIFO=/tmp/.nnn.fifo
 export NNN_SEL='/tmp/.nnn.sel'
 # [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
@@ -30,12 +33,12 @@ Y:!printf '%q' \"\$PWD\" | sed 's|^$HOME|~|' | wl-copy*;
 ")
 export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
 d:$HOME/Downloads;
+D:$SYNC;
 m:/run/media/$USER;
-b:$SYNC;
-S:$SCREENSHOTS;
-t:/tmp;
-T:$HOME/.local/share/Trash/files;
 s:$HOME/Syncthing;
+S:$SCREENSHOTS;
+T:$HOME/.local/share/Trash/files;
+t:/tmp;
 w:$HOME/WS;
-w:$WIKI;
+W:$WIKI;
 ")

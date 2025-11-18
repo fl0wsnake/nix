@@ -22,6 +22,7 @@ paths=(
   ~/.config/mimeapps.list
   ~/.config/nnn/config
   ~/.config/nnn/plugins
+  ~/.config/nsxiv
   ~/.config/nvim
   ~/.config/scripts
   ~/.config/syncthing-1/config.xml
@@ -34,8 +35,8 @@ paths=(
   ~/.gitconfig
   ~/.ignore # for ripgrep
   ~/.lesskey
-  ~/.local/share/lf/marks
   ~/.local/share/applications
+  ~/.local/share/lf/marks
   ~/.npmrc
   ~/.profile
   ~/.tmux.conf

@@ -93,7 +93,7 @@ input type:touchpad {
 }
 
 bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+Shift+Return exec wofi --show drun
+bindsym $mod+Shift+Return exec vicinae toggle
 bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
@@ -172,7 +172,7 @@ bindsym --to-code $mod+g+Shift move container to workspace $g_workspace
 bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_name $g_workspace
 
 set $1_workspace 31:1
-bindsym $mod+1 workspace $1_workspace
+bindsym $mod+1 workspace $1_workspace; exec "$focused_window || $TERMINAL -e sh -c nvim --server $NVIM_SOCK --remote-tab"
 bindsym $mod+1+Shift move container to workspace $1_workspace
 bindsym $mod+1+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $1_workspace
 set $2_workspace 32:2
@@ -226,7 +226,6 @@ bindsym --to-code $mod+Control+Shift+q exec $focused_window | wl-copy
 bindsym --to-code $mod+w layout toggle tabbed split
 bindsym --to-code $mod+Shift+w fullscreen toggle
 bindsym --to-code $mod+Control+w floating toggle
-bindsym --to-code $mod+c exec clipman pick --tool wofi --histpath=$CLIP_HIST
 bindsym --to-code $mod+b exec blueman-manager
 bindsym --to-code $mod+t exec $SCRIPTS/syncthing-open
 
@@ -324,10 +323,14 @@ exec $SWAY_SCRIPTS/bar
 exec $SWAY_SCRIPTS/watch-config
 
 workspace $0_workspace
+exec $BROWSER
+
 exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
 exec $SWAY_SCRIPTS/watch-udiskie
+exec vicinae server
 
 # exec systemctl --user import-environment PATH
 # exec systemctl --user restart xdg-desktop-portal.service
 
 workspace $1_workspace
+exec $TERMINAL -e sh -c nvim --server $NVIM_SOCK --remote-tab

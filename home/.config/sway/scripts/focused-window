@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'

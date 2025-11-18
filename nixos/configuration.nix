@@ -4,6 +4,13 @@
 
 { config, pkgs, ... }:
 
+# let # TODO actually install vicinae
+#   unstableTarball = builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+#
+#   unstable = import unstableTarball {
+#     config = config.nixpkgs.config;
+#   };
+# in
 {
   nix.settings.experimental-features = [
     "nix-command"
@@ -163,6 +170,7 @@
     USER = "nix";
     CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
+    NIXPKGS_ALLOW_INSECURE = 1; # packages become insecure from occasionally. This is it save time.
     NIX_BUILD_CORES = 0;
   };
 
@@ -195,10 +203,15 @@
   services.dbus.enable = true;
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-1.1.05"
+    "ventoy-1.1.07"
+    # "qtwebengine-5.15.19" # for whatsie
   ];
 
   environment.systemPackages = with pkgs; [
+    typescript-language-server
+    harper
+    deno
+    # unstable.vicinae # TODO fix
     ### Code
     tree-sitter
     zig
@@ -233,12 +246,13 @@
     libva
     vlc-bittorrent
     ### Social
-    whatsie
+    # whatsie
     telegram-desktop
     ### Hardware
     tlp
     acpi
     ### Files
+    jujutsu
     unrar
     unzip
     syncthing
@@ -254,7 +268,6 @@
     git-credential-manager
     ripgrep
     nautilus
-    renameutils
     ### Terminals
     alacritty # kitty has crap scrollback and does not use a -e flag for exec
     ghostty
@@ -263,7 +276,7 @@
     nnn
     bat
     ### Network
-    chromium
+    # chromium
     nix-search-cli
     onedrive
     wget
@@ -387,11 +400,12 @@
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
+    # upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];
       path = [ pkgs.batsignal ];
       script = ''
-        ${pkgs.batsignal}/bin/batsignal -w 40 -c 40 -d 40 -D 'shutdown now'
+        ${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'
       '';
       serviceConfig = {
         Restart = "always";
@@ -403,7 +417,7 @@
       path = [ pkgs.systemd ];
       script = ''
         if [ -n $DISPLAY ]; then
-          while ! pgrep eww >/dev/null; do
+          while ! pkill -0 eww >/dev/null; do
             sleep 1;
           done
           systemd-notify --ready
@@ -428,6 +442,7 @@
         procps
         udiskie
         socat
+        xdg-utils
       ];
       script = ''
         udiskie | while read l; do 
