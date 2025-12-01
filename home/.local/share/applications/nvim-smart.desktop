@@ -1,2 +1,2 @@
 [Desktop Entry]
-Exec=/run/current-system/sw/bin/alacritty -e /home/nix/.config/scripts/nvim-smart %U
+Exec=/home/nix/.config/scripts/nvim-smart %F

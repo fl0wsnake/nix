@@ -1,13 +1,15 @@
 markup=1
-default-timeout=1000
-anchor=center
+default-timeout=4000
+anchor=top-right
 text-alignment=center
 max-visible=4
 background-color=#000000ff
-font=monospace 16
-history=0
-group-by=app-name
+font=monospace 12
+history=1
+max-history=32
+group-by=category,body
 format=<b>%s</b>\n%b
+height=1000
 
 [grouped]
 format=<b>%s</b>\n%b
@@ -21,13 +23,21 @@ margin=0
 padding=0
 
 [app-name="watch-volume"]
+anchor=center
+default-timeout=1000
+font=monospace 16
 width=100
 
 [app-name="watch-kblayout"]
+anchor=center
+default-timeout=1000
+font=monospace 16
 format=%b
 width=200
 
 [app-name="watch-brightness"]
-default-timeout=1000
 anchor=center
+font=monospace 16
+width=100
+default-timeout=1000
 

@@ -1,3 +1,11 @@
+local rb = { remap = true, buffer = 0 }
+-- Italics
+vim.keymap.set('n', '<localleader>c', 'mmysiW*`m', rb)
+vim.keymap.set('x', '<localleader>c', 'mms*`m', rb)
+-- Bold
+vim.keymap.set('n', '<localleader>b', 'mmysiW*v`]o`[s*`m', rb)
+vim.keymap.set('x', '<localleader>b', 'mms*v`]o`[s*`m', rb)
+
 local url_re_str = vim.fn.escape(
   [[https?://(www\.)?[-a-zA-Z0-9@:%\._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+\.~#\?&/=;]*]], '?(){'
 )

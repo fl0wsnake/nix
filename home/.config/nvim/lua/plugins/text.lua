@@ -30,8 +30,8 @@ return {
   {
     'https://github.com/svermeulen/vim-easyclip', -- For `s`ubstitute bindings
     init = function()
-      vim.g.EasyClipUseCutDefaults = false -- For `M`oveMotionPlug, `M`oveMotionXPlug, `M`oveMotionLinePlug overriding `m`
-      vim.g.EasyClipUseSubstituteDefaults = true -- Override default `s` 'Delete n characters and start insert' behavior
+      vim.g.EasyClipUseCutDefaults = false        -- For `M`oveMotionPlug, `M`oveMotionXPlug, `M`oveMotionLinePlug overriding `m`
+      vim.g.EasyClipUseSubstituteDefaults = true  -- Override default `s` 'Delete n characters and start insert' behavior
       -- vim.g.EasyClipAutoFormat = true -- `=` pasted lines <- often butchers text TODO remove
     end
   },

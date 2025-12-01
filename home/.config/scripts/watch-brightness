@@ -1,6 +1,6 @@
 #!/bin/sh
 
-app_name=$(basename "$0")
+script_name=$(basename "$0")
 
 file='/sys/class/backlight/intel_backlight/brightness'
 mult_inv=$(calc '1/4')
@@ -18,6 +18,6 @@ echo "$(brightness)"
 
 inotifywait -mqe modify "$file" | while read -r _; do
   brightness="$(brightness)"
-  notify-send -a "$app_name" "$brightness"
+  notify-send -c "$script_name" "$brightness"
   echo "$brightness"
 done

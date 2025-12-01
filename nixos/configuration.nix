@@ -168,7 +168,6 @@
   environment.sessionVariables = {
     PATH = "$HOME/.npm/bin:$PATH";
     USER = "nix";
-    CLIP_HIST = "/tmp/clipman.json";
     NIXPKGS_ALLOW_UNFREE = 1;
     NIXPKGS_ALLOW_INSECURE = 1; # packages become insecure from occasionally. This is it save time.
     NIX_BUILD_CORES = 0;
@@ -208,11 +207,14 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    exfatprogs
+    exfat
+    whatsapp-electron
+    ### CODE
     typescript-language-server
-    harper
     deno
-    # unstable.vicinae # TODO fix
-    ### Code
+    basedpyright
+    ruff
     tree-sitter
     zig
     (python3.withPackages (
@@ -234,7 +236,7 @@
     cargo
     rustc
     eww
-    ### Media
+    ### MEDIA
     shotcut
     xfce.thunar
     python313Packages.grip # uses github API
@@ -245,15 +247,17 @@
     vlc
     libva
     vlc-bittorrent
-    ### Social
+    ### SOCIAL
     # whatsie
     telegram-desktop
-    ### Hardware
+    ### HARDWARE
     tlp
     acpi
-    ### Files
+    ### FILESYSTEM
     jujutsu
+    rar
     unrar
+    zip
     unzip
     syncthing
     syncthingtray
@@ -268,14 +272,15 @@
     git-credential-manager
     ripgrep
     nautilus
-    ### Terminals
+    ### TERMINALS
+    kitty
     alacritty # kitty has crap scrollback and does not use a -e flag for exec
     ghostty
     ### TUIs
     neovim
     nnn
     bat
-    ### Network
+    ### NETWORK
     # chromium
     nix-search-cli
     onedrive
@@ -283,7 +288,7 @@
     transmission_4-gtk
     vivaldi
     dropbox
-    ### Deps
+    ### DEPS
     mpv # for nnn previews
     libappindicator # for Dropbox
     libappindicator-gtk3 # for waybar
@@ -302,7 +307,8 @@
     nixd
     nixfmt
     lua-language-server
-    ### Text
+    ### TEXT/LANGUAGE/PARSING
+    tesseract
     python313Packages.langdetect
     piper-tts
     calc
@@ -311,7 +317,8 @@
     translate-shell
     dict
     fzf
-    ### WM/System
+    ### WM/SYSTEM
+    vicinae
     batsignal
     efibootmgr # for auto Win reboot
     ventoy
@@ -329,14 +336,14 @@
     htop
     udiskie
     wlsunset
-    clipman
     grim
+    flameshot
     libnotify
     mako # notification daemon for libnotify
     pango # for mako
     dconf # for dark theme in apps
     wl-clipboard
-    wofi
+    rofi
     hyprsunset
     waybar
     i3status-rust
@@ -467,17 +474,6 @@
         Restart = "always";
       };
     };
-    clip = {
-      wantedBy = [ "graphical-session.target" ];
-      path = with pkgs; [
-        wl-clipboard
-        clipman
-      ];
-      script = "wl-paste --watch clipman store --max-items=9999 --histpath=${config.environment.sessionVariables.CLIP_HIST}";
-      serviceConfig = {
-        Restart = "always";
-      };
-    };
     wlsunset = {
       wantedBy = [ "graphical-session.target" ];
       path = with pkgs; [ wlsunset ];
@@ -527,9 +523,6 @@
   };
 
   networking.firewall.allowedTCPPorts = [
-    # Syncthing WebUI
-    8384
-    8385
     # Syncthing discovery
     22000
     22001

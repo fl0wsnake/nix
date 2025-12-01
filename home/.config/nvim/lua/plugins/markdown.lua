@@ -1,9 +1,3 @@
-local rb = { remap = true, buffer = 0 }
-vim.keymap.set('n', '<localleader>c', 'mmysiW*`m', rb)         -- Italics
-vim.keymap.set('x', '<localleader>c', 'mms*`m', rb)            -- Italics
-vim.keymap.set('n', '<localleader>b', 'mmysiW*v`]o`[s*`m', rb) -- Bold
-vim.keymap.set('x', '<localleader>b', 'mms*v`]o`[s*`m', rb)    -- Bold
-
 return {
   -- {
   --   'https://github.com/Nedra1998/nvim-mdlink',

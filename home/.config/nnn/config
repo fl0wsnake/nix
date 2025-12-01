@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export NNN_COMM='nnn -Tr;. /tmp/.nnn.lastd' # Tr isn't handled by NNN_OPTS
+export NNN_COMM='nnn;. /tmp/.nnn.lastd'
 
 ### [nnn](https://github.com/jarun/nnn)
 export NNN_TMPFILE=/tmp/.nnn.lastd
@@ -32,6 +32,7 @@ y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
 Y:!printf '%q' \"\$PWD\" | sed 's|^$HOME|~|' | wl-copy*;
 ")
 export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
+p:$HOME/Pictures;
 d:$HOME/Downloads;
 D:$SYNC;
 m:/run/media/$USER;

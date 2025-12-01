@@ -1,3 +1,4 @@
+require("config.utils")
 Silent = { silent = true }
 vim.api.nvim_create_augroup('my', { clear = false })
 
@@ -24,7 +25,10 @@ vim.api.nvim_create_autocmd(
   { "BufWritePre" },
   {
     callback = function()
-      if vim.fn.filereadable(vim.fn.expand('%:p:h')) == 0 then io.popen('mkdir -p ' .. vim.fn.expand('%:p:h')) end
+      if vim.o.ft ~= 'oil' then
+        local dirname = vim.fn.expand('%:p:h')
+        if vim.fn.filereadable(dirname) == 0 then vim.fn.system('mkdir -p ' .. dirname) end
+      end
     end
   })
 vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall')
@@ -41,7 +45,7 @@ vim.keymap.set("", "<leader>y",
   end,
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
-vim.keymap.set("", "<C-s>", function() if vim.o.ft ~= 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
+vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
 vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end, Silent)
 vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end, Silent)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
@@ -62,51 +66,62 @@ vim.keymap.set("", "j", 'gj', Silent)
 vim.keymap.set("", "k", 'gk', Silent)
 vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent)
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
---- Disable mouse
+--- DISABLE MOUSE
 vim.opt.mouse = ''
 vim.keymap.set({ 'n', 'i' }, '<Up>', '<nop>')
 vim.keymap.set({ 'n', 'i' }, '<Down>', '<nop>')
 vim.keymap.set({ 'n', 'i' }, '<Left>', '<nop>')
 vim.keymap.set({ 'n', 'i' }, '<Right>', '<nop>')
---- Search
+--- SEARCH
 vim.cmd('set ignorecase smartcase')
 vim.keymap.set("", "<leader>/", function() vim.fn.setreg("/", "") end, Silent)
---- Select changed or yanked text
-vim.keymap.set("n", "<a-V>", "`[v`]")
--- Select all text
-vim.keymap.set("n", "<a-v>", "ggVG")
--- Toggle wrap
+--- SELECT CHANGED OR YANKED TEXT
+vim.keymap.set("n", "<a-v>", "`[v`]")
+-- SELECT ALL TEXT
+vim.keymap.set("n", "<a-V>", "ggVG")
+-- TOGGLE WRAP
 vim.keymap.set("", "<A-w>", function()
   vim.cmd('set wrap!')
   print("wrap == " .. tostring(vim.o.wrap))
 end, Silent)
---- Disable autocommeting next line
+--- DISABLE AUTOCOMMETING NEXT LINE
 vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil" | set formatoptions-=ro | endif' })
 
 --- EDITING
 vim.cmd('set cindent') -- Format .nix files same as `=`
 vim.cmd('set expandtab shiftwidth=2')
-vim.keymap.set("n", "<a-c>", "gcc", { noremap = true, silent = true })
--- Auto formatting
-vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
-vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
---- Line swapping
+-- COMMENTING
+vim.api.nvim_set_keymap('n', 'z', 'gc', {})
+vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
+-- AUTO FORMATTING
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = '*',
+  callback = function()
+    if vim.o.ft ~= '' and vim.o.ft ~= 'text' and vim.o.ft ~= 'markdown' then
+      vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
+      vim.keymap.set("v", "p", "p`]=`[", { noremap = true, silent = true })
+    end
+  end
+})
+--- LINE SWAPPING
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
 vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi", Silent)
 vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv", Silent)
 vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
---- Sorting
+--- SORTING
 vim.keymap.set("v", "<a-t>", ":'<,'>!sort<cr>", Silent)
 vim.keymap.set("n", "<a-t>", "vip:'<,'>!sort<cr>", Silent)
 vim.keymap.set("v", "<a-s-t>", ":'<,'>!sort -r<cr>", Silent)
 vim.keymap.set("n", "<a-s-t>", "vip:'<,'>!sort -r<cr>", Silent)
+--- MOVING AROUND
+vim.keymap.set("", "<c-j>", Down_v, Silent)
+vim.keymap.set("", "<c-k>", Up_v, Silent)
 
---- Presentation
+--- PRESENTATION
 vim.o.list = true
 vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
-
 -- TODO removing number relativenumber
 vim.cmd('set nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
@@ -121,11 +136,11 @@ vim.api.nvim_create_autocmd("BufReadPost", { -- Jump to last visited pos per fil
   end
 })
 
---- Windows
+--- WINDOW MANAGEMENT
 vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
 vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
 
---- Tabs
+--- TABS
 vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
@@ -156,7 +171,7 @@ vim.cmd("command! -nargs=1 -complete=shellcmd M Man <args> | on")
 vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'M' : 'm')")
 
 --- Bookmarks
-vim.cmd('command! Wiki e $WIKI/index.md') -- for external use
+vim.cmd('command! Wiki e $WIKI/index.md')   -- for external use
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
@@ -165,5 +180,4 @@ vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', '<leader>l', function() vim.cmd('h lspconfig-all | on') end, Silent)
 
-require("config.utils")
 require("config.lazy")

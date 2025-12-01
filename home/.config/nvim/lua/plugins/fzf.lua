@@ -1,8 +1,14 @@
-local function root()
+---@return string
+local function gitRoot()
   return io.popen('git rev-parse --show-toplevel 2>/dev/null || pwd'):read()
 end
 
-local function lines() -- reimplementing because BLines turns search upside down
+---@return string
+local function pwd()
+  return vim.fn.getcwd()
+end
+
+local function blines() -- reimplementing because BLines turns search upside down
   local source = vim.fn.map(vim.fn.getline(1, '$'), function(i, e)
     return string.format('%s:%s', i + 1, e)
   end)
@@ -20,11 +26,11 @@ local function lines() -- reimplementing because BLines turns search upside down
     options = {
       "-d", ":",
       "--nth", "2..",
-      "--preview", "bat --style=plain --color=always --highlight-line {1} " .. tmp_file_with_ext,
+      "--preview", "bat --style=plain --color=always -H {1} " .. tmp_file_with_ext,
       "--preview-window", "+{1}-/2", },
     sink = function(selection)
-      local line_idx = string.match(selection, '([0-9]*):')
-      vim.fn.execute(line_idx)
+      local line_idx = string.match(selection, '^([0-9]*):')
+      vim.cmd(line_idx)
     end,
     exit = function()
       os.execute('rm ' .. tmp_file_with_ext)
@@ -32,31 +38,60 @@ local function lines() -- reimplementing because BLines turns search upside down
   })
 end
 
-local function GitFiles()
-  vim.call('fzf#run', {
-    dir = root(),
-    source = 'rg --files --smart-case --color=never -.',
-    options = {
-      "--preview", "bat --style=plain --color=always {1} ",
-    },
-    sink = 'e',
-  })
+--- @param basedir function
+--- @return function
+local function Files(basedir)
+  return function()
+    local basedir = basedir()
+    local is_multi = false
+    vim.call('fzf#run', {
+      dir = basedir,
+      source = 'rg --files --smart-case --color=never -.',
+      options = {
+        "--bind", "tab:toggle", "-m", "--preview", "bat --style=plain --color=always {1} ",
+      },
+      sink = function(sel)
+        local sel = basedir .. '/' .. sel
+        if is_multi then
+          vim.cmd('tabe ' .. sel)
+        else
+          vim.cmd('e ' .. sel)
+        end
+        is_multi = true
+      end
+    })
+  end
 end
 
-local function GitFileLines()
-  vim.cmd(string.format('sil lcd %s', root()))
-  vim.fn['fzf#vim#grep'](
-    "rg --line-number --no-heading --smart-case --color=always -. -- ^",
-    vim.fn['fzf#vim#with_preview']()
-  )
-end
-
-local function PluginLines()
-  vim.cmd(string.format('sil lcd %s', vim.fn.stdpath("data")))
-  vim.fn['fzf#vim#grep'](
-    'rg --line-number --no-heading --smart-case --color=always -. -- ^',
-    vim.fn['fzf#vim#with_preview']()
-  )
+--- @param basedir function
+--- @return function
+local function FileLines(basedir)
+  return function()
+    local basedir = basedir()
+    local is_multi = false
+    vim.call('fzf#run', {
+      dir = basedir,
+      source = 'rg --line-number --no-heading --smart-case --color=always -. -- ^',
+      options = {
+        "-m",
+        "--bind", "tab:toggle",
+        "-d", ":",
+        "--preview-window", "+{2}-/2,~1",
+        "--preview", "bat --style=header-filename --color=always -H {2} {1}",
+      },
+      sink = function(sel)
+        local sel = sel:gmatch('[^:]+')
+        local file = basedir .. '/' .. sel()
+        if is_multi then
+          vim.cmd('tabe ' .. file)
+        else
+          vim.cmd('e ' .. file)
+        end
+        vim.cmd(sel())
+        is_multi = true
+      end
+    })
+  end
 end
 
 local function helptags()
@@ -87,14 +122,14 @@ return {
     },
     init = function()
       vim.g.fzf_layout = { window = 'enew' }
-      vim.keymap.set('', '<leader>f', function() vim.cmd('Files') end)
-      vim.keymap.set('', '<leader>r', GitFiles)
-      vim.keymap.set('', '<leader>h', function() vim.cmd('History') end)
+      vim.keymap.set('', '<leader>sl', blines)
+      vim.keymap.set('', '<leader>f', Files(pwd))
+      vim.keymap.set('', '<leader>r', Files(gitRoot))
+      vim.keymap.set('', '<leader>sf', FileLines(pwd))
+      vim.keymap.set('', '<leader>sr', FileLines(gitRoot))
+      vim.keymap.set('', '<leader>sp', FileLines(function() return vim.fn.stdpath("data") end))
       vim.keymap.set('', '<leader>m', helptags)
-      vim.keymap.set('', '<leader>sf', function() vim.cmd('Rg') end)
-      vim.keymap.set('', '<leader>sl', lines)
-      vim.keymap.set('', '<leader>sr', GitFileLines)
-      vim.keymap.set('', '<leader>sp', PluginLines)
+      vim.keymap.set('', '<leader>h', function() vim.cmd('History') end)
       vim.keymap.set('', '<leader>a', function()
         vim.fn['fzf#run']({
           source = 'fd -HE .git -d8 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore',

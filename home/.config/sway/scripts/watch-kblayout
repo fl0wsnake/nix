@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-app_name=$(basename "$0")
+script_name=$(basename "$0")
 
 layouts="$(swaymsg -t get_inputs | jq '.[] | select(.identifier=="1:1:AT_Translated_Set_2_keyboard").xkb_layout_names')"
 
@@ -11,6 +11,6 @@ swaymsg -t subscribe -m '["input"]' \
   | while IFS=$'\n' read -r layout; do
   if [ ! "$layout" == 'null' ]; then
     echo "$layout"
-    notify-send -a "$app_name" '' "$(echo "$layouts" | jq -r ". | map(if (. == \"$layout\") then \"<span bgcolor='#5b9bd5' color='black'>\"+.+\"</span>\" else . end) | join(\"\n\")")"
+    notify-send -c "$script_name" '' "$(echo "$layouts" | jq -r ". | map(if (. == \"$layout\") then \"<span bgcolor='#5b9bd5' color='black'>\"+.+\"</span>\" else . end) | join(\"\n\")")"
   fi
 done 

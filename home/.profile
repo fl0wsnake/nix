@@ -34,8 +34,7 @@ export RICE="$HOME/.config/nixos-rice"
 
 ### OPTS
 export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
-export NVIM_SOCK=/tmp/.nvim.sock
-export GTK_THEME=Adwaita:dark # make Firefox-like apps dark themed (like Zen)
+export GTK_THEME=Adwaita:dark # affects firefox, zen, gparted etc.
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"
 export GREP_COLORS='always'
 export FZF_COLORS='hl:33,hl+:33' # for fzf.nvim

@@ -28,17 +28,16 @@ vim.keymap.set('', '<a-f>', function()
   vim.g.fmt_on_save = not vim.g.fmt_on_save
   print("fmt_on_save == " .. tostring(vim.g.fmt_on_save))
 end)
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = '*', callback = function() if vim.g.fmt_on_save then vim.lsp.buf.format() end end
-})
-
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = '*', callback = function() if vim.g.fmt_on_save then vim.lsp.buf.format() end end
+-- })
 
 return {
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.enable({
-        "bashls", "jsonls", "ts_ls", "nixd", "lua_ls"
+        "bashls", "jsonls", "ts_ls", "nixd", "lua_ls", "basedpyright", "ruff",
       })
       vim.lsp.config.ts_ls = {
         settings = {
@@ -134,4 +133,16 @@ return {
       }
     end
   },
+  {
+    'https://github.com/lukas-reineke/lsp-format.nvim',
+    init = function()
+      require("lsp-format").setup {}
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(args)
+          local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+          require("lsp-format").on_attach(client, args.buf)
+        end,
+      })
+    end
+  }
 }

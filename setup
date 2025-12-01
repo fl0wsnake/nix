@@ -15,6 +15,7 @@ paths=(
   ~/.blerc
   ~/.config/alacritty
   ~/.config/eww
+  ~/.config/flameshot
   ~/.config/i3status-rust
   ~/.config/kitty
   ~/.config/lf

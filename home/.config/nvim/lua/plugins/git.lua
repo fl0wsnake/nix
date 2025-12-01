@@ -21,6 +21,7 @@ return {
   {
     "https://github.com/sindrets/diffview.nvim",
     init = function()
+      require('diffview').setup { enhanced_diff_hl = true }
       vim.keymap.set('', '<leader>gr', function() return vim.cmd('DiffviewOpen') end)
       vim.keymap.set('', '<leader>gh', function() return vim.cmd('DiffviewFileHistory') end)
       vim.keymap.set('', '<leader>gc', function() return vim.cmd('DiffviewClose') end)

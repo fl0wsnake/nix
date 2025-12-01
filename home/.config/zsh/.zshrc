@@ -37,18 +37,24 @@ alias drs="dr && shutdown now"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias du='du -hs'
 alias dun='nix-env --uninstall'
+alias dus='du -hs * | sort -h'
 alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
+alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
 alias gcl='git clone --recurse-submodules -j8'
 alias gco='git checkout'
 alias gc='(R && git commit -v)'
+alias gd='git diff --word-diff=color'
 alias gd='(R && git diff --staged)'
+alias gds='git diff --word-diff=color --staged'
+alias gparted='sudo -E gparted'
 alias gp='git push'
 alias gs='(R && git status)'
-alias jo'journalctl --since today --reverse'
+alias jo='journalctl --since today --reverse'
 alias kat='killall -15 -r'
+alias lsblk='lsblk -f'
 alias md=mkdir
 alias nowin='sudo efibootmgr -N'
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
@@ -93,7 +99,7 @@ bindkey '^[[1;5D' backward-word      # left
 # COMMANDS
 di() {
   # alias di='nix-env -i'
-  nix profile install nixpkgs/nixos-unstable#$@
+  nix profile add nixpkgs/nixos-unstable#$@
 }
 ds() {
   unbuffer nix-search -d "$@" | less
@@ -142,6 +148,9 @@ probe() { # Samsung Smart TV does not support some audio codecs
     echo "--> $i"
     ffprobe 2>&1 "$i" | grep -P '^ *Stream #'
   done
+}
+timestampify() {
+  while read line; do echo "$(date +%T): $line"; done
 }
 
 # eval "$(fzf --bash)" # for <C-r> history search
