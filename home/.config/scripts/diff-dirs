@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-list_basenames() {
-  fd --base-directory "$*" --type f . | sort
-}
-
-diff <(list_basenames "$1") <(list_basenames "$2")
-

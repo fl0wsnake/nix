@@ -11,6 +11,6 @@ swaymsg -t subscribe -m '["input"]' \
   | while IFS=$'\n' read -r layout; do
   if [ ! "$layout" == 'null' ]; then
     echo "$layout"
-    notify-send -c "$script_name" '' "$(echo "$layouts" | jq -r ". | map(if (. == \"$layout\") then \"<span bgcolor='#5b9bd5' color='black'>\"+.+\"</span>\" else . end) | join(\"\n\")")"
+    notify-send -a "$script_name" -c 'desktop' '' "$(echo "$layouts" | jq -r ". | map(if (. == \"$layout\") then \"<span bgcolor='#5b9bd5' color='black'>\"+.+\"</span>\" else . end) | join(\"\n\")")"
   fi
 done 

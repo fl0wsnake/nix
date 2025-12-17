@@ -9,8 +9,8 @@
 --   end
 -- end
 
-vim.keymap.set('n', '<a-cr>', function() vim.diagnostic.jump { count = 1, float = true } end)
-vim.keymap.set('n', '<s-a-cr>', function() vim.diagnostic.jump { count = -1, float = true } end)
+vim.keymap.set('n', '<c-cr>', function() vim.diagnostic.jump { count = 1, float = true } end)
+vim.keymap.set('n', '<s-c-cr>', function() vim.diagnostic.jump { count = -1, float = true } end)
 vim.keymap.set('n', '<localleader>D', vim.lsp.buf.declaration)
 vim.keymap.set('n', '<localleader>d', vim.lsp.buf.definition)
 vim.keymap.set('n', '<localleader>i', vim.lsp.buf.implementation)
@@ -28,17 +28,36 @@ vim.keymap.set('', '<a-f>', function()
   vim.g.fmt_on_save = not vim.g.fmt_on_save
   print("fmt_on_save == " .. tostring(vim.g.fmt_on_save))
 end)
--- vim.api.nvim_create_autocmd("BufWritePre", {
---   pattern = '*', callback = function() if vim.g.fmt_on_save then vim.lsp.buf.format() end end
--- })
 
 return {
+  {
+    'https://github.com/stevearc/aerial.nvim',
+    init = function()
+      require("aerial").setup({
+        on_attach = function(bufnr)
+          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
+        end,
+      })
+      vim.keymap.set("n", "<leader>o", "<cmd>AerialToggle left<CR>")
+    end
+  },
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.enable({
-        "bashls", "jsonls", "ts_ls", "nixd", "lua_ls", "basedpyright", "ruff",
+        "bashls",
+        "jsonls",
+        "ts_ls",
+        "nixd",
+        "lua_ls",
+        "basedpyright",
+        "ruff",
+        "clangd" -- ccls is worse & creates huge .ccls-cache dirs
       })
+      vim.lsp.config.clangd = {
+        cmd = { 'clangd', '--query-driver=/run/current-system/sw/bin/gcc,/run/current-system/sw/bin/clang' }
+      }
       vim.lsp.config.ts_ls = {
         settings = {
           codeActionsOnSave = {
@@ -63,33 +82,17 @@ return {
 
           client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
             runtime = {
-              -- Tell the language server which version of Lua you're using (most
-              -- likely LuaJIT in the case of Neovim)
               version = 'LuaJIT',
-              -- Tell the language server how to find Lua modules same way as Neovim
-              -- (see `:h lua-module-load`)
               path = {
                 'lua/?.lua',
                 'lua/?/init.lua',
               },
             },
-            -- Make the server aware of Neovim runtime files
             workspace = {
               checkThirdParty = false,
               library = {
                 vim.env.VIMRUNTIME
-                -- Depending on the usage, you might want to add additional paths
-                -- here.
-                -- '${3rd}/luv/library'
-                -- '${3rd}/busted/library'
               }
-              -- Or pull in all of 'runtimepath'.
-              -- NOTE: this is a lot slower and will cause issues when working on
-              -- your own configuration.
-              -- See https://github.com/neovim/nvim-lspconfig/issues/3189
-              -- library = {
-              --   vim.api.nvim_get_runtime_file('', true),
-              -- }
             }
           })
         end,
@@ -97,27 +100,6 @@ return {
           Lua = {}
         }
       })
-      -- vim.lsp.config("lua_ls", {
-      --   capabilities = capabilities,
-      --   settings = {
-      --     Lua = {
-      --       runtime = {
-      --         version = 'LuaJIT',
-      --       },
-      --       diagnostics = {
-      --         globals = { 'vim', 'it', 'describe', 'before_each', 'after_each' },
-      --       },
-      --       workspace = {
-      --         library = {
-      --           [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-      --           [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-      --           [vim.fn.stdpath("data") .. "/lazy/"] = true
-      --         },
-      --         checkThirdParty = false,
-      --       },
-      --     }
-      --   }
-      -- })
     end
   },
   {
@@ -127,14 +109,14 @@ return {
       local null_ls = require("null-ls")
       null_ls.setup {
         sources = {
-          null_ls.builtins.formatting.prettier,
+          -- null_ls.builtins.formatting.prettier, -- works for markdown, but do I want it there?
           null_ls.builtins.formatting.black,
         }
       }
     end
   },
   {
-    'https://github.com/lukas-reineke/lsp-format.nvim',
+    'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
     init = function()
       require("lsp-format").setup {}
       vim.api.nvim_create_autocmd('LspAttach', {

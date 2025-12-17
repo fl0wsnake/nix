@@ -18,7 +18,7 @@ vim.o.fileencoding = 'utf-8'
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
---- Process integration
+--- PROCESS INTEGRATION
 vim.cmd('set termguicolors title titlestring=%t')
 --- FILESYSTEM
 vim.api.nvim_create_autocmd(
@@ -89,7 +89,7 @@ vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil
 
 --- EDITING
 vim.cmd('set cindent') -- Format .nix files same as `=`
-vim.cmd('set expandtab shiftwidth=2')
+vim.cmd('set tabstop=2 expandtab shiftwidth=2')
 -- COMMENTING
 vim.api.nvim_set_keymap('n', 'z', 'gc', {})
 vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
@@ -110,6 +110,9 @@ vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv", Silent)
 vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
+--- TABLES
+vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>", Silent)
+vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
 --- SORTING
 vim.keymap.set("v", "<a-t>", ":'<,'>!sort<cr>", Silent)
 vim.keymap.set("n", "<a-t>", "vip:'<,'>!sort<cr>", Silent)
@@ -141,7 +144,8 @@ vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
 vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
 
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
+-- vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tabedit % | normal! zz<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
@@ -171,13 +175,15 @@ vim.cmd("command! -nargs=1 -complete=shellcmd M Man <args> | on")
 vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'M' : 'm')")
 
 --- Bookmarks
-vim.cmd('command! Wiki e $WIKI/index.md')   -- for external use
+vim.cmd('command! Wiki e $WIKI/index.md') -- for external use
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
-vim.keymap.set('', '<leader>l', function() vim.cmd('h lspconfig-all | on') end, Silent)
+vim.keymap.set('', '<leader>l',
+  function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
+  Silent)
 
 require("config.lazy")

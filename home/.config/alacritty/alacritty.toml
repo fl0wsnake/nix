@@ -29,3 +29,14 @@ bindings = [
 
 [window]
 startup_mode = "Maximized"
+
+# [hints]
+# [[hints.enabled]]
+# # regex = "(?:/|\\./|\\.\\./)[^\\s]*[^/\\s]+" 
+# # regex ="(\\.{1,2}|~|([^~:\\s]*\\w[^~:\\s]*))?(\\/[^~:\\s]*\\w[^~:\\s]*)+(:\\d+){1,2}"
+# # regex = "(\\.{1,2}|~|([^~:\\s]*\\w[^~:\\s]*))?(\\/[^~:\\s]*\\w[^~:\\s]*)+(:\\d+){1,2}"
+# # regex = "([\\w\\/\\.\\-@]+):(\\d+):(\\d+)"
+# # regex ="((?:\\.{1,2}|~)?\\/?[^:\\/]+(?:\\/[^:\\/]+)*)(\\:\\d+){0,2}"
+# regex = "\\.?\\.?(/[a-zA-Z0-9.,\\-_()]+)+"
+# command = { program = "/run/current-system/sw/bin/xdg-open" }
+# mouse.enabled = true

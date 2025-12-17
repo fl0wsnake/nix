@@ -34,7 +34,7 @@
 
   (defvar sep "|")
 
-   (deflisten watch-wm-workspaces :initial "{\"current_ws\": \"\", \"wss\": []}" "$SWAY_SCRIPTS/watch-workspaces")
+   (deflisten watch-wm-workspaces :initial "{\"current_ws\": \"\", \"wss\": []}" "$SCRIPTS_SWAY/watch-workspaces")
    (defwidget wm-workspaces []
     (box
         :spacing 0
@@ -45,7 +45,7 @@
      ))
     )
 
-   (deflisten watch-kblayout '$SWAY_SCRIPTS/watch-kblayout')
+   (deflisten watch-kblayout '$SCRIPTS_SWAY/watch-kblayout')
    (defwidget kblayout []
     (box :class { watch-kblayout != 'English (US)' ? "mod" : "norm" } watch-kblayout)
    )

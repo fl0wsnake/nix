@@ -35,7 +35,7 @@ export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
 p:$HOME/Pictures;
 d:$HOME/Downloads;
 D:$SYNC;
-m:/run/media/$USER;
+m:/media;
 s:$HOME/Syncthing;
 S:$SCREENSHOTS;
 T:$HOME/.local/share/Trash/files;

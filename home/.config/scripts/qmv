@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# for usage via NNN
-# not using renameutils or moreutils for qmv or vidir cause they suck
-nvim . # remove if pressing `r` in nnn fails

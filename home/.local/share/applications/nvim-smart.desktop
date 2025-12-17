@@ -1,2 +1,3 @@
 [Desktop Entry]
 Exec=/home/nix/.config/scripts/nvim-smart %F
+MimeType=text/*;

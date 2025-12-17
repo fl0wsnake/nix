@@ -7,12 +7,27 @@ background-color=#000000ff
 font=monospace 12
 history=1
 max-history=32
-group-by=category,body
 format=<b>%s</b>\n%b
 height=1000
 
+[category="desktop"]
+group-by=app-name
+anchor=center
+default-timeout=1000
+font=monospace 16
+
 [grouped]
 format=<b>%s</b>\n%b
+
+[app-name="watch-volume"]
+width=100
+
+[app-name="watch-kblayout"]
+format=%b
+width=200
+
+[app-name="watch-brightness"]
+width=100
 
 [hidden]
 format=
@@ -21,23 +36,3 @@ border-color=#000000ff
 height=1
 margin=0
 padding=0
-
-[app-name="watch-volume"]
-anchor=center
-default-timeout=1000
-font=monospace 16
-width=100
-
-[app-name="watch-kblayout"]
-anchor=center
-default-timeout=1000
-font=monospace 16
-format=%b
-width=200
-
-[app-name="watch-brightness"]
-anchor=center
-font=monospace 16
-width=100
-default-timeout=1000
-

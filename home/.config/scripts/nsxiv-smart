@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
-ls_res=$(\ls -r "$(dirname "$@")")
-nsxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$ls_res")" - <<<"$ls_res"
+files=$(find "$(dirname "$@")" -type f -maxdepth 1 | sort)
+# if [[ $(wc -l <<<"$files") -gt 100 ]]; then
+nsxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$files")" - <<<"$files"
+# else
+#   vimiv "$@"
+# fi

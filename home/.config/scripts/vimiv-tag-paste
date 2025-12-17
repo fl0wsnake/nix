@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 
-set -e
+if [[ -e "$VIMIV_TAGFILE" ]]; then
+  cat "$VIMIV_TAGFILE" 2>/dev/null| tail +3 | xargs -d '\n' -I{} mv -vf "{}" .   \
+    && wc1="$(tail +3 <"$VIMIV_TAGFILE")" \
+    && trash "$VIMIV_TAGFILE" || rm -vf "$VIMIV_TAGFILE" \
+    || true
+fi
 
-cat "$VIMIV_TAGFILE" | tail +3 | xargs -d '\n' -I{} mv -vf "{}" .
+if [[ -e "$NSXIV_SEL" ]]; then
+  cat "$NSXIV_SEL" 2>/dev/null| xargs -d '\n' -I{} mv -vf "{}" . \
+    && wc2="$(wc -l <"$NSXIV_SEL")" \
+    && trash "$NSXIV_SEL" || rm -vf "$NSXIV_SEL" \
+    || true
+fi
 
-trash "$VIMIV_TAGFILE" || rm -vf "$VIMIV_TAGFILE"
+notify-send "Moved $((wc1 + wc2)) images"

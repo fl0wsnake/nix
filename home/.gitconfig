@@ -7,3 +7,5 @@
   useHttpPath = true
 [color]
   ui = auto
+[safe]
+	directory = /home/nix/.config/nixos-rice # for nixos-upgrade.service enabled by system.autoUpgrade

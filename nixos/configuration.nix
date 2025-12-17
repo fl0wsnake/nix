@@ -2,7 +2,12 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 # let # TODO actually install vicinae
 #   unstableTarball = builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
@@ -83,24 +88,11 @@
     };
   };
 
-  security.polkit = {
-    # for criticalPowerAction
-    enable = true;
-    extraConfig = ''
-      polkit.addRule(function(action, subject) {
-        if (action.id == "org.freedesktop.upower.hibernate" ||
-          action.id == "org.freedesktop.upower.suspend" ||
-          action.id == "org.freedesktop.login1.power-off" ||
-          action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
-          action.id == "org.freedesktop.login1.reboot" ||
-          action.id == "org.freedesktop.login1.reboot-multiple-sessions") {
-          if (subject.isInGroup("users") || subject.isInGroup("wheel") || subject.isInGroup("sudo")) {
-            return polkit.Result.YES;
-          }
-        }
-      });
-    '';
-  };
+  services.swapspace.enable = true;
+
+  boot.extraModprobeConfig = ''
+    options psmouse elantech_smbus=0
+  ''; # [t480s touchpad issue](https://wiki.archlinux.org/title/Laptop#Elantech)
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -165,14 +157,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.sessionVariables = {
-    PATH = "$HOME/.npm/bin:$PATH";
-    USER = "nix";
-    NIXPKGS_ALLOW_UNFREE = 1;
-    NIXPKGS_ALLOW_INSECURE = 1; # packages become insecure from occasionally. This is it save time.
-    NIX_BUILD_CORES = 0;
-  };
-
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
@@ -206,11 +190,36 @@
     # "qtwebengine-5.15.19" # for whatsie
   ];
 
+  environment.sessionVariables = {
+    # PKG_CONFIG_PATH = lib.makeSearchPathOutput "dev" "lib/pkgconfig" [
+    #   pkgs.imlib2
+    #   pkgs.libx11
+    # ];
+    C_INCLUDE_PATH =
+      with pkgs;
+      lib.makeSearchPathOutput "dev" "include" [
+        xorgproto # for nsxiv
+        z88dk
+        libxft
+        libexif
+        imlib2
+        libx11
+      ];
+    PATH = "$HOME/.npm/bin:$PATH";
+    USER = "nix";
+    NIXPKGS_ALLOW_UNFREE = 1;
+    NIXPKGS_ALLOW_INSECURE = 1; # packages become insecure from occasionally. This is it save time.
+    NIX_BUILD_CORES = 0;
+  };
+
   environment.systemPackages = with pkgs; [
-    exfatprogs
-    exfat
-    whatsapp-electron
+    ### MAKE
+    libx11
+    imlib2Full
+    pkg-config
     ### CODE
+    shfmt
+    cloc
     typescript-language-server
     deno
     basedpyright
@@ -237,6 +246,8 @@
     rustc
     eww
     ### MEDIA
+    nsxiv
+    pinta # for cropping, clone stamp, all shortcuts
     shotcut
     xfce.thunar
     python313Packages.grip # uses github API
@@ -248,12 +259,14 @@
     libva
     vlc-bittorrent
     ### SOCIAL
-    # whatsie
     telegram-desktop
+    whatsapp-electron
     ### HARDWARE
     tlp
     acpi
     ### FILESYSTEM
+    exfatprogs # for disk formatting
+    exfat # for disk formatting
     jujutsu
     rar
     unrar
@@ -267,6 +280,7 @@
     tig
     git
     vimiv-qt
+    clang-tools
     trash-cli
     fd
     git-credential-manager
@@ -302,7 +316,6 @@
     mktemp
     xdotool
     tabbed
-    sxiv
     zathura
     nixd
     nixfmt
@@ -347,16 +360,9 @@
     hyprsunset
     waybar
     i3status-rust
+    # DEV
+    imlib2Full # building nsxiv
   ];
-
-  services.transmission = {
-    # enable = true;
-    settings = {
-      umask = "000";
-      watch-dir-enabled = true;
-      watch-dir = "/home/nix/Downloads";
-    };
-  };
 
   services.dictd = {
     enable = true;
@@ -538,14 +544,20 @@
 
   services.udisks2 = {
     enable = true; # required for udiskie
+    mountOnMedia = true;
     settings = {
       "mount_options.conf" = {
         defaults = {
-          ntfs_drivers = "ntfs-3g,ntfs3"; # fix error mounting ntfs formatted `WD My Passport`
+          ntfs_drivers = "ntfs-3g,ntfs3"; # fix mounting error
         };
       };
     };
   };
+
+  # users.users.transmission = { # TODO
+  #   group = "users";
+  #   isSystemUser = true;
+  # };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

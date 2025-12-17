@@ -1,3 +1,4 @@
+### Exec stumbles on `;`s and `,`s, so all that goes to ./scripts
 include /etc/sway/config.d/*
 
 
@@ -93,11 +94,11 @@ input type:touchpad {
   natural_scroll enabled
 }
 
-bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec vicinae toggle
-bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
-bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR '$($SWAY_SCRIPTS/wcwd)'; $SHELL"
+bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
+bindsym $mod+x exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
+bindsym $mod+e exec $TERMINAL -e sh -c "$EDITOR"
 bindsym $mod+p exec $TERMINAL -e sh -c "htop"
 
 floating_modifier $mod normal
@@ -156,7 +157,7 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$SWAY_SCRIPTS/zen-run"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$SCRIPTS_SWAY/zen-run"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
@@ -175,43 +176,43 @@ bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_n
 set $1_workspace 31:1
 bindsym $mod+1 workspace $1_workspace; exec "$focused_window || nvim-smart"
 bindsym $mod+1+Shift move container to workspace $1_workspace
-bindsym $mod+1+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $1_workspace
+bindsym $mod+1+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $1_workspace
 set $2_workspace 32:2
 bindsym $mod+2 workspace $2_workspace
 bindsym $mod+2+Shift move container to workspace $2_workspace
-bindsym $mod+2+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $2_workspace
+bindsym $mod+2+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $2_workspace
 set $3_workspace 33:3
 bindsym $mod+3 workspace $3_workspace
 bindsym $mod+3+Shift move container to workspace $3_workspace
-bindsym $mod+3+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $3_workspace
+bindsym $mod+3+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $3_workspace
 set $4_workspace 34:4
 bindsym $mod+4 workspace $4_workspace
 bindsym $mod+4+Shift move container to workspace $4_workspace
-bindsym $mod+4+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $4_workspace
+bindsym $mod+4+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $4_workspace
 set $5_workspace 35:5
 bindsym $mod+5 workspace $5_workspace
 bindsym $mod+5+Shift move container to workspace $5_workspace
-bindsym $mod+5+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $5_workspace
+bindsym $mod+5+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $5_workspace
 set $6_workspace 36:6
 bindsym $mod+6 workspace $6_workspace
 bindsym $mod+6+Shift move container to workspace $6_workspace
-bindsym $mod+6+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $6_workspace
+bindsym $mod+6+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $6_workspace
 set $7_workspace 37:7
 bindsym $mod+7 workspace $7_workspace
 bindsym $mod+7+Shift move container to workspace $7_workspace
-bindsym $mod+7+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $7_workspace
+bindsym $mod+7+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $7_workspace
 set $8_workspace 38:8
 bindsym $mod+8 workspace $8_workspace
 bindsym $mod+8+Shift move container to workspace $8_workspace
-bindsym $mod+8+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $8_workspace
+bindsym $mod+8+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $8_workspace
 set $9_workspace 39:9
 bindsym $mod+9 workspace $9_workspace
 bindsym $mod+9+Shift move container to workspace $9_workspace
-bindsym $mod+9+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $9_workspace
+bindsym $mod+9+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $9_workspace
 set $0_workspace 40:0
 bindsym $mod+0 workspace $0_workspace
 bindsym $mod+0+Shift move container to workspace $0_workspace
-bindsym $mod+0+Control exec $SWAY_SCRIPTS/move_workspace $current_ws_name $0_workspace
+bindsym $mod+0+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $0_workspace
 
 bindsym $mod+period split h
 bindsym $mod+period+Shift sway-msg input type:keyboard xkb_layout 'us,ua'
@@ -301,7 +302,7 @@ bindsym --locked XF86AudioPause exec playerctl play-pause
 bindsym --locked XF86AudioPlay exec playerctl play-pause
 bindsym --locked XF86AudioPrev exec playerctl previous
 
-bindsym Print exec grim -g "$(swaymsg -t get_tree | jq -r '.. | (.nodes? // empty)[] | select(.focused) | .rect | "\(.x),\(.y) \(.width)x\(.height)"')" && notify-send "Screenshot saved"
+bindsym Print exec $SCRIPTS_SWAY/screenshot-window
 bindsym Shift+Print exec flameshot gui
 bindsym Control+Print exec wl-paste | tesseract - - | wl-copy
 
@@ -316,20 +317,19 @@ assign [title="^Rakuten Viber"] $d_workspace
 assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
 assign [title="^Transmission.*"] $f_workspace
 
-# Fix touchpad not registering
-exec swaymsg -t get_inputs | jq -e '.[] | select(.type=="touchpad")' || sudo modprobe -r psmouse && sudo modprobe psmouse
 # Apps
-exec $SWAY_SCRIPTS/zen-run
+exec $SCRIPTS_SWAY/zen-run
 # exec dropbox
 # exec watch-udiskie
-exec $SWAY_SCRIPTS/bar
-exec $SWAY_SCRIPTS/watch-config
+exec $SCRIPTS_SWAY/bar
+exec $SCRIPTS_SWAY/watch-config
 
 workspace $0_workspace
 exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
-exec $SWAY_SCRIPTS/watch-udiskie
+exec $SCRIPTS_SWAY/watch-udiskie
 exec vicinae server
 exec flameshot
+exec mako
 
 # exec systemctl --user import-environment PATH
 # exec systemctl --user restart xdg-desktop-portal.service

@@ -19,6 +19,6 @@ if echo "$event" | grep -q "^Event 'new' on client "; then
   fi
   print_sink_status
   skips_left=2
-  notify-send -c "$script_name" "$volume"
+  notify-send -a "$script_name" -c 'desktop' "$volume"
 fi
 done

@@ -2,7 +2,7 @@
 export TRASH=~/.local/share/Trash/files
 
 ### HARDWARE
-export CPU_COUNT=$((100/$(getconf _NPROCESSORS_ONLN)))
+export CPU_COUNT=$((100 / $(getconf _NPROCESSORS_ONLN)))
 
 ### from .nix
 # export XDG_RUNTIME_DIR="/run/user/$UID"
@@ -28,11 +28,12 @@ export SCREENSHOTS="${SYNC}/Screenshots"
 ### DIRS
 export SCRIPTS="$HOME/.config/scripts"
 export PATH="$SCRIPTS:$PATH"
-export SWAY_SCRIPTS="$HOME/.config/sway/scripts"
+export SCRIPTS_SWAY="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 export RICE="$HOME/.config/nixos-rice"
 
 ### OPTS
+export NSXIV_SEL=/tmp/.nsxiv.sel
 export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
 export GTK_THEME=Adwaita:dark # affects firefox, zen, gparted etc.
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+$TERMINAL -e sh -c "$EXPLORER $*; $SHELL"

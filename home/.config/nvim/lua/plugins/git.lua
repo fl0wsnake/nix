@@ -13,8 +13,8 @@ return {
       vim.keymap.set('', '<a-s>', '<Plug>(GitGutterStageHunk)')
       vim.keymap.set('', '<a-u>', '<Plug>(GitGutterUndoHunk)')
       vim.keymap.set('', '<leader>gd', function() vim.cmd('GitGutterDiffOrig') end)
-      vim.keymap.set('', '<s-c-cr>', '<Plug>(GitGutterPrevHunk)')
-      vim.keymap.set('', '<c-cr>', '<Plug>(GitGutterNextHunk)')
+      vim.keymap.set('', '<s-a-cr>', '<Plug>(GitGutterPrevHunk)')
+      vim.keymap.set('', '<a-cr>', '<Plug>(GitGutterNextHunk)')
     end
   },
   {},

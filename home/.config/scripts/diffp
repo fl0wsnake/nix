@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+  diff -r $* | while read -r l; do 
+  echo "$l"; binaries_diffing="$(echo "$l" | sed -nr 's/^Binary files (.*) and (.*) differ$/\1 \2/p')"
+  if [[ -n "$binaries_diffing" ]] ; then  
+    nsxiv $binaries_diffing &
+  fi
+done

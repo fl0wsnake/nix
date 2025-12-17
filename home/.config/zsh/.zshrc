@@ -32,23 +32,26 @@ alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias df='df -h'
+alias diff='diff -r'
+alias dl='nix profile list | grep'
 alias drb="dr && reboot"
 alias drs="dr && shutdown now"
 alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
-alias du='du -hs'
+alias du='du -h'
 alias dun='nix-env --uninstall'
-alias dus='du -hs * | sort -h'
+alias dus='du -h * | sort -h'
 alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
 alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
+alias gb='git branch'
 alias gcl='git clone --recurse-submodules -j8'
-alias gco='git checkout'
+alias gch='git checkout'
 alias gc='(R && git commit -v)'
-alias gd='git diff --word-diff=color'
-alias gd='(R && git diff --staged)'
-alias gds='git diff --word-diff=color --staged'
+alias gd='(R && git diff --word-diff=color)'
+alias gds='(R && git diff --word-diff=color --staged)'
+alias gemini='gemini -r'
 alias gparted='sudo -E gparted'
 alias gp='git push'
 alias gs='(R && git status)'
@@ -66,9 +69,12 @@ alias rsync='rsync -aP'
 alias scl='systemctl --user'
 alias sdn='shutdown now'
 alias se="sudo -e"
+alias trash='trash -v'
 alias tr='trans :uk'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
+alias xd='xdg-mime query default'
+alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 
 . "$ZDOTDIR"/modules/keymaps
@@ -98,7 +104,6 @@ bindkey '^[[1;5D' backward-word      # left
 
 # COMMANDS
 di() {
-  # alias di='nix-env -i'
   nix profile add nixpkgs/nixos-unstable#$@
 }
 ds() {
