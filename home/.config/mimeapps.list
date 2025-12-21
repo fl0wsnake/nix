@@ -30,9 +30,9 @@ video/x-matroska=mpv-smart.desktop;vlc.desktop
 video/x-msvideo=mpv-smart.desktop;vlc.desktop
 
 # vimiv's only vice is eager thumbnail load, nsxiv's - ignore EXIF in thumbnail mode and no crop
-image/bmp=nsxiv-smart.desktop;vimiv.desktop;
-image/jpeg=nsxiv-smart.desktop;vimiv.desktop;
-image/png=nsxiv-smart.desktop;vimiv.desktop;
+image/bmp=sxiv-smart.desktop;vimiv.desktop;
+image/jpeg=sxiv-smart.desktop;vimiv.desktop;
+image/png=sxiv-smart.desktop;vimiv.desktop;
 
 application/pdf=org.pwmt.zathura.desktop
 

@@ -3,13 +3,13 @@
 sock=/tmp/.nvim.sock
 script_name=$(basename "$0")
 
-if [[ -e $sock ]]; then 
-  if [[ -n $* ]]; then 
+if [[ -e $sock ]]; then
+  if [[ -n $* ]]; then
     nvim --server $sock --remote-tab "$*"
     notify-send -c "$script_name" "nvim += $*"
-  else 
-    $TERMINAL -e bash -c "nvim $*";
-  fi;
+  else
+    $TERMINAL -e bash -c "nvim"
+  fi
 else
-  $TERMINAL -e bash -c "nvim --listen $sock $*";
-fi 
+  $TERMINAL -e bash -c "nvim -S $NVIM_SESSION --listen $sock $*"
+fi

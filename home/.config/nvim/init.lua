@@ -66,33 +66,45 @@ vim.keymap.set("", "j", 'gj', Silent)
 vim.keymap.set("", "k", 'gk', Silent)
 vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent)
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
+
 --- DISABLE MOUSE
 vim.opt.mouse = ''
-vim.keymap.set({ 'n', 'i' }, '<Up>', '<nop>')
-vim.keymap.set({ 'n', 'i' }, '<Down>', '<nop>')
-vim.keymap.set({ 'n', 'i' }, '<Left>', '<nop>')
-vim.keymap.set({ 'n', 'i' }, '<Right>', '<nop>')
+-- vim.keymap.set({ 'n', 'i' }, '<Up>', '<nop>') TODO remove idk why its here
+-- vim.keymap.set({ 'n', 'i' }, '<Down>', '<nop>')
+-- vim.keymap.set({ 'n', 'i' }, '<Left>', '<nop>')
+-- vim.keymap.set({ 'n', 'i' }, '<Right>', '<nop>')
+
 --- SEARCH
 vim.cmd('set ignorecase smartcase')
 vim.keymap.set("", "<leader>/", function() vim.fn.setreg("/", "") end, Silent)
---- SELECT CHANGED OR YANKED TEXT
-vim.keymap.set("n", "<a-v>", "`[v`]")
--- SELECT ALL TEXT
-vim.keymap.set("n", "<a-V>", "ggVG")
--- TOGGLE WRAP
-vim.keymap.set("", "<A-w>", function()
+
+--- SELECTION
+vim.keymap.set("n", "<a-v>", "`[v`]") -- Pasted or yanked text
+vim.keymap.set("n", "<a-V>", "ggVG")  -- All text
+
+-- TOGGLES
+vim.keymap.set("", "<a-w>", function()
   vim.cmd('set wrap!')
   print("wrap == " .. tostring(vim.o.wrap))
 end, Silent)
+
 --- DISABLE AUTOCOMMETING NEXT LINE
-vim.api.nvim_create_autocmd('BufEnter', { pattern = "*", command = 'if &ft!="oil" | set formatoptions-=ro | endif' })
+vim.api.nvim_create_autocmd(
+  'FileType',
+  {
+    pattern = "*",
+    command = 'set formatoptions-=ro'
+  }
+)
 
 --- EDITING
 vim.cmd('set cindent') -- Format .nix files same as `=`
 vim.cmd('set tabstop=2 expandtab shiftwidth=2')
+
 -- COMMENTING
 vim.api.nvim_set_keymap('n', 'z', 'gc', {})
 vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
+
 -- AUTO FORMATTING
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = '*',
@@ -103,6 +115,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
     end
   end
 })
+
 --- LINE SWAPPING
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
 vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi", Silent)
@@ -110,14 +123,17 @@ vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv", Silent)
 vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
+
 --- TABLES
 vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>", Silent)
 vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
+
 --- SORTING
 vim.keymap.set("v", "<a-t>", ":'<,'>!sort<cr>", Silent)
 vim.keymap.set("n", "<a-t>", "vip:'<,'>!sort<cr>", Silent)
 vim.keymap.set("v", "<a-s-t>", ":'<,'>!sort -r<cr>", Silent)
 vim.keymap.set("n", "<a-s-t>", "vip:'<,'>!sort -r<cr>", Silent)
+
 --- MOVING AROUND
 vim.keymap.set("", "<c-j>", Down_v, Silent)
 vim.keymap.set("", "<c-k>", Up_v, Silent)
@@ -138,14 +154,22 @@ vim.api.nvim_create_autocmd("BufReadPost", { -- Jump to last visited pos per fil
     end
   end
 })
+vim.api.nvim_create_autocmd("BufEnter", { -- Uniquely distunguish [No Name] buffers for selection via `ft`
+  pattern = "*",
+  callback = function()
+    if vim.fn.expand("%") == "" then
+      vim.bo.ft = "nofile" -- Custom unique filetype
+    end
+  end,
+})
+
 
 --- WINDOW MANAGEMENT
 vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
 vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
 
 --- TABS
--- vim.keymap.set({ '', 'i' }, '<C-t>', function() vim.cmd 'tabe %' end, Silent)
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tabedit % | normal! zz<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tabe % | normal! zz<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
@@ -171,10 +195,10 @@ vim.api.nvim_set_keymap('', '<C-9>', '9gt', Silent)
 --- CMD ABBREVIATIONS
 vim.cmd("command! -nargs=1 -complete=help H h <args> | on")
 vim.cmd("cnoreabbrev <expr> h (getcmdtype() == ':' && getcmdline()=~'^h' ? 'H' : 'h')")
-vim.cmd("command! -nargs=1 -complete=shellcmd M Man <args> | on")
-vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'M' : 'm')")
+vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'Man' : 'm')")
+vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function() vim.cmd('on') end })
 
---- Bookmarks
+--- BOOKMARKS
 vim.cmd('command! Wiki e $WIKI/index.md') -- for external use
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
@@ -185,5 +209,16 @@ vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
   Silent)
+
+--- SESSION
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    for _, el in vim.v.argv do
+      if el == '-S' then
+        vim.cmd("mksession! " .. os.getenv("NVIM_SESSION"))
+      end
+    end
+  end,
+})
 
 require("config.lazy")

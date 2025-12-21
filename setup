@@ -23,15 +23,17 @@ paths=(
   ~/.config/mimeapps.list
   ~/.config/nnn/config
   ~/.config/nnn/plugins
-  ~/.config/nsxiv
   ~/.config/nvim
   ~/.config/scripts
+  ~/.config/starship.toml
+  ~/.config/sxiv
   ~/.config/syncthing-1/config.xml
   ~/.config/syncthing-2/config.xml
   ~/.config/syncthingtray.ini
   ~/.config/vimiv
   ~/.config/waybar
   ~/.config/zsh
+  ~/.editorconfig
   ~/.fuzzy-home-ignore
   ~/.gitconfig
   ~/.ignore # for ripgrep
@@ -44,12 +46,13 @@ paths=(
   ~/.zprofile
 )
 
-printf "%s\n" "${paths[@]}" | while read -r path; do 
+printf "%s\n" "${paths[@]}" | while read -r path; do
   path_bac="${path/~/$DIR/home}"
   if [[ ! -e "$path_bac" ]]; then
     if [[ ! -e "$path" ]]; then
       echo "$path"
-      echo "No config to backup: $path"; exit 1
+      echo "No config to backup: $path"
+      exit 1
     else
       mkdir -p "$(dirname "$path_bac")"
       echo "Backing up $path to $(readlink -f "$path_bac")"

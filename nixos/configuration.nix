@@ -88,6 +88,30 @@
     };
   };
 
+  services.hardware.bolt.enable = true;
+
+  boot.kernelParams = [ "nvidia-drm.modeset=1" ];
+
+  # hardware.nvidia = { TODO
+  #   modesetting.enable = true; # Required for Wayland
+  #   powerManagement.enable = false; # Can cause issues with eGPUs
+  #   open = false; # 1080 is too old for the 'open' kernel modules
+  #   # package = config.boot.kernelPackages.nvidiaPackages.stable; TODO do I need this
+  #   prime = {
+  #     sync.enable = true;
+  #     allowExternalGpu = true;
+  #     # Find these using `lspci` (e.g., "00:02.0" -> "PCI:0:2:0")
+  #     # intelBusId = "PCI:0:2:0";
+  #     # nvidiaBusId = "PCI:1:0:0"; # Your eGPU Bus ID
+  #   };
+  # };
+  # services.xserver.videoDrivers = [ "nvidia" ];
+
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+  };
+
   services.swapspace.enable = true;
 
   boot.extraModprobeConfig = ''
@@ -119,6 +143,8 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "video" # for egpu
+      "render"
     ];
     shell = pkgs.zsh;
   };
@@ -246,7 +272,7 @@
     rustc
     eww
     ### MEDIA
-    nsxiv
+    sxiv
     pinta # for cropping, clone stamp, all shortcuts
     shotcut
     xfce.thunar
@@ -544,7 +570,7 @@
 
   services.udisks2 = {
     enable = true; # required for udiskie
-    mountOnMedia = true;
+    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {
@@ -554,10 +580,10 @@
     };
   };
 
-  # users.users.transmission = { # TODO
-  #   group = "users";
-  #   isSystemUser = true;
-  # };
+  users.users.transmission = {
+    group = "users";
+    isSystemUser = true;
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

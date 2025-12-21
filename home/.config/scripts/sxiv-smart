@@ -2,7 +2,7 @@
 
 files=$(find "$(dirname "$@")" -type f -maxdepth 1 | sort)
 # if [[ $(wc -l <<<"$files") -gt 100 ]]; then
-nsxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$files")" - <<<"$files"
+sxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$files")" - <<<"$files"
 # else
 #   vimiv "$@"
 # fi

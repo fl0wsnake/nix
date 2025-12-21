@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+imgs="$(cat)"
+
+case "$@" in
+'h' | 'C-h') mogrify -rotate -90 "$imgs" ;;
+'l' | 'C-l') mogrify -rotate 90 "$imgs" ;;
+'j' | 'C-j' | 'k' | 'C-k') mogrify -rotate 180 "$imgs" ;;
+'Return' | 'C-Return')
+  kill "$("$SCRIPTS_SWAY"/focused-window-pid)"
+  nsxiv -t "$(dirname "$imgs")"
+  ;;
+'x' | 'C-x') xargs trash <<<"$imgs" && notify-send "Trashed $(wc -l <<<"$imgs") images" ;;
+'w' | 'C-w') echo "$imgs" | xargs -d'\n' readlink -f >"$SXIV_SEL" && notify-send "Selected $(wc -l <<<"$imgs") images" ;;
+'r' | 'C-r') $TERMINAL -e sh -c "vidir - <<<\"$imgs\"" ;;
+'y' | 'C-y') wl-copy <<<"$imgs" && notify-send "Image path copied" ;;
+esac

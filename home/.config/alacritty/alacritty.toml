@@ -1,7 +1,7 @@
 # https://alacritty.org/config-alacritty.html
 
 [colors.cursor]
-cursor = '#ffffff'
+cursor = '#ffffff' # fix cursor coalescing with text
 
 [font]
 size = 11
@@ -10,33 +10,28 @@ size = 11
 history = 10000
 multiplier = 3
 
-[env]
-TERM="xterm-256color" # Fix nvim color distortion. Weirdly $TERM is not changed in both nvim and zsh.
-
-[keyboard]
-bindings = [
-{key = "Key1", mods = "Control", chars = "\u001b[49;5u"},
-{key = "Key2", mods = "Control", chars = "\u001b[50;5u"},
-{key = "Key3", mods = "Control", chars = "\u001b[51;5u"},
-{key = "Key4", mods = "Control", chars = "\u001b[52;5u"},
-{key = "Key5", mods = "Control", chars = "\u001b[53;5u"},
-{key = "Key6", mods = "Control", chars = "\u001b[54;5u"},
-{key = "Key7", mods = "Control", chars = "\u001b[55;5u"},
-{key = "Key8", mods = "Control", chars = "\u001b[56;5u"},
-{key = "Key9", mods = "Control", chars = "\u001b[57;5u"},
-{key = "Key0", mods = "Control", action = "ResetFontSize"},
-]
-
 [window]
-startup_mode = "Maximized"
+startup_mode = "Maximized" # for Gnome
+
+# [env]
+# TERM="xterm-256color" # Fix nvim color distortion. Weirdly $TERM is not changed in both nvim and zsh.
+
+# [keyboard]
+# bindings = [
+# {key = "Key1", mods = "Control", chars = "\u001b[49;5u"},
+# {key = "Key2", mods = "Control", chars = "\u001b[50;5u"},
+# {key = "Key3", mods = "Control", chars = "\u001b[51;5u"},
+# {key = "Key4", mods = "Control", chars = "\u001b[52;5u"},
+# {key = "Key5", mods = "Control", chars = "\u001b[53;5u"},
+# {key = "Key6", mods = "Control", chars = "\u001b[54;5u"},
+# {key = "Key7", mods = "Control", chars = "\u001b[55;5u"},
+# {key = "Key8", mods = "Control", chars = "\u001b[56;5u"},
+# {key = "Key9", mods = "Control", chars = "\u001b[57;5u"},
+# {key = "Key0", mods = "Control", action = "ResetFontSize"},
+# ]
 
 # [hints]
 # [[hints.enabled]]
-# # regex = "(?:/|\\./|\\.\\./)[^\\s]*[^/\\s]+" 
-# # regex ="(\\.{1,2}|~|([^~:\\s]*\\w[^~:\\s]*))?(\\/[^~:\\s]*\\w[^~:\\s]*)+(:\\d+){1,2}"
-# # regex = "(\\.{1,2}|~|([^~:\\s]*\\w[^~:\\s]*))?(\\/[^~:\\s]*\\w[^~:\\s]*)+(:\\d+){1,2}"
-# # regex = "([\\w\\/\\.\\-@]+):(\\d+):(\\d+)"
-# # regex ="((?:\\.{1,2}|~)?\\/?[^:\\/]+(?:\\/[^:\\/]+)*)(\\:\\d+){0,2}"
 # regex = "\\.?\\.?(/[a-zA-Z0-9.,\\-_()]+)+"
 # command = { program = "/run/current-system/sw/bin/xdg-open" }
 # mouse.enabled = true

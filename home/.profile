@@ -26,21 +26,21 @@ export TODOS="${SYNC}/Todos"
 export SCREENSHOTS="${SYNC}/Screenshots"
 
 ### DIRS
-export SCRIPTS="$HOME/.config/scripts"
-export PATH="$SCRIPTS:$PATH"
+export RICE="$HOME/.config/nixos-rice"
+export SCRIPTS="$HOME/.config/scripts" && export PATH="$SCRIPTS:$PATH"
 export SCRIPTS_SWAY="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
-export RICE="$HOME/.config/nixos-rice"
 
 ### OPTS
-export NSXIV_SEL=/tmp/.nsxiv.sel
-export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
-export GTK_THEME=Adwaita:dark # affects firefox, zen, gparted etc.
-export GRIM_DEFAULT_DIR="$SCREENSHOTS"
-export GREP_COLORS='always'
 export FZF_COLORS='hl:33,hl+:33' # for fzf.nvim
 export FZF_DEFAULT_OPTS="--color ${FZF_COLORS} --ansi --history=/tmp/.fzf-history --bind=ctrl-d:page-down --bind=ctrl-u:page-up"
 export GCM_CREDENTIAL_STORE='plaintext'
+export GREP_COLORS='always'
+export GRIM_DEFAULT_DIR="$SCREENSHOTS"
+export GTK_THEME=Adwaita:dark # affects firefox, zen, gparted etc.
+export NVIM_SESSION=$HOME/.local/state/nvim/session
+export SXIV_SEL=/tmp/.nsxiv.sel
+export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
 
 # GDK_SCALE="1.5"; # Gnome only supports non-fractional scaling by default. "2" is too much for 2560x1440 and "1" is too little.
 # QT_SCALE_FACTOR="1.5";
