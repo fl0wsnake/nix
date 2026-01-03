@@ -169,7 +169,8 @@ vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
 vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
 
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tabe % | normal! zz<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
@@ -180,8 +181,10 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end
 })
 vim.keymap.set({ '', 'i' }, '<C-S-Tab>', function() vim.cmd 'tabp' end, Silent)
-vim.api.nvim_set_keymap('', '<C-l>', '<C-w>l', Silent)
 vim.api.nvim_set_keymap('', '<C-h>', '<C-w>h', Silent)
+vim.api.nvim_set_keymap('', '<C-j>', '<C-w>j', Silent)
+vim.api.nvim_set_keymap('', '<C-k>', '<C-w>k', Silent)
+vim.api.nvim_set_keymap('', '<C-l>', '<C-w>l', Silent)
 vim.api.nvim_set_keymap('', '<C-1>', '1gt', Silent)
 vim.api.nvim_set_keymap('', '<C-2>', '2gt', Silent)
 vim.api.nvim_set_keymap('', '<C-3>', '3gt', Silent)
@@ -213,7 +216,7 @@ vim.keymap.set('', '<leader>l',
 --- SESSION
 vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
-    for _, el in vim.v.argv do
+    for _, el in pairs(vim.v.argv) do
       if el == '-S' then
         vim.cmd("mksession! " .. os.getenv("NVIM_SESSION"))
       end

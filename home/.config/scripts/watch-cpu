@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 avg_busy=$((100 / $(getconf _NPROCESSORS_ONLN)))
-bar=50
+extra_info_avg_required=50
+interval=2
 
-mpstat --dec=0 4 | awk 'NR >= 4{print 100-$12; fflush()}' | while read -r avg; do
+mpstat --dec=0 $interval | awk 'NR >= 4{print 100-$12; fflush()}' | while read -r avg; do
   if [[ $avg -gt $avg_busy ]]; then
     echo '{"avg":'"$avg"',"top":"'"$(
       top -w -bc -n 1 |
         tail +8 |
-        awk '{if(int($9)>'$bar'){if($12!="top"){print $12}}}' |
+        awk '{if(int($9)>'$extra_info_avg_required'){if($12!="top"){print $12}}}' |
         sort -u | # Grouping processes by cmdline and not name because `zen` tabs have many names but same cmdline
         perl -pe 's@^\[(.*)/.*]|^.*/(.*)@\1\2@' |
         perl -0777 -pe 's/\n/ /g;s/ $//'

@@ -30,8 +30,8 @@ startup_mode = "Maximized" # for Gnome
 # {key = "Key0", mods = "Control", action = "ResetFontSize"},
 # ]
 
-# [hints]
-# [[hints.enabled]]
-# regex = "\\.?\\.?(/[a-zA-Z0-9.,\\-_()]+)+"
-# command = { program = "/run/current-system/sw/bin/xdg-open" }
-# mouse.enabled = true
+[hints]
+[[hints.enabled]]
+regex = "(\\.?\\.|~)?(/[a-zA-Z0-9.,\\-_()]+)+"
+command = { program = "/run/current-system/sw/bin/xdg-open" }
+mouse.enabled = true

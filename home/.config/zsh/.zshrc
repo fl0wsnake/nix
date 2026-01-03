@@ -14,23 +14,13 @@ alias f='file="$(~/.config/scripts/fuzzy)" && nnn "$file" && . "$NNN_TMPFILE"'
 # Bookmarks
 alias D="cd $RICE"
 
-# 1 letter
-alias c=calc
-alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
-alias e=nvim-smart
-alias h="$EDITOR $HISTFILE"
-alias j='jj'
-alias o=xdg-open
-alias R='cd $(git rev-parse --show-toplevel)'
-alias T="$HOME/.local/share/Trash/files"
-alias t=/tmp
-alias x="$NNN_COMM"
-
-# 2+ letters
 alias bootfix='NIXOS_INSTALL_BOOTLOADER=1 /run/current-system/bin/switch-to-configuration boot'
+alias ca=calc
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
+alias c=wl-copy
+alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
@@ -40,39 +30,51 @@ alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (no
 alias du='du -h'
 alias dun='nix-env --uninstall'
 alias dus='du -h * | sort -h'
+alias e=nvim-smart
 alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
 alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
 alias gb='git branch'
-alias gcl='git clone --recurse-submodules -j8'
 alias gch='git checkout'
+alias gcl='git clone --recurse-submodules -j8'
 alias gc='(R && git commit -v)'
+alias gca='(R && git commit --amend --no-edit)'
 alias gd='(R && git diff)'
 alias gds='(R && git diff --staged)'
 alias gemini='gemini -r'
 alias gparted='sudo -E gparted'
 alias gp='git push'
 alias gs='(R && git status)'
+alias h="$EDITOR $HISTFILE"
+alias j='jj'
 alias jo='journalctl --since today --reverse'
 alias kat='killall -15 -r'
+alias ln='ln -sT'
 alias lsblk='lsblk -f'
-alias md=mkdir
+alias md='mkdir -p'
+alias mkdir='mkdir -p'
 alias nowin='sudo efibootmgr -N'
+alias o=xdg-open
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
 alias pg='pgrep -fal'
 alias pkill='pkill -c'
 alias pk='pkill -fc'
+alias p=wl-paste
+alias R='cd $(git rev-parse --show-toplevel)'
 alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias rsync='rsync -aP'
 alias scl='systemctl --user'
 alias sdn='shutdown now'
 alias se="sudo -e"
+alias T="$HOME/.local/share/Trash/files"
 alias trash='trash -v'
 alias tr='trans :uk'
+alias t=/tmp
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
+alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
 alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'

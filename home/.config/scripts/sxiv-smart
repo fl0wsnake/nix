@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-files=$(find "$(dirname "$@")" -type f -maxdepth 1 | sort)
+files=$(find "$(dirname "$@")" -maxdepth 1 -type f | sort)
 # if [[ $(wc -l <<<"$files") -gt 100 ]]; then
-sxiv -n"$( (grep -n -m1 "$(basename "$@")" | cut -d: -f1) <<<"$files")" - <<<"$files"
+nsxiv -n"$( (grep -nF -m1 "$(basename "$@")" | cut -d: -f1) <<<"$files")" - <<<"$files"
 # else
 #   vimiv "$@"
 # fi

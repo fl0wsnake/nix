@@ -2,34 +2,31 @@
 
 charge_stop=$(cat '/sys/class/power_supply/BAT0/charge_control_end_threshold')
 
-charge_points=(45 60 85 100)
+charge_points=(50 80 100)
 
 if [[ "$*" -lt 0 ]]; then
-  summand=-1
+  change_direction=-1
 else
-  summand=1
+  change_direction=1
 fi
 
-if [ ! $charge_stop -gt 45 ]; then
-  charge_point_cur=0
-elif [ ! $charge_stop -gt 60 ]; then
-  charge_point_cur=1
-elif [ ! $charge_stop -gt 85 ]; then
-  charge_point_cur=2
-else
-  charge_point_cur=3
-fi
+for charge_point_i in $(seq 0 $((${#charge_points[@]} - 1))); do
+  if [ ! "$charge_stop" -gt "${charge_points[*]:$charge_point_i:1}" ]; then
+    charge_point_cur=$charge_point_i
+    break
+  fi
+done
 
-charge_point_new=$((charge_point_cur + summand))
+charge_point_new=$((charge_point_cur + change_direction))
 case $charge_point_new in
-  -1)
-    charge_point_new=0
-    ;;
-  "${#charge_points[@]}")
-    charge_point_new=$((charge_point_new - 1))
-    ;;
+-1)
+  charge_point_new=0
+  ;;
+"${#charge_points[@]}")
+  charge_point_new=$((charge_point_new - 1))
+  ;;
 esac
 
 charge_stop_new=${charge_points[$charge_point_new]}
 
-sudo tlp setcharge $(($charge_stop_new - 4)) "$charge_stop_new"
+sudo tlp setcharge $((charge_stop_new - 5)) "$charge_stop_new"

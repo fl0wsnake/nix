@@ -1,11 +1,4 @@
-local rb = { remap = true, buffer = 0 }
--- Italics
-vim.keymap.set('n', '<localleader>c', 'mmysiW*`m', rb)
-vim.keymap.set('x', '<localleader>c', 'mms*`m', rb)
--- Bold
-vim.keymap.set('n', '<localleader>b', 'mmysiW*v`]o`[s*`m', rb)
-vim.keymap.set('x', '<localleader>b', 'mms*v`]o`[s*`m', rb)
-
+-- LINKS
 local url_re_str = vim.fn.escape(
   [[https?://(www\.)?[-a-zA-Z0-9@:%\._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+\.~#\?&/=;]*]], '?(){'
 )
@@ -126,3 +119,43 @@ local function link_action()
 end
 
 vim.keymap.set('n', '<cr>', link_action, { buffer = true })
+
+-- EMBOLDENING & ITALICIZING
+function make_surround_operator(surrounding_item)
+  return function(type)
+    local old_z = vim.fn.getreg('z')
+    if type == 'line' then
+      vim.cmd('normal! `[V`]"zy')
+    else
+      vim.cmd('normal! `[v`]"zy')
+    end
+    local content = vim.fn.getreg('z')
+    local has_newline = content:match("\n$")
+    if has_newline then
+      content = content:gsub("\n$", "")
+    end
+    vim.fn.setreg('z', surrounding_item .. content .. surrounding_item .. (has_newline or ""))
+    vim.cmd('normal! gv"zp')
+    vim.fn.setreg('z', old_z)
+  end
+end
+
+local embolden_item = '**'
+_G.embolden_operator = make_surround_operator(embolden_item)
+vim.keymap.set('n', '<C-b>', function()
+  vim.go.operatorfunc = 'v:lua.embolden_operator'
+  return 'g@'
+end, { expr = true, desc = 'Embolden motion' })
+vim.keymap.set('n', '<C-b><C-b>', '0<C-b>$', { remap = true, desc = 'Embolden whole line' })
+vim.keymap.set('v', '<C-b>', 'c' .. embolden_item .. '<C-r>"' .. embolden_item .. '<Esc>',
+  { desc = 'Embolden selection' })
+
+local italicize_item = '_'
+_G.italicize_operator = make_surround_operator(italicize_item)
+vim.keymap.set('n', '<C-i>', function()
+  vim.go.operatorfunc = 'v:lua.italicize_operator'
+  return 'g@'
+end, { expr = true, desc = 'Italicize motion' })
+vim.keymap.set('n', '<C-i><C-i>', '0<C-i>$', { remap = true, desc = 'Italicize whole line' })
+vim.keymap.set('v', '<C-i>', 'c' .. italicize_item .. '<C-r>"' .. italicize_item .. '<Esc>',
+  { desc = 'Embolden selection' })

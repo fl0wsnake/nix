@@ -9,13 +9,11 @@
   ...
 }:
 
-# let # TODO actually install vicinae
-#   unstableTarball = builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
-#
-#   unstable = import unstableTarball {
-#     config = config.nixpkgs.config;
-#   };
-# in
+let
+  sessionVariablesFlatpak = {
+    GTK_THEME = "Adwaita:dark"; # affects firefox, zen, gparted etc.
+  };
+in
 {
   nix.settings.experimental-features = [
     "nix-command"
@@ -40,7 +38,6 @@
   nix.gc = {
     automatic = true;
     dates = "daily";
-    options = "--delete-older-than 30d";
   };
 
   system.autoUpgrade = {
@@ -82,34 +79,48 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.sway}/bin/sway";
+        command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
         user = "nix";
       };
     };
   };
 
   services.hardware.bolt.enable = true;
-
-  boot.kernelParams = [ "nvidia-drm.modeset=1" ];
-
-  # hardware.nvidia = { TODO
-  #   modesetting.enable = true; # Required for Wayland
-  #   powerManagement.enable = false; # Can cause issues with eGPUs
-  #   open = false; # 1080 is too old for the 'open' kernel modules
-  #   # package = config.boot.kernelPackages.nvidiaPackages.stable; TODO do I need this
-  #   prime = {
-  #     sync.enable = true;
-  #     allowExternalGpu = true;
-  #     # Find these using `lspci` (e.g., "00:02.0" -> "PCI:0:2:0")
-  #     # intelBusId = "PCI:0:2:0";
-  #     # nvidiaBusId = "PCI:1:0:0"; # Your eGPU Bus ID
-  #   };
-  # };
-  # services.xserver.videoDrivers = [ "nvidia" ];
-
+  # boot.kernelParams = [
+  #   "pci=realloc"
+  #   "pci=assign-busses"
+  #   "hpbussize=0x33"
+  #   "nvidia-drm.modeset=1"
+  # ];
+  services.xserver.videoDrivers = [ "nvidia" ]; # `Generic PCI device` ->  `Nvidia card`
+  hardware.graphics.enable = true; # needed for ollama to communicate with the driver
+  hardware.nvidia = {
+    open = false; # true for Turing+ architechture
+    # powerManagement.enable = true; # Can cause issues, but saves power
+    modesetting.enable = false; # Required for Wayland, so no
+    prime = {
+      offload.enable = true;
+      intelBusId = "PCI:00:02:0";
+      nvidiaBusId = "PCI:07:00:0";
+      # sync.enable = true;
+      #   allowExternalGpu = true;
+      #   # Find these using `lspci` (e.g., "00:02.0" -> "PCI:0:2:0")
+      #   # nvidiaBusId = "PCI:1:0:0"; # Your eGPU Bus ID
+    };
+  };
   services.ollama = {
     enable = true;
     acceleration = "cuda";
+    package = pkgs.ollama.override {
+      acceleration = "cuda";
+      cudaArches = [ "61" ];
+    };
+    # environmentVariables = {
+    #   CUDA_VISIBLE_DEVICES = "0";
+    # };
+  };
+  systemd.services.ollama.serviceConfig = {
+    LD_LIBRARY_PATH = "/run/opengl-driver/lib:/run/cudatoolkit/lib";
   };
 
   services.swapspace.enable = true;
@@ -181,7 +192,7 @@
     enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true; # for Nvidia drivers etc
 
   programs.sway = {
     enable = true;
@@ -194,8 +205,8 @@
     extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
   };
 
+  # From nix-flatpak flake input
   services.flatpak = {
-    # requires nix-flatpak
     enable = true;
     packages = [
       "app.zen_browser.zen"
@@ -204,7 +215,14 @@
     ];
     overrides = {
       global = {
-        Context.filesystems = [ "home" ]; # for zen user conf
+        Context = {
+          sockets = [
+            "x11"
+            "wayland"
+          ]; # Ensure display sockets are available
+          filesystems = [ "home" ]; # for zen user conf
+        };
+        Environment = sessionVariablesFlatpak;
       };
     };
   };
@@ -216,7 +234,7 @@
     # "qtwebengine-5.15.19" # for whatsie
   ];
 
-  environment.sessionVariables = {
+  environment.sessionVariables = sessionVariablesFlatpak // {
     # PKG_CONFIG_PATH = lib.makeSearchPathOutput "dev" "lib/pkgconfig" [
     #   pkgs.imlib2
     #   pkgs.libx11
@@ -244,6 +262,7 @@
     imlib2Full
     pkg-config
     ### CODE
+    aider-chat
     shfmt
     cloc
     typescript-language-server
@@ -272,7 +291,7 @@
     rustc
     eww
     ### MEDIA
-    sxiv
+    nsxiv
     pinta # for cropping, clone stamp, all shortcuts
     shotcut
     xfce.thunar
@@ -288,6 +307,9 @@
     telegram-desktop
     whatsapp-electron
     ### HARDWARE
+    config.boot.kernelPackages.nvidia_x11
+    pciutils # for tb3/egpu
+    usbutils
     tlp
     acpi
     ### FILESYSTEM
@@ -323,7 +345,6 @@
     ### NETWORK
     # chromium
     nix-search-cli
-    onedrive
     wget
     transmission_4-gtk
     vivaldi
@@ -429,11 +450,6 @@
     };
   };
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
   hardware.bluetooth.enable = true;
   services.blueman.enable = true; # Enables the Blueman graphical tool
 
@@ -442,75 +458,48 @@
     # upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];
-      path = [ pkgs.batsignal ];
-      script = ''
-        ${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'
-      '';
       serviceConfig = {
+        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
         Restart = "always";
       };
     };
     tray-ready = {
       wantedBy = [ "default.target" ];
       after = [ "graphical-session.target" ];
-      path = with pkgs; [
-        systemd
-        procps
-      ];
+      requires = [ "graphical-session.target" ];
+      path = with pkgs; [ procps ];
       script = ''
         if [ -n $DISPLAY ]; then
           while ! pkill -0 eww >/dev/null; do
             sleep 1;
           done
-          systemd-notify --ready
         fi
       '';
-      serviceConfig.Type = "notify";
+      serviceConfig = {
+        RemainAfterExit = true;
+        Type = "oneshot";
+      };
     };
     dropbox = {
-      wantedBy = [ "tray-ready.service" ];
+      wantedBy = [ "default.target" ];
       after = [ "tray-ready.service" ];
-      script = ''
-        ${pkgs.dropbox}/bin/dropbox
-      '';
       serviceConfig = {
+        ExecStart = "${pkgs.dropbox}/bin/dropbox";
         Restart = "always";
       };
     };
     udiskie = {
-      wantedBy = [ "tray-ready.service" ];
-      after = [ "tray-ready.service" ];
-      path = with pkgs; [
-        procps
-        udiskie
-        socat
-        xdg-utils
-      ];
-      script = ''
-        udiskie | while read l; do 
-          mount_dir="$(sed -nr 's/mounted .* on (.*)/\1/p' <<< "$l")"
-          if [[ -d "$mount_dir" ]]; then
-            echo "$mount_dir"
-          fi
-        done | socat -s - UNIX-LISTEN:/tmp/udiskie-dir-mounted.sock,fork
-      '';
-      serviceConfig = {
-        Restart = "always";
-      };
-    };
-    onedrive = {
       wantedBy = [ "default.target" ];
-      path = [ pkgs.onedrive ];
-      script = "onedrive --monitor";
       serviceConfig = {
+        ExecStart = "${pkgs.udiskie}/bin/udiskie";
         Restart = "always";
       };
     };
     wlsunset = {
       wantedBy = [ "graphical-session.target" ];
-      path = with pkgs; [ wlsunset ];
-      script = "wlsunset -S 4:30 -s 20:00";
+      requires = [ "graphical-session.target" ];
       serviceConfig = {
+        ExecStart = "${pkgs.wlsunset}/bin/wlsunset -S 4:30 -s 20:00;";
         Restart = "always";
       };
     };

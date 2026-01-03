@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+### Symlinks to backup places
+ln -ST "$HOME/Pictures" "$HOME/Syncthing/0Phone/Pictures"
+
+### Symlinks to this repo
 DIR="$(readlink -f "$(dirname "$0")")" || exit
 
 # Cloud
@@ -23,13 +27,14 @@ paths=(
   ~/.config/mimeapps.list
   ~/.config/nnn/config
   ~/.config/nnn/plugins
+  ~/.config/nsxiv
   ~/.config/nvim
   ~/.config/scripts
   ~/.config/starship.toml
-  ~/.config/sxiv
   ~/.config/syncthing-1/config.xml
   ~/.config/syncthing-2/config.xml
   ~/.config/syncthingtray.ini
+  ~/.config/transmission/settings.json
   ~/.config/vimiv
   ~/.config/waybar
   ~/.config/zsh

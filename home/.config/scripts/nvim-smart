@@ -2,14 +2,15 @@
 
 sock=/tmp/.nvim.sock
 script_name=$(basename "$0")
+files="$(readlink -f "$*" | perl -0777 -pe 's/\n/ /g;s/ $//')"
 
 if [[ -e $sock ]]; then
   if [[ -n $* ]]; then
-    nvim --server $sock --remote-tab "$*"
-    notify-send -c "$script_name" "nvim += $*"
+    nvim --server $sock --remote-tab "$files"
+    notify-send -c "$script_name" "nvim += $files"
   else
     $TERMINAL -e bash -c "nvim"
   fi
 else
-  $TERMINAL -e bash -c "nvim -S $NVIM_SESSION --listen $sock $*"
+  $TERMINAL -e bash -c "nvim -S $NVIM_SESSION --listen $sock $files"
 fi

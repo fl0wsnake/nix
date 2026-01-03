@@ -12,7 +12,8 @@ export NNN_ORDER="t:$HOME/Syncthing/Phone;t:$HOME/.local/share/Trash/files;t:$HO
 export NNN_FIFO=/tmp/.nnn.fifo
 export NNN_SEL='/tmp/.nnn.sel'
 # [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
-export NNN_PLUG;NNN_PLUG=$(tr -d '\n' <<<"
+export NNN_PLUG
+NNN_PLUG=$(tr -d '\n' <<<"
 d:diffs;
 e:preview-tabbed;
 m:mtpmount;
@@ -29,9 +30,10 @@ p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
 s:!echo -n>$NNN_SEL*;
 v:!$SCRIPTS/vimiv-tag-paste*;
 y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
-Y:!printf '%q' \"\$PWD\" | sed 's|^$HOME|~|' | wl-copy*;
+Y:!wl-copy file -b --mime-type \$nnn*;
 ")
-export NNN_BMS;NNN_BMS=$(tr -d '\n' <<<"
+export NNN_BMS
+NNN_BMS=$(tr -d '\n' <<<"
 p:$HOME/Pictures;
 d:$HOME/Downloads;
 D:$SYNC;

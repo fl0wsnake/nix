@@ -37,7 +37,6 @@ export FZF_DEFAULT_OPTS="--color ${FZF_COLORS} --ansi --history=/tmp/.fzf-histor
 export GCM_CREDENTIAL_STORE='plaintext'
 export GREP_COLORS='always'
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"
-export GTK_THEME=Adwaita:dark # affects firefox, zen, gparted etc.
 export NVIM_SESSION=$HOME/.local/state/nvim/session
 export SXIV_SEL=/tmp/.nsxiv.sel
 export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
