@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+file="$1"
+count=1
+base="${file%.*}"
+if [[ "$file" == *.* ]]; then
+  ext="${file##*.}"
+  while [[ -e "$file" ]]; do
+    file="${base}_${count}.${ext}"
+    ((count++))
+  done
+else
+  ext=""
+  while [[ -e "$file" ]]; do
+    file="${base}_${count}"
+    ((count++))
+  done
+fi
+echo "$file"

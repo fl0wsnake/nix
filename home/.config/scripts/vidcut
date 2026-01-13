@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+in="$1"
+out="$("$SCRIPTS/bac" "$1")"
+shift
+seg_counter=1
+concat_path=/tmp/segments.txt
+rm "$concat_path"
+while (("$#" >= 2)); do
+  seg_path="/tmp/part${seg_counter}.mp4"
+  rm "$seg_path"
+  if [[ "$1" == '-' ]]; then
+    ffmpeg -i "$in" -to "$2" -c copy $seg_path
+  elif [[ "$2" == '-' ]]; then
+    ffmpeg -i "$in" -ss "$1" -c copy $seg_path
+  else
+    ffmpeg -i "$in" -ss "$1" -to "$2" -c copy $seg_path
+  fi
+  echo "file '$seg_path'" >>$concat_path
+  ((seg_counter += 1))
+  shift 2
+done
+
+ffmpeg -f concat \
+  -safe 0 \
+  -i $concat_path \
+  -c copy "$out"
+
+notify-send "Saved concatenated video under $out"

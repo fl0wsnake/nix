@@ -27,6 +27,7 @@ in
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # boot.tmp = {
@@ -48,7 +49,7 @@ in
   nix.optimise.automatic = true;
 
   networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.wireless.enable = false; # Conflicts with NetworkManager
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -85,49 +86,84 @@ in
     };
   };
 
-  services.hardware.bolt.enable = true;
-  # boot.kernelParams = [
-  #   "pci=realloc"
-  #   "pci=assign-busses"
-  #   "hpbussize=0x33"
-  #   "nvidia-drm.modeset=1"
+  # # for gnome-network-displays & casting
+  # services.xserver.config = ''
+  #   Section "Module"
+  #     Load "dri2"
+  #     Load "dri3"
+  #   EndSection
+  # '';
+  # networking.networkmanager.unmanaged = [
+  #   "interface-name:p2p*"
+  #   "interface-name:wfd*"
   # ];
+
+  services.hardware.bolt.enable = true;
+  # boot.blacklistedKernelModules = [ "nouveau" ]; # might wanna remove these boot entries
+  # boot.initrd.kernelModules = [
+  #   "thunderbolt"
+  # ];
+  # boot.kernelModules = [
+  #   "nvidia"
+  #   "nvidia_uvm"
+  # ];
+  boot.kernelParams = [
+    # "pci=assign-busses"
+    # "pci=realloc"
+    # "pcie_port_pm=off"
+    "nvidia-drm.modeset=1"
+  ]; # ikd if needed
+  nixpkgs.config = {
+    allowUnfree = true; # for Nvidia drivers etc
+    # nvidia.acceptLicense = true;
+    # cudaCapabilities = [ "6.1" ];
+  };
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true; # Helpful for steam and certain drivers
+    # extraPackages = with pkgs; [
+    #   nvidia-vaapi-driver
+    #   vulkan-loader
+    #   vulkan-validation-layers
+    #   vulkan-tools
+    # ];
+  }; # needed for ollama to communicate with the driver
   services.xserver.videoDrivers = [ "nvidia" ]; # `Generic PCI device` ->  `Nvidia card`
-  hardware.graphics.enable = true; # needed for ollama to communicate with the driver
   hardware.nvidia = {
+    modesetting.enable = true;
+    # nvidiaPersistenced = true;
+    powerManagement.enable = true; # Can cause issues, but saves power
     open = false; # true for Turing+ architechture
-    # powerManagement.enable = true; # Can cause issues, but saves power
-    modesetting.enable = false; # Required for Wayland, so no
-    prime = {
-      offload.enable = true;
-      intelBusId = "PCI:00:02:0";
-      nvidiaBusId = "PCI:07:00:0";
-      # sync.enable = true;
-      #   allowExternalGpu = true;
-      #   # Find these using `lspci` (e.g., "00:02.0" -> "PCI:0:2:0")
-      #   # nvidiaBusId = "PCI:1:0:0"; # Your eGPU Bus ID
-    };
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
   services.ollama = {
     enable = true;
+    # acceleration = "vulkan"; # late 2025 feature
     acceleration = "cuda";
-    package = pkgs.ollama.override {
-      acceleration = "cuda";
-      cudaArches = [ "61" ];
-    };
+    package = pkgs.ollama-cuda;
+
+    # 2. Force Vulkan via Environment Variables
+    # environmentVariables = {
+    #   OLLAMA_VULKAN = "1";
+    # };
+    # package = pkgs.ollama.override {
+    #   acceleration = "cuda";
+    #   cudaArches = [ "61" ];
+    # };
     # environmentVariables = {
     #   CUDA_VISIBLE_DEVICES = "0";
     # };
   };
-  systemd.services.ollama.serviceConfig = {
-    LD_LIBRARY_PATH = "/run/opengl-driver/lib:/run/cudatoolkit/lib";
-  };
+  # systemd.services.ollama.serviceConfig = {
+  #   # LD_LIBRARY_PATH = "/run/opengl-driver/lib:/run/cudatoolkit/lib";
+  #   Environment = "CUDA_VISIBLE_DEVICES=0";
+  # };
 
   services.swapspace.enable = true;
 
   boot.extraModprobeConfig = ''
     options psmouse elantech_smbus=0
-  ''; # [t480s touchpad issue](https://wiki.archlinux.org/title/Laptop#Elantech)
+  ''; # 2 for [t480s touchpad issue](https://wiki.archlinux.org/title/Laptop#Elantech)
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -154,7 +190,7 @@ in
     extraGroups = [
       "networkmanager"
       "wheel"
-      "video" # for egpu
+      "video" # for eGPU
       "render"
     ];
     shell = pkgs.zsh;
@@ -167,6 +203,10 @@ in
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
   };
+
+  programs.direnv.enable = true;
+  programs.direnv.enableZshIntegration = true;
+  programs.direnv.nix-direnv.enable = true;
 
   programs.bash.blesh.enable = true;
 
@@ -192,8 +232,6 @@ in
     enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true; # for Nvidia drivers etc
-
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
@@ -202,7 +240,10 @@ in
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+    # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
   };
 
   # From nix-flatpak flake input
@@ -235,33 +276,32 @@ in
   ];
 
   environment.sessionVariables = sessionVariablesFlatpak // {
-    # PKG_CONFIG_PATH = lib.makeSearchPathOutput "dev" "lib/pkgconfig" [
-    #   pkgs.imlib2
-    #   pkgs.libx11
-    # ];
-    C_INCLUDE_PATH =
-      with pkgs;
-      lib.makeSearchPathOutput "dev" "include" [
-        xorgproto # for nsxiv
-        z88dk
-        libxft
-        libexif
-        imlib2
-        libx11
-      ];
     PATH = "$HOME/.npm/bin:$PATH";
     USER = "nix";
-    NIXPKGS_ALLOW_UNFREE = 1;
-    NIXPKGS_ALLOW_INSECURE = 1; # packages become insecure from occasionally. This is it save time.
     NIX_BUILD_CORES = 0;
+    NIXPKGS_ALLOW_UNFREE = 1;
   };
 
   environment.systemPackages = with pkgs; [
+    gitkraken
+    claude-code
+    # SCREEN CASTING
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-vaapi # This provides the DRI/Hardware link
+    gst_all_1.gst-libav # For software H.264/AAC fallback
+    gst_all_1.gst-rtsp-server # Often needed for the WFD stream
+    gnome-network-displays
     ### MAKE
     libx11
     imlib2Full
     pkg-config
     ### CODE
+    zls
+    direnv
     aider-chat
     shfmt
     cloc
@@ -279,7 +319,7 @@ in
     ))
     gnumake # for vim-jsdoc
     bash-language-server
-    vscode-langservers-extracted # lsps: css html eslint json markdown
+    vscode-langservers-extracted # LSPs: css html eslint json markdown
     nodejs
     nodePackages.prettier
     black
@@ -291,6 +331,8 @@ in
     rustc
     eww
     ### MEDIA
+    shotcut
+    kdePackages.kdenlive
     nsxiv
     pinta # for cropping, clone stamp, all shortcuts
     shotcut
@@ -307,7 +349,6 @@ in
     telegram-desktop
     whatsapp-electron
     ### HARDWARE
-    config.boot.kernelPackages.nvidia_x11
     pciutils # for tb3/egpu
     usbutils
     tlp
@@ -543,11 +584,37 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [
-    # Syncthing discovery
-    22000
-    22001
-  ];
+  networking.firewall = {
+    trustedInterfaces = [
+      "p2p-wl+"
+    ]; # for gnome-network-displays
+    allowedTCPPorts = [
+      22000
+      22001 # Syncthing instances
+      7236
+      7250 # Miracast control
+    ];
+    allowedUDPPorts = [
+      5353 # mDNS
+      7236 # Miracast stream
+    ];
+    allowedUDPPortRanges = [
+      {
+        from = 32768;
+        to = 65535; # for gnome-network-displays
+      }
+    ];
+    # extraCommands = ''
+    #   iptables -A INPUT -i p2p-wl+ -j ACCEPT
+    #   iptables -A INPUT -i wlan+ -p udp --dport 5353 -j ACCEPT
+    # ''; TODO remove
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  }; # for casting
 
   # fix flatpak apps not using xdg-open correctly
   systemd.user.services.xdg-desktop-portal = {

@@ -31,6 +31,17 @@ end)
 
 return {
   {
+    'https://github.com/direnv/direnv.vim',
+    init = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "DirenvLoaded",
+        callback = function()
+          vim.cmd("LspRestart")
+        end,
+      })
+    end
+  },
+  {
     'https://github.com/stevearc/aerial.nvim',
     init = function()
       require("aerial").setup({
@@ -46,6 +57,8 @@ return {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.enable({
+        "zls",
+        "html", -- for formatting
         "bashls",
         "jsonls",
         "ts_ls",

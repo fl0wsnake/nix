@@ -1,21 +1,10 @@
+vim.cmd('setl sw=2')
 -- LINKS
 local url_re_str = vim.fn.escape(
   [[https?://(www\.)?[-a-zA-Z0-9@:%\._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+\.~#\?&/=;]*]], '?(){'
 )
 local url_re = vim.regex(url_re_str)
 local url_re_precise = vim.regex(string.format('^%s$', url_re_str))
-
-local function root_get()
-  local dir = vim.fn.expand('%:p:h')
-  while true do
-    local file = io.open(dir .. '/index.md', 'r')
-    if file ~= nil and file:close() then return dir end
-    if dir == os.getenv('HOME') then return dir end
-    dir = dir:match("(.*)/")
-  end
-end
-local root = root_get()
-print(root)
 
 local function mdlink_extract_link(line, col)
   local mdlink_pat = '()%[.-%]%((.-)%)()'
@@ -107,6 +96,7 @@ local function link_action()
   local line_str = vim.fn.getline(line)
   local col = vim.fn.col('.')
   local link = mdlink_extract_link(line_str, col)
+  local root = os.getenv('WIKI') or vim.fn.expand('%:p:h')
   if link then
     if url_re_precise:match_str(link) or not string.match(link, '^' .. root) then
       vim.ui.open(link)
@@ -121,34 +111,47 @@ end
 vim.keymap.set('n', '<cr>', link_action, { buffer = true })
 
 -- EMBOLDENING & ITALICIZING
-function make_surround_operator(surrounding_item)
+function make_surround_operator(surround_item)
   return function(type)
-    local old_z = vim.fn.getreg('z')
+    -- Get the start and end positions of the motion
+    local start_pos = vim.api.nvim_buf_get_mark(0, "[")
+    local end_pos = vim.api.nvim_buf_get_mark(0, "]")
+
+    -- 0-indexed rows for the API
+    local start_row, start_col = start_pos[1] - 1, start_pos[2]
+    local end_row, end_col = end_pos[1] - 1, end_pos[2]
+
     if type == 'line' then
-      vim.cmd('normal! `[V`]"zy')
+      -- For whole lines, we wrap the entire line content
+      local lines = vim.api.nvim_buf_get_lines(0, start_row, end_row + 1, false)
+      for i, line in ipairs(lines) do
+        lines[i] = surround_item .. line .. surround_item
+      end
+      vim.api.nvim_buf_set_lines(0, start_row, end_row + 1, false, lines)
     else
-      vim.cmd('normal! `[v`]"zy')
+      -- For character motions (w, e, f, etc.)
+      -- end_col needs +1 because marks are inclusive and set_text is exclusive
+      local text = vim.api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col + 1, {})
+      if #text > 0 then
+        text[1] = surround_item .. text[1]
+        text[#text] = text[#text] .. surround_item
+        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col + 1, text)
+      end
     end
-    local content = vim.fn.getreg('z')
-    local has_newline = content:match("\n$")
-    if has_newline then
-      content = content:gsub("\n$", "")
-    end
-    vim.fn.setreg('z', surrounding_item .. content .. surrounding_item .. (has_newline or ""))
-    vim.cmd('normal! gv"zp')
-    vim.fn.setreg('z', old_z)
   end
 end
 
 local embolden_item = '**'
-_G.embolden_operator = make_surround_operator(embolden_item)
+_G.embolden_operator = make_surround_operator('**')
 vim.keymap.set('n', '<C-b>', function()
   vim.go.operatorfunc = 'v:lua.embolden_operator'
   return 'g@'
-end, { expr = true, desc = 'Embolden motion' })
-vim.keymap.set('n', '<C-b><C-b>', '0<C-b>$', { remap = true, desc = 'Embolden whole line' })
-vim.keymap.set('v', '<C-b>', 'c' .. embolden_item .. '<C-r>"' .. embolden_item .. '<Esc>',
-  { desc = 'Embolden selection' })
+end, { expr = true, desc = 'Bold motion' })
+vim.keymap.set('n', '<C-b><C-b>', function()
+  vim.go.operatorfunc = 'v:lua.embolden_operator'
+  return 'g@_'
+end, { expr = true, desc = 'Bold current line' })
+vim.keymap.set('v', '<C-b>', 'c' .. embolden_item .. '<C-r>"' .. embolden_item .. '<Esc>', { desc = 'Bold selection' })
 
 local italicize_item = '_'
 _G.italicize_operator = make_surround_operator(italicize_item)

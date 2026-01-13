@@ -37,15 +37,17 @@ alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,ma
 alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
 alias gb='git branch'
+alias gca='(R && git commit --amend --no-edit)'
 alias gch='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
 alias gc='(R && git commit -v)'
-alias gca='(R && git commit --amend --no-edit)'
 alias gd='(R && git diff)'
 alias gds='(R && git diff --staged)'
-alias gemini='gemini -r'
+alias gemini='gemini -r || gemini'
+alias gl="git log --graph --oneline --decorate --all"
 alias gparted='sudo -E gparted'
 alias gp='git push'
+alias gr="git reset"
 alias gs='(R && git status)'
 alias h="$EDITOR $HISTFILE"
 alias j='jj'
@@ -53,8 +55,10 @@ alias jo='journalctl --since today --reverse'
 alias kat='killall -15 -r'
 alias ln='ln -sT'
 alias lsblk='lsblk -f'
+alias ls='ls --color=always -A'
 alias md='mkdir -p'
 alias mkdir='mkdir -p'
+alias nix-shell="nix-shell --run zsh"
 alias nowin='sudo efibootmgr -N'
 alias o=xdg-open
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
@@ -160,4 +164,5 @@ timestampify() {
   while read line; do echo "$(date +%T): $line"; done
 }
 
-# eval "$(fzf --bash)" # for <C-r> history search
+eval "$(fzf --zsh)" # for <C-r> history search
+# eval "$(direnv hook zsh)"

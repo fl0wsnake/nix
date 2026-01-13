@@ -18,8 +18,8 @@ return {
         pattern = 'markdown',
         callback = function()
           local b = { buffer = 0 }
-          vim.keymap.set({ 'n', 'x' }, '<a-cr>', '<Plug>Markdown_MoveToNextHeader', b)
-          vim.keymap.set({ 'n', 'x' }, '<s-a-cr>', '<Plug>Markdown_MoveToPreviousHeader', b)
+          vim.keymap.set({ 'n', 'x' }, '<c-cr>', '<Plug>Markdown_MoveToNextHeader', b)
+          vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '<Plug>Markdown_MoveToPreviousHeader', b)
         end
       })
     end

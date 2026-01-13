@@ -25,6 +25,7 @@ paths=(
   ~/.config/lf
   ~/.config/mako
   ~/.config/mimeapps.list
+  ~/.config/mpv
   ~/.config/nnn/config
   ~/.config/nnn/plugins
   ~/.config/nsxiv

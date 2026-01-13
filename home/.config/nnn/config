@@ -30,7 +30,7 @@ p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
 s:!echo -n>$NNN_SEL*;
 v:!$SCRIPTS/vimiv-tag-paste*;
 y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
-Y:!wl-copy file -b --mime-type \$nnn*;
+Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"

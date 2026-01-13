@@ -31,20 +31,8 @@ smart_borders on
 # exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 # exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 
-# bar {
-# # icon_theme Adwaita
-#   position bottom
-# # mode hide
-#     status_command i3status-rs
-#     font Hack 12, FontAwesome 12
-#     separator_symbol |
-#     strip_workspace_numbers yes
-#     colors {
-#       statusline #cccccc
-#         background #101010
-#     }
-# }
-
+output HEADLESS-1 pos -1920 0 res 1920x1080
+# output HDMI-A-2 pos -1920 0 res 1920x1080
 
 # output eDP-1 scale 1.6524
 output * bg #000000 solid_color
@@ -172,6 +160,7 @@ set $g_workspace 14:G
 bindsym --to-code $mod+g workspace $g_workspace
 bindsym --to-code $mod+g+Shift move container to workspace $g_workspace
 bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_name $g_workspace
+workspace $g_workspace output HEADLESS-1
 
 set $1_workspace 31:1
 bindsym $mod+1 workspace $1_workspace; exec "$focused_window || nvim-smart"

@@ -32,10 +32,7 @@ vim.api.nvim_create_autocmd(
     end
   })
 vim.cmd('set noswapfile autochdir clipboard+=unnamedplus autowrite autowriteall')
--- vim.o.statusline = '%<%{v:lua.MyStatus()} %m%r%=%l,%L'
--- vim.g.netrw_list_hide = '\\.\\./,\\./' # TODO: remove
--- vim.keymap.set("", "<A-x>", function() vim.cmd('Ex') end, Silent)
--- vim.g.netrw_banner = 0
+vim.o.statusline = '%<%f %h%m%r%=%-14.(%l,%c%V%) %L'
 vim.keymap.set("", "<leader>e", function() vim.cmd.file(io.popen('readlink -f ' .. vim.fn.expand('%')):read()) end,
   Silent)
 vim.keymap.set("", "<leader>y",
@@ -69,14 +66,10 @@ vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk'
 
 --- DISABLE MOUSE
 vim.opt.mouse = ''
--- vim.keymap.set({ 'n', 'i' }, '<Up>', '<nop>') TODO remove idk why its here
--- vim.keymap.set({ 'n', 'i' }, '<Down>', '<nop>')
--- vim.keymap.set({ 'n', 'i' }, '<Left>', '<nop>')
--- vim.keymap.set({ 'n', 'i' }, '<Right>', '<nop>')
 
 --- SEARCH
 vim.cmd('set ignorecase smartcase')
-vim.keymap.set("", "<leader>/", function() vim.fn.setreg("/", "") end, Silent)
+vim.keymap.set({ "n", 'i' }, "<a-/>", function() vim.fn.setreg("/", "") end, Silent)
 
 --- SELECTION
 vim.keymap.set("n", "<a-v>", "`[v`]") -- Pasted or yanked text
@@ -103,6 +96,7 @@ vim.cmd('set tabstop=2 expandtab shiftwidth=2')
 
 -- COMMENTING
 vim.api.nvim_set_keymap('n', 'z', 'gc', {})
+vim.api.nvim_set_keymap('n', 'Z', 'gcc', {})
 vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
 
 -- AUTO FORMATTING
@@ -141,7 +135,6 @@ vim.keymap.set("", "<c-k>", Up_v, Silent)
 --- PRESENTATION
 vim.o.list = true
 vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
--- TODO removing number relativenumber
 vim.cmd('set nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="

@@ -6,5 +6,5 @@ if pgrep mpv >/dev/null; then
   echo "loadfile '$*' replace" | socat - "$socket"
   echo '{ "command": ["set_property", "pause", false] }' | socat - "$socket"
 else
-  mpv --keep-open --input-ipc-server="$socket" "$@"
+  mpv --osd-fractions --keep-open --input-ipc-server="$socket" "$@"
 fi

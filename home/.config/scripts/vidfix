@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ffmpeg -i "$@" -f yuv4mpegpipe - | ffmpeg -i - -c:v libx264 -crf 18 -c:a aac "$(bac "$@")"

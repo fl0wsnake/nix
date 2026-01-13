@@ -3,9 +3,9 @@
 imgs="$(cat)"
 
 case "$@" in
-'h' | 'C-h') mogrify -rotate -90 "$imgs" ;;
-'l' | 'C-l') mogrify -rotate 90 "$imgs" ;;
-'j' | 'C-j' | 'k' | 'C-k') mogrify -rotate 180 "$imgs" ;;
+'h' | 'C-h') mogrify -auto-orient -rotate -90 "$imgs" ;;
+'l' | 'C-l') mogrify -auto-orient -rotate 90 "$imgs" ;;
+'j' | 'C-j' | 'k' | 'C-k') mogrify -auto-orient -rotate 180 "$imgs" ;;
 'Return' | 'C-Return')
   kill "$("$SCRIPTS_SWAY"/focused-window-pid)"
   nsxiv -t "$(dirname "$imgs")"
@@ -14,4 +14,5 @@ case "$@" in
 'w' | 'C-w') echo "$imgs" | xargs -d'\n' readlink -f >"$SXIV_SEL" && notify-send "Selected $(wc -l <<<"$imgs") images" ;;
 'r' | 'C-r') $TERMINAL -e sh -c "vidir - <<<\"$imgs\"" ;;
 'y' | 'C-y') wl-copy <<<"$imgs" && notify-send "Image path copied" ;;
+'e' | 'C-e') pinta "$imgs" ;;
 esac
