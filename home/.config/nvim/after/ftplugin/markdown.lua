@@ -1,4 +1,4 @@
-vim.cmd('setl sw=2')
+vim.cmd('setl sw=2 sts=0')
 -- LINKS
 local url_re_str = vim.fn.escape(
   [[https?://(www\.)?[-a-zA-Z0-9@:%\._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+\.~#\?&/=;]*]], '?(){'
@@ -95,13 +95,13 @@ local function link_action()
   local line = vim.fn.line('.')
   local line_str = vim.fn.getline(line)
   local col = vim.fn.col('.')
-  local link = mdlink_extract_link(line_str, col)
+  local link = mdlink_extract_link(line_str, col) -- should run vim.uv.fs_realpath on a link when it's to a file
   local root = os.getenv('WIKI') or vim.fn.expand('%:p:h')
   if link then
     if url_re_precise:match_str(link) or not string.match(link, '^' .. root) then
       vim.ui.open(link)
     else
-      vim.cmd('tabe ' .. link)
+      vim.cmd('e ' .. link)
     end
   else
     mdlinkify(line, col)

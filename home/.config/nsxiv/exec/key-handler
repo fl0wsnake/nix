@@ -3,16 +3,17 @@
 imgs="$(cat)"
 
 case "$@" in
-'h' | 'C-h') mogrify -auto-orient -rotate -90 "$imgs" ;;
-'l' | 'C-l') mogrify -auto-orient -rotate 90 "$imgs" ;;
-'j' | 'C-j' | 'k' | 'C-k') mogrify -auto-orient -rotate 180 "$imgs" ;;
+'h' | 'C-h') xargs -P 8 -n 4 mogrify -auto-orient -rotate -90 <<<"$imgs" ;;
+'l' | 'C-l') xargs -P 8 -n 4 mogrify -auto-orient -rotate 90 <<<"$imgs" ;;
+'j' | 'C-j' | 'k' | 'C-k') xargs -P 8 -n 4 mogrify -auto-orient -rotate 180 <<<"$imgs" ;;
 'Return' | 'C-Return')
   kill "$("$SCRIPTS_SWAY"/focused-window-pid)"
   nsxiv -t "$(dirname "$imgs")"
   ;;
-'x' | 'C-x') xargs trash <<<"$imgs" && notify-send "Trashed $(wc -l <<<"$imgs") images" ;;
+'q' | 'C-q') xargs trash <<<"$imgs" && notify-send "Trashed $(wc -l <<<"$imgs") images" ;;
 'w' | 'C-w') echo "$imgs" | xargs -d'\n' readlink -f >"$SXIV_SEL" && notify-send "Selected $(wc -l <<<"$imgs") images" ;;
 'r' | 'C-r') $TERMINAL -e sh -c "vidir - <<<\"$imgs\"" ;;
-'y' | 'C-y') wl-copy <<<"$imgs" && notify-send "Image path copied" ;;
-'e' | 'C-e') pinta "$imgs" ;;
+'y' | 'C-y') wl-copy -t "$(xdg-mime query filetype "$imgs")" <"$imgs" && notify-send "Image clipped" ;;
+'p' | 'C-p') wl-copy <<<"$imgs" && notify-send "Image path clipped" ;;
+'e' | 'C-e') gimp -sdf "$imgs" & ;;
 esac

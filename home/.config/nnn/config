@@ -8,36 +8,38 @@ export NNN_SCOPE=1
 export NNN_USE_EDITOR=1
 export NNN_TRASH=1
 export NNN_OPTS='rHRAJxE'
-export NNN_ORDER="t:$HOME/Syncthing/Phone;t:$HOME/.local/share/Trash/files;t:$HOME/.local/share/Trash/info;t:$HOME/Downloads;t:/tmp;"
+export NNN_ORDER="t:$HOME/Syncthing/0Phone/Camera;t:$HOME/.local/share/Trash/files;t:$HOME/.local/share/Trash/info;t:$HOME/Downloads;t:/tmp;"
 export NNN_FIFO=/tmp/.nnn.fifo
 export NNN_SEL='/tmp/.nnn.sel'
 # [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
+### NNN_PIPE takes full paths only
 export NNN_PLUG
 NNN_PLUG=$(tr -d '\n' <<<"
-d:diffs;
-e:preview-tabbed;
-m:mtpmount;
-;:preview-tui;
-R:renamer;
-r:rsynccp;
 a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
+D:diffs;
+d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;
+e:preview-tabbed;
 f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+m:mtpmount;
 <:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
 >:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
 n:!nautilus . &*;
 p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
+;:preview-tui;
 s:!echo -n>$NNN_SEL*;
-v:!$SCRIPTS/vimiv-tag-paste*;
+v:!$SCRIPTS/iv-paste*;
 y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
 Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"
-p:$HOME/Pictures;
+c:$HOME/Dropbox;
 d:$HOME/Downloads;
 D:$SYNC;
 m:/media;
+p:$HOME/Pictures;
 s:$HOME/Syncthing;
 S:$SCREENSHOTS;
 T:$HOME/.local/share/Trash/files;

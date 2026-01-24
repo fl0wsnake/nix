@@ -32,6 +32,7 @@ video/x-msvideo=mpv-smart.desktop;vlc.desktop
 image/bmp=sxiv-smart.desktop;vimiv.desktop;
 image/jpeg=sxiv-smart.desktop;vimiv.desktop;
 image/png=sxiv-smart.desktop;vimiv.desktop;
+image/webp=sxiv-smart.desktop;vimiv.desktop;
 
 application/pdf=org.pwmt.zathura.desktop
 

@@ -15,6 +15,7 @@ let
   };
 in
 {
+  nix.settings.auto-optimise-store = true;
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -29,11 +30,8 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.timeout = 0;
 
-  # boot.tmp = {
-  #   # cleanOnBoot = true;
-  #   useTmpfs = true;
-  # };
   boot.tmp.useTmpfs = true;
 
   nix.gc = {
@@ -49,7 +47,7 @@ in
   nix.optimise.automatic = true;
 
   networking.hostName = "nixos"; # Define your hostname.
-  networking.wireless.enable = false; # Conflicts with NetworkManager
+  # networking.wireless.enable = false; # Conflicts with NetworkManager
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -139,7 +137,6 @@ in
   services.ollama = {
     enable = true;
     # acceleration = "vulkan"; # late 2025 feature
-    acceleration = "cuda";
     package = pkgs.ollama-cuda;
 
     # 2. Force Vulkan via Environment Variables
@@ -159,6 +156,10 @@ in
   #   Environment = "CUDA_VISIBLE_DEVICES=0";
   # };
 
+  zramSwap = {
+    enable = true;
+    priority = 100;
+  };
   services.swapspace.enable = true;
 
   boot.extraModprobeConfig = ''
@@ -271,8 +272,7 @@ in
   services.dbus.enable = true;
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-1.1.07"
-    # "qtwebengine-5.15.19" # for whatsie
+    "ventoy-1.1.10"
   ];
 
   environment.sessionVariables = sessionVariablesFlatpak // {
@@ -300,6 +300,7 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    clojure-lsp
     zls
     direnv
     aider-chat
@@ -334,9 +335,7 @@ in
     shotcut
     kdePackages.kdenlive
     nsxiv
-    pinta # for cropping, clone stamp, all shortcuts
     shotcut
-    xfce.thunar
     python313Packages.grip # uses github API
     imagemagick # rotate images from nnn
     gimp3
@@ -375,11 +374,13 @@ in
     git-credential-manager
     ripgrep
     nautilus
+    thunar
     ### TERMINALS
     kitty
     alacritty # kitty has crap scrollback and does not use a -e flag for exec
     ghostty
     ### TUIs
+    ascii
     neovim
     nnn
     bat
@@ -393,8 +394,8 @@ in
     ### DEPS
     mpv # for nnn previews
     libappindicator # for Dropbox
-    libappindicator-gtk3 # for waybar
-    libdbusmenu-gtk3 # for waybar
+    # libappindicator-gtk3 # for waybar
+    # libdbusmenu-gtk3 # for waybar
     luarocks-nix # for nvim
     gzip # for treesitter
     gcc # for treesitter. Clang works the same.
@@ -425,7 +426,7 @@ in
     ventoy
     expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
     go-mtpfs # only one mtp tool that works
-    xorg.xev # print input codes
+    xev
     rclone
     lsof
     pulseaudioFull # for pactl: watch-volume
@@ -444,7 +445,9 @@ in
     pango # for mako
     dconf # for dark theme in apps
     wl-clipboard
-    rofi
+    (pkgs.rofi.override {
+      plugins = [ pkgs.rofi-emoji ];
+    })
     hyprsunset
     waybar
     i3status-rust

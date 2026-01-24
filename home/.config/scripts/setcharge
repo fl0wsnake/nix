@@ -2,7 +2,7 @@
 
 charge_stop=$(cat '/sys/class/power_supply/BAT0/charge_control_end_threshold')
 
-charge_points=(50 80 100)
+charge_points=(55 80 100)
 
 if [[ "$*" -lt 0 ]]; then
   change_direction=-1

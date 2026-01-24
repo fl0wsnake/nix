@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-$TERMINAL -e bash -c 'mv -f -- "$@" || read' '' "${@:3}" &
+if [ "$(stat -c %d "$1")" = "$(stat -c %d "$(dirname "$2")")" ]; then
+  $TERMINAL -e bash -c 'mv -f -- "$@" || read' '' "${@:3}" &
+else
+  $TERMINAL -e sh -c 'rsync -ah --progress --remove-source-files "$@" || read' '' "${@:3}" &
+fi

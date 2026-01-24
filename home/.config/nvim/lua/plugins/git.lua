@@ -21,7 +21,7 @@ return {
   {
     "https://github.com/sindrets/diffview.nvim",
     init = function()
-      require('diffview').setup { enhanced_diff_hl = false }
+      require('diffview').setup {}
       vim.keymap.set('', '<leader>gr', function()
         vim.cmd('DiffviewOpen')
         vim.fn.setreg("/", "")

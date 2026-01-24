@@ -135,7 +135,7 @@ vim.keymap.set("", "<c-k>", Up_v, Silent)
 --- PRESENTATION
 vim.o.list = true
 vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
-vim.cmd('set nowrap scrolloff=999 sidescrolloff=10')
+vim.cmd('set cursorline nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
 })

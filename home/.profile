@@ -18,7 +18,7 @@ export TERMINAL='alacritty'
 export BROWSER='app.zen_browser.zen'
 
 ### SYNC
-export SYNC="$HOME/Dropbox"
+export SYNC="$HOME/Syncthing/0Phone/Documents"
 . "$SYNC/.config/.profile"
 export SCRIPTS_SYNC="${SYNC}/.config/scripts"
 export WIKI="${SYNC}/Wiki"
@@ -32,6 +32,7 @@ export SCRIPTS_SWAY="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 
 ### OPTS
+export LC_COLLATE=C
 export FZF_COLORS='hl:33,hl+:33' # for fzf.nvim
 export FZF_DEFAULT_OPTS="--color ${FZF_COLORS} --ansi --history=/tmp/.fzf-history --bind=ctrl-d:page-down --bind=ctrl-u:page-up"
 export GCM_CREDENTIAL_STORE='plaintext'

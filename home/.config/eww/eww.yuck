@@ -1,3 +1,4 @@
+; https://elkowar.github.io/eww/magic-vars.html
 ; NOTE Some scripts just don't output fast enough not to cause harmless errors, hence all the 'deflisten :initial's
 
 (defwindow bar
@@ -10,15 +11,12 @@
  :exclusive true
  :windowtype "dock"
  :spacing 2
- (box
-  (box :orientation "horizontal"
-   :halign "start"
-   :space-evenly false
+ (box :orientation "horizontal" :space-evenly false 
+  (box :halign "start" :space-evenly false 
    (wm-workspaces)
-  )
-  (box :orientation "horizontal" :class "system-widgets"
-   :halign "end"
-   :space-evenly false
+  )  
+  (box :hexpand true)
+  (box :class "system-widgets" :halign "end" :space-evenly false
    (kblayout) sep
    (volume) sep
    (brightness) sep
@@ -32,70 +30,68 @@
  )
   )
 
-  (defvar sep "|")
+   (defvar sep "|")
 
    (deflisten watch-wm-workspaces :initial "{\"current_ws\": \"\", \"wss\": []}" "$SCRIPTS_SWAY/watch-workspaces")
    (defwidget wm-workspaces []
     (box
-        :spacing 0
-    (for ws in {watch-wm-workspaces.wss}
-     (box 
-      :class { watch-wm-workspaces.current_ws == ws.name ? "current_ws" : ws.urgent ? "urgent" : "" } 
-      {ws.name})
+     :spacing 0
+     (for ws in {watch-wm-workspaces.wss}
+      (box 
+       :class { watch-wm-workspaces.current_ws == ws.name ? "current_ws" : ws.urgent ? "urgent" : "" } 
+       {ws.name})
      ))
-    )
+   )
 
    (deflisten watch-kblayout '$SCRIPTS_SWAY/watch-kblayout')
    (defwidget kblayout []
-    (box :class { watch-kblayout != 'English (US)' ? "mod" : "norm" } watch-kblayout)
+    (box :class { watch-kblayout != 'English (US)' ? "hl" : "nohl" } watch-kblayout)
    )
 
    (deflisten watch-volume :initial "{\"vol\": 0, \"mute\": \"no\"}" 'watch-volume')
    (defwidget volume []
-    (box :class {watch-volume.vol>0?"mod":"norm"}{ (watch-volume.mute == "yes" ? "󰖁" : 
-                        watch-volume.vol < 33 ? "󰕿" :
-                        watch-volume.vol < 67 ? "󰖀" :
-                        "󰕾") + watch-volume.vol })
+    (box :class {watch-volume.vol>0?"hl":"nohl"}{ (watch-volume.mute == "yes" ? "󰖁" : 
+                                                    watch-volume.vol < 33 ? "󰕿" :
+                                                    watch-volume.vol < 67 ? "󰖀" :
+                                                    "󰕾") + watch-volume.vol })
    )
 
    (deflisten watch-brightness 'watch-brightness')
    (defwidget brightness []
-    (box :class "norm" "" watch-brightness)
+    (box :class "nohl" "" watch-brightness)
    )
 
-  (deflisten watch-cpu 'watch-cpu')
-  (defwidget cpu []
-   (box :space-evenly false :class {watch-cpu.avg>12?"mod":"norm"}
-    " "{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
+   (deflisten watch-cpu 'watch-cpu')
+   (defwidget cpu []
+    (box :space-evenly false :class {watch-cpu.avg>12?"hl":"nohl"}
+     " "{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
+    )
    )
-  )
 
-  (defwidget ram []
-   (box :class "norm" " "{floor(EWW_RAM.available_mem/1024/1024/1024)})
-  )
-
-  (deflisten watch-battery 'watch-battery')
-  (defwidget battery []
-   (box :space-evenly false :class
-    {watch-battery.status == "Charging" ? "mod":
-    watch-battery.capacity < 40 ? "critical":
-    "norm"}
-    {watch-battery.status == "Charging" ? "" : 
-    watch-battery.status == "Discharging" ? 
-    (watch-battery.capacity > 80 ? "" : 
-     watch-battery.capacity > 60 ? "" : 
-     watch-battery.capacity > 40 ? "" : 
-     watch-battery.capacity > 20 ? "" : 
-     "") : 
-    ""}
-    {watch-battery.capacity}"/"{watch-battery.charge_stop}
+   (defwidget ram []
+    (box :class "nohl" " "{floor(EWW_RAM.available_mem/1024/1024/1024)})
    )
-  )
+
+   (deflisten watch-battery 'watch-battery')
+   (defwidget battery []
+    (box :space-evenly false :class
+     {watch-battery.status == "Discharging" ? "hl": "nohl"}
+     {watch-battery.status == "Charging" ? "" : 
+     watch-battery.status == "Discharging" ? 
+     (watch-battery.capacity > 80 ? "" : 
+      watch-battery.capacity > 60 ? "" : 
+      watch-battery.capacity > 40 ? "" : 
+      watch-battery.capacity > 20 ? "" : 
+      "") : 
+     ""}
+     {watch-battery.capacity}"/"{watch-battery.charge_stop}
+    )
+   )
 
    (deflisten watch-network 'watch-network')
    (defwidget network []
-    (box :class {watch-network == '' ? "mod" : "norm"} {watch-network != '' ?"󰖩 "+watch-network:"󰖪 "}))
+    (box :class {watch-network == '' ? "hl" : "nohl"} {watch-network != '' ?"󰖩 "+watch-network:"󰖪 "}))
 
-  (defpoll time :interval "10s" 
-   "date '+%H:%M'")
+   (defpoll time :interval "10s" 
+    "date '+%H:%M'")
 

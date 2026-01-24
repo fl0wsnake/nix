@@ -1,10 +1,12 @@
+. ~/.profile
+
 function set_terminal_title() {
   echo -en "\e]2;$(sed s@^$HOME@~@<<<$PWD)" # it had \a at the end on the Internet where I found it
 }
 autoload -U add-zsh-hook && add-zsh-hook precmd set_terminal_title
 
 # OPTIONS
-setopt NOHISTEXPAND AUTOCD NO_HUP
+setopt NOHISTEXPAND AUTOCD NO_HUP GLOB_DOTS
 setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY
 
 alias a='file="$(~/.config/scripts/fuzzy-home)" && nnn "$file" && . "$NNN_TMPFILE"'
@@ -74,7 +76,6 @@ alias sdn='shutdown now'
 alias se="sudo -e"
 alias T="$HOME/.local/share/Trash/files"
 alias trash='trash -v'
-alias tr='trans :uk'
 alias t=/tmp
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
@@ -84,7 +85,7 @@ alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 
 . "$ZDOTDIR"/modules/keymaps
-# . "$ZDOTDIR"/modules/expand-dots
+. "$ZDOTDIR"/modules/expand-dots
 
 # `^` for `ctrl`, `^[` for `alt`
 bindkey "^[h" edit-history

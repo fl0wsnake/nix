@@ -20,56 +20,56 @@ $cyan: #5b9bd5;
 $blue: #6f82c2;
 $violet: #a782c4;
 
-.system-widgets > .norm:nth-child(1) {
+.system-widgets > .nohl:nth-child(1) {
   color: $red;
 }
-.system-widgets > .mod:nth-child(1) {
+.system-widgets > .hl:nth-child(1) {
   background-color: $red;
 }
 
-.system-widgets > .norm:nth-child(3) {
+.system-widgets > .nohl:nth-child(3) {
   color: $orange;
 }
-.system-widgets > .mod:nth-child(3) {
+.system-widgets > .hl:nth-child(3) {
   background-color: $orange;
 }
 
-.system-widgets > .norm:nth-child(5) {
+.system-widgets > .nohl:nth-child(5) {
   color: $yellow;
 }
-.system-widgets > .mod:nth-child(5) {
+.system-widgets > .hl:nth-child(5) {
   background-color: $yellow;
 }
 
-.system-widgets > .norm:nth-child(7) {
+.system-widgets > .nohl:nth-child(7) {
   color: $green;
 }
-.system-widgets > .mod:nth-child(7) {
+.system-widgets > .hl:nth-child(7) {
   background-color: $green;
 }
 
-.system-widgets > .norm:nth-child(9) {
+.system-widgets > .nohl:nth-child(9) {
   color: $cyan;
 }
-.system-widgets > .mod:nth-child(9) {
+.system-widgets > .hl:nth-child(9) {
   background-color: $cyan;
 }
 
-.system-widgets > .norm:nth-child(11) {
+.system-widgets > .nohl:nth-child(11) {
   color: $blue;
 }
-.system-widgets > .mod:nth-child(11) {
+.system-widgets > .hl:nth-child(11) {
   background-color: $blue;
 }
 
-.system-widgets > .norm:nth-child(13) {
+.system-widgets > .nohl:nth-child(13) {
   color: $violet;
 }
-.system-widgets > .mod:nth-child(13) {
+.system-widgets > .hl:nth-child(13) {
   background-color: $violet;
 }
 
-.mod {
+.hl {
   color: black;
   background-color: $cyan;
 }
