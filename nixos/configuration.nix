@@ -11,7 +11,8 @@
 
 let
   sessionVariablesFlatpak = {
-    GTK_THEME = "Adwaita:dark"; # affects firefox, zen, gparted etc.
+    LC_COLLATE = "C"; # affects all file pickers
+    GTK_THEME = "Adwaita:dark"; # affects firefox, gparted etc.
   };
 in
 {
@@ -166,10 +167,10 @@ in
     options psmouse elantech_smbus=0
   ''; # 2 for [t480s touchpad issue](https://wiki.archlinux.org/title/Laptop#Elantech)
 
-  # Enable CUPS to print documents.
+  # INFO: Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
+  # INFO: Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true; # Required for low-latency audio
   services.pipewire = {
@@ -185,7 +186,7 @@ in
     #media-session.enable = true;
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # INFO: Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nix = {
     isNormalUser = true;
     extraGroups = [
@@ -196,7 +197,7 @@ in
     ];
     shell = pkgs.zsh;
   };
-  # bash's alias expansion isn't good enough
+  # INFO: bash's alias expansion isn't good enough
   users.defaultUserShell = pkgs.zsh;
   programs.zsh = {
     enable = true;
@@ -218,15 +219,15 @@ in
     wheelNeedsPassword = false;
   };
 
-  # Enable automatic login for the user.
+  # NOTE: Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "nix";
 
-  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+  # NOTE: Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
-  # Install firefox.
+  # NOTE: Install firefox.
   programs.firefox.enable = true;
 
   programs.tmux = {
@@ -247,11 +248,10 @@ in
     # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
   };
 
-  # From nix-flatpak flake input
+  # NOTE From nix-flatpak flake input
   services.flatpak = {
     enable = true;
     packages = [
-      "app.zen_browser.zen"
       "com.github.tchx84.Flatseal"
       "com.viber.Viber"
     ];
@@ -262,7 +262,7 @@ in
             "x11"
             "wayland"
           ]; # Ensure display sockets are available
-          filesystems = [ "home" ]; # for zen user conf
+          filesystems = [ "home" ]; # for user conf
         };
         Environment = sessionVariablesFlatpak;
       };
@@ -300,6 +300,8 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    nix-index # to nix-locate `#include <.h>`
+    cursor-cli
     clojure-lsp
     zls
     direnv
@@ -332,6 +334,9 @@ in
     rustc
     eww
     ### MEDIA
+    (brave.override {
+      commandLineArgs = "--restore-last-session";
+    })
     shotcut
     kdePackages.kdenlive
     nsxiv
@@ -421,7 +426,6 @@ in
     fzf
     ### WM/SYSTEM
     vicinae
-    batsignal
     efibootmgr # for auto Win reboot
     ventoy
     expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
@@ -451,16 +455,12 @@ in
     hyprsunset
     waybar
     i3status-rust
-    # DEV
+    ### DEV
     imlib2Full # building nsxiv
   ];
 
   services.dictd = {
     enable = true;
-    DBs = [
-      pkgs.dictdDBs.wordnet
-      # pkgs.dictdDBs.gcide
-    ];
   };
 
   programs.dconf.profiles.user.databases = [
@@ -485,7 +485,6 @@ in
   };
 
   fonts = {
-    # fontDir.enable = true; # TODO remove if it didn't break anything
     packages =
       with pkgs;
       [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
@@ -499,7 +498,7 @@ in
 
   # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
-    # upower signals are not handled by wayland
+    # NOTE: upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
@@ -536,14 +535,6 @@ in
       wantedBy = [ "default.target" ];
       serviceConfig = {
         ExecStart = "${pkgs.udiskie}/bin/udiskie";
-        Restart = "always";
-      };
-    };
-    wlsunset = {
-      wantedBy = [ "graphical-session.target" ];
-      requires = [ "graphical-session.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.wlsunset}/bin/wlsunset -S 4:30 -s 20:00;";
         Restart = "always";
       };
     };
@@ -607,10 +598,6 @@ in
         to = 65535; # for gnome-network-displays
       }
     ];
-    # extraCommands = ''
-    #   iptables -A INPUT -i p2p-wl+ -j ACCEPT
-    #   iptables -A INPUT -i wlan+ -p udp --dport 5353 -j ACCEPT
-    # ''; TODO remove
   };
 
   services.avahi = {
@@ -619,21 +606,20 @@ in
     openFirewall = true;
   }; # for casting
 
-  # fix flatpak apps not using xdg-open correctly
+  # NOTE: fix flatpak apps not using xdg-open correctly
   systemd.user.services.xdg-desktop-portal = {
-    # NOTE: conflicting definition does not include xdg-open nor app.zen_browser.zen, setting `after` to `default.target` didn't help
     environment = pkgs.lib.mkForce {
       PATH = "$PATH:/run/current-system/sw/bin:/var/lib/flatpak/exports/bin";
     };
   };
 
   services.udisks2 = {
-    enable = true; # required for udiskie
-    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
+    enable = true; # NOTE: required for udiskie
+    mountOnMedia = true; # NOTE: otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {
-          ntfs_drivers = "ntfs-3g,ntfs3"; # fix mounting error
+          ntfs_drivers = "ntfs-3g,ntfs3"; # NOTE: fix mounting error
         };
       };
     };

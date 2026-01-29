@@ -39,7 +39,6 @@ local function mdlinkify(line_idx, col)
       local find_start = math.max(0, col - string.len(cfile))
       local cfile_first, cfile_last = line:find(cfile, find_start, true)
       if cfile_first > col then break end
-      -- local path = io.popen('realpath ' .. cfile):read()
       local path = cfile
       local ext = vim.fn.fnamemodify(path, ':e')
       local title = cfile
@@ -88,17 +87,16 @@ local function mdlinkify(line_idx, col)
   end
 end
 
--- TODO
 -- mdlink -> [text](link)
 -- link   -> scheme://path?query#fragment | filename
 local function link_action()
   local line = vim.fn.line('.')
   local line_str = vim.fn.getline(line)
   local col = vim.fn.col('.')
-  local link = mdlink_extract_link(line_str, col) -- should run vim.uv.fs_realpath on a link when it's to a file
+  local link = mdlink_extract_link(line_str, col)
   local root = os.getenv('WIKI') or vim.fn.expand('%:p:h')
   if link then
-    if url_re_precise:match_str(link) or not string.match(link, '^' .. root) then
+    if url_re_precise:match_str(link) or not string.match(io.popen('realpath ' .. link):read("a") or link, '^' .. root) then
       vim.ui.open(link)
     else
       vim.cmd('e ' .. link)

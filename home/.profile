@@ -15,7 +15,7 @@ export VISUAL='nvim'
 export MANPAGER='nvim +Man!'
 export EXPLORER="nnn"
 export TERMINAL='alacritty'
-export BROWSER='app.zen_browser.zen'
+export BROWSER='brave'
 
 ### SYNC
 export SYNC="$HOME/Syncthing/0Phone/Documents"
@@ -27,12 +27,11 @@ export SCREENSHOTS="${SYNC}/Screenshots"
 
 ### DIRS
 export RICE="$HOME/.config/nixos-rice"
-export SCRIPTS="$HOME/.config/scripts" && export PATH="$SCRIPTS:$PATH"
+export SCRIPTS="$HOME/.config/scripts" && PATH="$SCRIPTS:$PATH"
 export SCRIPTS_SWAY="$HOME/.config/sway/scripts"
 export SYNC_MOBILE="$HOME/OneDrive"
 
 ### OPTS
-export LC_COLLATE=C
 export FZF_COLORS='hl:33,hl+:33' # for fzf.nvim
 export FZF_DEFAULT_OPTS="--color ${FZF_COLORS} --ansi --history=/tmp/.fzf-history --bind=ctrl-d:page-down --bind=ctrl-u:page-up"
 export GCM_CREDENTIAL_STORE='plaintext'
@@ -59,6 +58,8 @@ export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 export HISTSIZE=100000
 export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
+
+export PATH="$HOME/.npm/bin:$PATH"
 
 ### NNN
 . "$HOME/.config/nnn/config"

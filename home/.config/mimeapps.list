@@ -1,9 +1,4 @@
-# xdg-mime query default application/x-bittorrent = transmission-gtk.desktop
-# xdg-mime query filetype FILE.torrent = application/x-bittorrent
-# .desktop files should be placed under $XDG_DATA_HOME/applications or ~/.local/share/applications
-
 [Default Applications]
-
 application/javascript=nvim-smart.desktop
 application/json=nvim-smart.desktop
 application/xml=nvim-smart.desktop
@@ -18,34 +13,29 @@ text/x-java=nvim-smart.desktop
 text/x-makefile=nvim-smart.desktop
 text/x-script.python=nvim-smart.desktop
 text/x-shellscript=nvim-smart.desktop
-
 application/vnd.ms-excel=libreoffice.desktop
-
 application/octet-stream=mpv-smart.desktop;vlc.desktop
 video/3gpp=mpv-smart.desktop;vlc.desktop
 video/mp4=mpv-smart.desktop;vlc.desktop
 video/webm=mpv-smart.desktop;vlc.desktop
 video/x-matroska=mpv-smart.desktop;vlc.desktop
 video/x-msvideo=mpv-smart.desktop;vlc.desktop
-
-# vimiv's only vice is eager thumbnail load, nsxiv's - ignore EXIF in thumbnail mode, no inotify on opened dir and no crop
 image/bmp=sxiv-smart.desktop;vimiv.desktop;
 image/jpeg=sxiv-smart.desktop;vimiv.desktop;
 image/png=sxiv-smart.desktop;vimiv.desktop;
 image/webp=sxiv-smart.desktop;vimiv.desktop;
-
 application/pdf=org.pwmt.zathura.desktop
-
-text/html=app.zen_browser.zen.desktop;chromium-browser.desktop
-x-scheme-handler/about=app.zen_browser.zen.desktop;chromium-browser.desktop
-x-scheme-handler/http=app.zen_browser.zen.desktop;chromium-browser.desktop
-x-scheme-handler/https=app.zen_browser.zen.desktop;chromium-browser.desktop
-x-scheme-handler/unknown=app.zen_browser.zen.desktop;chromium-browser.desktop
-
+text/html=brave-browser.desktop;chromium-browser.desktop
+x-scheme-handler/about=brave-browser.desktop;chromium-browser.desktop
+x-scheme-handler/http=brave-browser.desktop;chromium-browser.desktop
+x-scheme-handler/https=brave-browser.desktop;chromium-browser.desktop
+x-scheme-handler/unknown=brave-browser.desktop;chromium-browser.desktop
 application/x-bittorrent=transmission-gtk.desktop
 x-scheme-handler/magnet=transmission-gtk.desktop
-
-x-scheme-handler/tg=org.telegram.desktop
-x-scheme-handler/tonsite=org.telegram.desktop
-
+x-scheme-handler/tg=org.telegram.desktop.desktop
+x-scheme-handler/tonsite=org.telegram.desktop.desktop
 x-scheme-handler/viber=viber.desktop
+
+[Added Associations]
+x-scheme-handler/tg=org.telegram.desktop.desktop;
+x-scheme-handler/tonsite=org.telegram.desktop.desktop;

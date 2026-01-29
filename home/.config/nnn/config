@@ -15,35 +15,36 @@ export NNN_SEL='/tmp/.nnn.sel'
 ### NNN_PIPE takes full paths only
 export NNN_PLUG
 NNN_PLUG=$(tr -d '\n' <<<"
-a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
+;:preview-tui;
+<:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
+>:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
 D:diffs;
+F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
+a:!file=\$($SCRIPTS/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;
 e:preview-tabbed;
 f:!file=\$($SCRIPTS/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-F:!file=\$($SCRIPTS/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
 m:mtpmount;
-<:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
->:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
 n:!nautilus . &*;
 p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
-;:preview-tui;
 s:!echo -n>$NNN_SEL*;
+t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
 v:!$SCRIPTS/iv-paste*;
 y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
-Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"
+C:$HOME/Syncthing/0Phone/Camera;
+D:$SYNC;
+S:$SCREENSHOTS;
+T:$HOME/.local/share/Trash/files;
+W:$WIKI;
 c:$HOME/Dropbox;
 d:$HOME/Downloads;
-D:$SYNC;
 m:/media;
 p:$HOME/Pictures;
 s:$HOME/Syncthing;
-S:$SCREENSHOTS;
-T:$HOME/.local/share/Trash/files;
 t:/tmp;
 w:$HOME/WS;
-W:$WIKI;
 ")

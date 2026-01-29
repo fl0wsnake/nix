@@ -75,7 +75,7 @@
    (deflisten watch-battery 'watch-battery')
    (defwidget battery []
     (box :space-evenly false :class
-     {watch-battery.status == "Discharging" ? "hl": "nohl"}
+     {watch-battery.status == "Discharging" && watch-battery.capacity < watch-battery.charge_stop ? "hl": "nohl"}
      {watch-battery.status == "Charging" ? "" : 
      watch-battery.status == "Discharging" ? 
      (watch-battery.capacity > 80 ? "" : 

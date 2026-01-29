@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# WIP Might not be needed
+#
+# Put in ~/.profile:
+#
+# export XKB_LAYOUTS=('us,ua' 'us,ru')
+# printf 0 >/tmp/.xkb-layout
+
+xkb_layout=$(cat /tmp/.xkb-layout)
+xkb_layouts_len=#$XKB_LAYOUTS
+xkb_layout=$(((xkb_layout + 1) % xkb_layouts_len))
+swaymsg "input \"1:1:AT_Translated_Set_2_keyboard\" xkb_layout $xkb_layout"
+echo -n $xkb_layout >/tmp/.xkb-layout

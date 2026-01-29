@@ -4,9 +4,6 @@ in="$1"
 out="$("$SCRIPTS/bac" "$1")"
 shift
 seg_counter=1
-concat_path=/tmp/segments.txt
-rm "$concat_path"
-echo "$@" >"$out.txt"
 while (("$#" >= 2)); do
   seg_path="/tmp/part${seg_counter}.mp4"
   rm "$seg_path"

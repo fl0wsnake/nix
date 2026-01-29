@@ -73,9 +73,9 @@ seat * hide_cursor when-typing enable
 input "1:1:AT_Translated_Set_2_keyboard" {
   repeat_delay 225
   repeat_rate 20
-  xkb_layout 'us,ua'
+  xkb_layout 'us,ua,ru'
   # xkb_options 'grp:win_space_toggle,caps:ctrl_modifier'
-  xkb_options grp:caps_toggle,grp:win_space_toggle
+  xkb_options 'grp:caps_toggle,grp:win_space_toggle,grp_led:caps'
 }
 input type:touchpad {
   tap enabled
@@ -88,6 +88,7 @@ bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/
 bindsym $mod+x exec $TERMINAL -e $SHELL -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e $SHELL -c "$EDITOR"
 bindsym $mod+p exec $TERMINAL -e $SHELL -c "htop"
+bindsym $mod+Escape exec $SCRIPTS/poweroff-gracefully
 # bindsym $mod+Shift+c exec hyprpicker -n | xargs pastel format name
 
 
@@ -147,7 +148,7 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$SCRIPTS_SWAY/zen-run"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || brave"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
@@ -272,6 +273,8 @@ bindsym --locked XF86Bluetooth exec $SCRIPTS/setcharge 1
 bindsym --locked XF86Keyboard exec killall eject-fuzzy; exec $TERMINAL --class=floating -e eject-fuzzy
 bindsym --locked XF86Favorites exec sudo systemctl suspend
 
+# bindsym --locked XF86PowerOff exec $SCRIPTS/poweroff-gracefully
+
 bindsym --locked XF86AudioNext exec playerctl next
 bindsym --locked XF86AudioPause exec playerctl play-pause
 bindsym --locked XF86AudioPlay exec playerctl play-pause
@@ -282,18 +285,24 @@ bindsym Shift+Print exec flameshot gui
 bindsym Control+Print exec wl-paste | tesseract - - | wl-copy
 
 assign [app_id="zen"] $s_workspace
+assign [app_id="brave-browser"] $s_workspace
 assign [app_id="firefox"] $s_workspace
 assign [class="Vivaldi-stable"] $s_workspace
-assign [class="Brave-browser"] $s_workspace
+
 assign [class="Slack"] $d_workspace
 assign [class="discord"] $d_workspace
 assign [title="^Telegram.*"] $d_workspace
+assign [app_id="whatsapp-electron"] $d_workspace
 assign [title="^Rakuten Viber"] $d_workspace
+
 assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
 assign [title="^Transmission.*"] $f_workspace
 
-# Apps
-exec $SCRIPTS_SWAY/zen-run
+### Apps
+# INFO: Brave requires clearing the "Crashed" status after pressing PowerOff button
+# exec jq '.profile.exit_type = "Normal" | .profile.exited_cleanly = true' ~/.config/BraveSoftware/Brave-Browser/Default/Preferences >/tmp/Preferences && mv /tmp/Preferences ~/.config/BraveSoftware/Brave-Browser/Default/Preferences && brave
+exec brave
+
 # exec dropbox
 # exec watch-udiskie
 exec $SCRIPTS_SWAY/bar
@@ -305,11 +314,10 @@ exec $SCRIPTS_SWAY/watch-udiskie
 exec vicinae server
 exec flameshot
 exec mako
+exec wlsunset -S 4:30 -s 20:00
 
 # exec systemctl --user import-environment PATH
 # exec systemctl --user restart xdg-desktop-portal.service
-
-# Trigger zen browser loading
 
 workspace $s_workspace
 workspace $1_workspace

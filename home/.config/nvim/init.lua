@@ -1,3 +1,9 @@
+--- MARKDOWN
+vim.api.nvim_set_hl(0, "@markup.math.latex", {})
+vim.api.nvim_set_hl(0, "@nospell.latex", {})
+--         vim.keymap.set({ 'n', 'x' }, '<c-cr>', '<Plug>Markdown_MoveToNextHeader', b)
+--         vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '<Plug>Markdown_MoveToPreviousHeader', b)
+
 require("config.utils")
 Silent = { silent = true }
 vim.api.nvim_create_augroup('my', { clear = false })
@@ -91,8 +97,9 @@ vim.api.nvim_create_autocmd(
 )
 
 --- EDITING
-vim.cmd('set cindent') -- Format .nix files same as `=`
+vim.cmd('set cindent')  -- Format .nix files same as `=`
 vim.cmd('set tabstop=2 expandtab shiftwidth=2')
+vim.cmd('set nofixeol') -- Automatic newline before eol messes git diffs and specific file requirements
 
 -- COMMENTING
 vim.api.nvim_set_keymap('n', 'z', 'gc', {})

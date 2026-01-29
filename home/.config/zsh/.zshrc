@@ -145,16 +145,6 @@ mkvify() { Samsung Smart TV does not support .avi
     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }
-mtp() { # go-mtpfs is the only one that works for android and still only on 2 attempt
-  set +e
-  fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
-  # pid=$!
-  while read -r; do
-    # kill $pid
-    fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
-    # pid=$!
-  done
-}
 probe() { # Samsung Smart TV does not support some audio codecs
   for i in "$@"; do
     echo "--> $i"

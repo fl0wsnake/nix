@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# go-mtpfs is the only one that works for android and still only on 2 attempt
+set +e
+fusermount -u "$@" 2>/dev/null
+go-mtpfs "$@" &
+# pid=$!
+while read -r; do
+  # kill $pid
+  fusermount -u "$@" 2>/dev/null
+  go-mtpfs "$@" &
+  # pid=$!
+done

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-pkill -0 'zen' || pkill -0 -f 'flatpak run.*zen' || $BROWSER

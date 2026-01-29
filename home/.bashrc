@@ -58,7 +58,7 @@ open-history() {
 bind -x '"\eh": open-history'
 
 man-command() {
-  line_first_word=$(awk '{print $1;}'<<<"$READLINE_LINE")
+  line_first_word=$(awk '{print $1;}' <<<"$READLINE_LINE")
   if type -p "$line_first_word" &>/dev/null; then
     man "$line_first_word"
   fi
@@ -66,10 +66,9 @@ man-command() {
 bind -x '"\em": man-command'
 
 yank-line() {
-  wl-copy -n<<<"$READLINE_LINE"
+  wl-copy -n <<<"$READLINE_LINE"
 }
 bind -x '"\ec": yank-line'
-
 
 toggle_sudo_prefix() {
   READLINE_LINE_ARRAY=($(echo $READLINE_LINE))
@@ -83,7 +82,7 @@ bind -x '"\es": toggle_sudo_prefix'
 
 edit_command_line() {
   local tmp_file=$(mktemp)
-  echo "$READLINE_LINE" > "$tmp_file"
+  echo "$READLINE_LINE" >"$tmp_file"
   $EDITOR +'se ft=sh' "$tmp_file"
   READLINE_LINE="$(<"$tmp_file")"
   READLINE_POINT="${#READLINE_LINE}"
@@ -98,7 +97,7 @@ subs_set_default() {
       subs_set_default_file "$file"
     done
   else
-  subs_set_default_file "$@"
+    subs_set_default_file "$@"
   fi
 }
 subs_set_default_file() {
@@ -106,7 +105,7 @@ subs_set_default_file() {
   eng_sub_count=
   while read -r line; do
     if [[ $line =~ 'Track type: subtitles' ]]; then
-      ((sub_count+=1))
+      ((sub_count += 1))
     elif [[ $line =~ 'Language: eng' ]]; then
       eng_sub_count=$sub_count
     fi
@@ -117,19 +116,8 @@ subs_set_default_file() {
 }
 
 mkvify() {
-  for file in "$@"; do 
+  for file in "$@"; do
     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
-  done
-}
-
-mtp() {
-  set +e
-  fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
-  # pid=$!
-  while read -r; do
-    # kill $pid
-    fusermount -u "$@" 2>/dev/null; go-mtpfs "$@"&
-    # pid=$!
   done
 }
 
