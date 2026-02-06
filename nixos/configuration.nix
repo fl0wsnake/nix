@@ -484,7 +484,7 @@ in
   };
   # INFO: Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
-    TIMEOUT=5
+    TIMEOUT=43200
     TARGET_TIME=$(( $(date +%s) + $TIMEOUT ))
     echo "$TARGET_TIME" > /run/expected_rtc_wake
     echo 0 > /sys/class/rtc/rtc0/wakealarm
