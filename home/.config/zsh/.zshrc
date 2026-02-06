@@ -155,5 +155,5 @@ timestampify() {
   while read line; do echo "$(date +%T): $line"; done
 }
 
-eval "$(fzf --zsh)" # for <C-r> history search
+# eval "$(fzf --zsh)" # for <C-r> history search
 # eval "$(direnv hook zsh)"

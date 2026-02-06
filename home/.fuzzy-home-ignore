@@ -1,6 +1,5 @@
 WS/**/*
 Syncthing/0Phone/Documents/.config/transmission-torrents
-Downloads/Telegram Desktop
 Downloads/*/**
 Documents/ViberDownloads
 .zen
@@ -24,7 +23,11 @@ Documents/ViberDownloads
 .cargo/registry
 .cache
 .ViberPC
+!WS/*
+!Downloads/*
 !.npm/bin
 !.local/share/piper
 !.local/share/applications
 !.local/share
+.gemini
+Light

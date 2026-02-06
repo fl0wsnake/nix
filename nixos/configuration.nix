@@ -38,6 +38,7 @@ in
   nix.gc = {
     automatic = true;
     dates = "daily";
+    options = "-d";
   };
 
   system.autoUpgrade = {
@@ -252,8 +253,8 @@ in
   services.flatpak = {
     enable = true;
     packages = [
+      "app.zen_browser.zen"
       "com.github.tchx84.Flatseal"
-      "com.viber.Viber"
     ];
     overrides = {
       global = {
@@ -283,8 +284,6 @@ in
   };
 
   environment.systemPackages = with pkgs; [
-    gitkraken
-    claude-code
     # SCREEN CASTING
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
@@ -300,6 +299,9 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    claude-code
+    gitkraken
+    google-cloud-sdk
     nix-index # to nix-locate `#include <.h>`
     cursor-cli
     clojure-lsp
@@ -327,6 +329,7 @@ in
     nodePackages.prettier
     black
     go
+    gopls
     typescript
     typescript-language-server
     lua
@@ -334,6 +337,7 @@ in
     rustc
     eww
     ### MEDIA
+    microsoft-edge
     (brave.override {
       commandLineArgs = "--restore-last-session";
     })
@@ -350,6 +354,7 @@ in
     libva
     vlc-bittorrent
     ### SOCIAL
+    viber
     telegram-desktop
     whatsapp-electron
     ### HARDWARE
@@ -419,12 +424,14 @@ in
     python313Packages.langdetect
     piper-tts
     calc
+    pup
     jq
     diffutils
     translate-shell
     dict
     fzf
     ### WM/SYSTEM
+    ripdrag
     vicinae
     efibootmgr # for auto Win reboot
     ventoy
@@ -472,8 +479,32 @@ in
     }
   ];
 
+  systemd.settings.Manager = {
+    DefaultTimeoutStopSec = "2s";
+  };
+  # INFO: Ever sleep for TIMEOUT max, then poweroff gracefully
+  powerManagement.powerDownCommands = ''
+    TIMEOUT=5
+    TARGET_TIME=$(( $(date +%s) + $TIMEOUT ))
+    echo "$TARGET_TIME" > /run/expected_rtc_wake
+    echo 0 > /sys/class/rtc/rtc0/wakealarm
+    echo "+$TIMEOUT" > /sys/class/rtc/rtc0/wakealarm
+  '';
   powerManagement.resumeCommands = ''
     sudo modprobe -r psmouse && sudo modprobe psmouse
+    if [ -f /run/expected_rtc_wake ]; then
+      NOW=$(date +%s)
+      EXPECTED=$(cat /run/expected_rtc_wake)
+      rm /run/expected_rtc_wake
+      if [ "$NOW" -ge "$EXPECTED" ]; then
+        echo "Wake-up threshold reached. Initiating poweroff..."
+        ${pkgs.systemd}/bin/systemd-run -M ${config.environment.sessionVariables.USER}@ --user ${pkgs.sway}/bin/swaymsg exit
+        ${pkgs.systemd}/bin/systemd-run --on-active=2s ${pkgs.systemd}/bin/systemctl poweroff
+        else
+        echo "Manual wake-up detected before timeout. Staying awake."
+      fi
+    fi
+    echo 0 > /sys/class/rtc/rtc0/wakealarm
   '';
 
   services.logind.settings.Login = {

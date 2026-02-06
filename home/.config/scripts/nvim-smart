@@ -12,5 +12,6 @@ if [[ -e $sock ]]; then
     $TERMINAL -e bash -c "nvim"
   fi
 else
-  $TERMINAL -e bash -c "nvim -c \"silent! source $NVIM_SESSION\" --listen $sock $files" # nvim -S "$NVIM_SESSION" forced a button press each startup
+  # $TERMINAL -e bash -c "nvim -c \"silent! source \"$NVIM_SESSION\"\" --listen $sock $files" # nvim -S "$NVIM_SESSION" forced a button press each startup
+  $TERMINAL -e bash -c "nvim -S \"$NVIM_SESSION\" --listen $sock $files" # nvim -S "$NVIM_SESSION" forced a button press each startup
 fi

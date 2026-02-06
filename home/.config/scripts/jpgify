@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
 for arg in "$@"; do
-  magick "$arg" "${arg%.*}.jpg"
+  arg_jpgified="${arg%.*}.jpg"
+  if [[ ! -f "$arg_jpgified" ]]; then
+    magick "$arg" "$arg_jpgified"
+  fi
 done

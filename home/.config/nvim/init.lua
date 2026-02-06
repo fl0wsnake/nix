@@ -202,18 +202,21 @@ vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'Man'
 vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function() vim.cmd('on') end })
 
 --- BOOKMARKS
-vim.cmd('command! Wiki e $WIKI/index.md') -- for external use
-vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
-vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
+vim.cmd('command! Wiki e $WIKI/index.md|tabe $WIKI/projects.md|tabp') -- for external use
+vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end, Silent)
+vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
-vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
+vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
+vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end, Silent)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
-vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/WS') end, Silent)
+vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
+vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
 vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
   Silent)
 
 --- SESSION
+vim.cmd('se shortmess+=A') -- disable prompt on launch with -S option
 vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
     for _, el in pairs(vim.v.argv) do

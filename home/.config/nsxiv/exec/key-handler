@@ -11,9 +11,10 @@ case "$@" in
   nsxiv -t "$(dirname "$imgs")"
   ;;
 'q' | 'C-q') xargs trash <<<"$imgs" && notify-send "Trashed $(wc -l <<<"$imgs") images" ;;
-'w' | 'C-w') echo "$imgs" | xargs -d'\n' readlink -f >"$SXIV_SEL" && notify-send "Selected $(wc -l <<<"$imgs") images" ;;
+'w' | 'C-w') echo "$imgs" | xargs -d'\n' readlink -e >"$SXIV_SEL" && notify-send "Selected $(wc -l <<<"$imgs") images" ;;
 'r' | 'C-r') $TERMINAL -e sh -c "vidir - <<<\"$imgs\"" ;;
 'y' | 'C-y') wl-copy -t "$(xdg-mime query filetype "$imgs")" <"$imgs" && notify-send "Image clipped" ;;
 'p' | 'C-p') wl-copy <<<"$imgs" && notify-send "Image path clipped" ;;
 'e' | 'C-e') gimp -sdf "$imgs" & ;;
+'d' | 'C-d') ripdrag -a $(echo "$imgs" | xargs -d'\n' readlink -e) & ;;
 esac

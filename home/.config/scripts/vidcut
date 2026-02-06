@@ -4,6 +4,7 @@ in="$1"
 out="$("$SCRIPTS/bac" "$1")"
 shift
 seg_counter=1
+ffmpeg_concat_path=/tmp/segments.txt
 while (("$#" >= 2)); do
   seg_path="/tmp/part${seg_counter}.mp4"
   rm "$seg_path"
@@ -14,15 +15,19 @@ while (("$#" >= 2)); do
   else
     ffmpeg -ss "$1" -to "$2" -i "$in" -c copy "$seg_path"
   fi
-  echo "file '$seg_path'" >>$concat_path
+  echo "file '$seg_path'" >>$ffmpeg_concat_path
   ((seg_counter += 1))
   shift 2
 done
 
+# ffmpeg -f concat -safe 0 -i "$ffmpeg_concat_path" \
+#   -c copy -bsf:v h264_mp4toannexb -f mpegts - |
+#   ffmpeg -i - -c copy -fflags +genpts "$out"
+
 ffmpeg -f concat \
   -safe 0 \
   -fflags +genpts \
-  -i $concat_path \
+  -i "$ffmpeg_concat_path" \
   -c copy "$out"
 
 notify-send "Saved concatenated video under $out"

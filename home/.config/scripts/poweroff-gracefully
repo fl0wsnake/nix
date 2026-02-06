@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-swaymsg [app_id=".*"] kill
-swaymsg [class=".*"] kill
-
-sleep 1
+# swaymsg [app_id=".*"] kill
+# swaymsg [class=".*"] kill
+# sync
+# sleep 2
 
 # 3. Sync filesystems (ensures Brave's save is actually on disk)
-sync
 
 # 4. Use the "kexec" or "reboot" force flags if systemctl hangs
-sudo systemctl poweroff --force --force
+
+swaymsg exit
+sudo systemctl poweroff

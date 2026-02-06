@@ -57,6 +57,7 @@ return {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.enable({
+        "gopls",
         "zls",
         "html", -- for formatting
         "bashls",
