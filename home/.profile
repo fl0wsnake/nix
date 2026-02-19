@@ -50,16 +50,17 @@ export TMPDIR=/tmp
 ### ZSH
 export ZDOTDIR=~/.config/zsh
 export SAVEHIST=$HISTFILESIZE
-# . $ZDOTDIR/param
-# cp ~/.config/zsh-history /tmp/.zsh-history
+export ZSH_CUSTOM="$HOME/.config/zsh/oh-my-zsh/custom"
+export AUTO_NOTIFY_THRESHOLD=1
+export AUTO_NOTIFY_EXPIRE_TIME=2500
+export AUTO_NOTIFY_TITLE='%exit_code'
+export AUTO_NOTIFY_BODY='%command'
 
 ### BASH
 export PROMPT_COMMAND="history -a; history -n; $PROMPT_COMMAND"
 export HISTSIZE=100000
 export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
-
-export PATH="$HOME/.npm/bin:$PATH"
 
 ### NNN
 . "$HOME/.config/nnn/config"

@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
-for arg in "$@"; do
+if [[ $# == 0 ]]; then
+  args=$(find . -maxdepth 1 -name '*.webp' -o -name '*.avif')
+else
+  args=$@
+fi
+
+for arg in $args; do
   arg_jpgified="${arg%.*}.jpg"
   if [[ ! -f "$arg_jpgified" ]]; then
     magick "$arg" "$arg_jpgified"
   fi
 done
+
+trash $args

@@ -21,6 +21,7 @@ return {
     local cmp = require 'cmp'
     require("luasnip.loaders.from_vscode").lazy_load()
     cmp.setup {
+      preselect = cmp.PreselectMode.None, -- INFO: preselect dumb completions, bye
       completion = {
         autocomplete = { "InsertEnter", "TextChanged" },
       },

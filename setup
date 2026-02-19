@@ -13,6 +13,7 @@ ln -sTv ~/.config/rclone/rclone.conf $SYNC/.config/rclone.conf 2>/dev/null
 sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 
 # Home
+# NOTE: don't add ~/.config/transmission/settings.json to this list, it has ever changing entries
 paths=(
   ~/.bash_profile # to prevent tmux from running ~/.profile
   ~/.bashrc
@@ -30,12 +31,12 @@ paths=(
   ~/.config/nnn/plugins
   ~/.config/nsxiv
   ~/.config/nvim
+  ~/.config/rofi
   ~/.config/scripts
   ~/.config/starship.toml
   ~/.config/syncthing-1/config.xml
   ~/.config/syncthing-2/config.xml
   ~/.config/syncthingtray.ini
-  ~/.config/transmission/settings.json
   ~/.config/vimiv
   ~/.config/waybar
   ~/.config/zsh

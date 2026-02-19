@@ -1,5 +1,3 @@
-. ~/.profile
-
 function set_terminal_title() {
   echo -en "\e]2;$(sed s@^$HOME@~@<<<$PWD)" # it had \a at the end on the Internet where I found it
 }
@@ -16,19 +14,24 @@ alias f='file="$(~/.config/scripts/fuzzy)" && nnn "$file" && . "$NNN_TMPFILE"'
 # Bookmarks
 alias D="cd $RICE"
 
+alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
+alias R='cd $(git rev-parse --show-toplevel)'
+alias T=/tmp
+alias TR="$HOME/.local/share/Trash/files"
 alias bootfix='NIXOS_INSTALL_BOOTLOADER=1 /run/current-system/bin/switch-to-configuration boot'
+alias c=wl-copy
 alias ca=calc
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
 alias cp='rsync -aP --info=progress2 --timeout=300'
+alias cpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
-alias c=wl-copy
 alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
+alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias drb="dr && reboot"
 alias drs="dr && shutdown now"
-alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
 alias du='du -h'
 alias dun='nix-env --uninstall'
 alias dus='du -h * | sort -h'
@@ -39,16 +42,16 @@ alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,ma
 alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
 alias gb='git branch'
+alias gc='(R && git commit -v)'
 alias gca='(R && git commit --amend --no-edit)'
 alias gch='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
-alias gc='(R && git commit -v)'
-alias gd='(R && git diff)'
-alias gds='(R && git diff --staged)'
+alias gd='(R && git diff --word-diff)'
+alias gds='(R && git diff --staged --word-diff)'
 alias gemini='gemini -r || gemini'
 alias gl="git log --graph --oneline --decorate --all"
-alias gparted='sudo -E gparted'
 alias gp='git push'
+alias gparted='sudo -E gparted'
 alias gr="git reset"
 alias gs='(R && git status)'
 alias h="$EDITOR $HISTFILE"
@@ -56,27 +59,24 @@ alias j='jj'
 alias jo='journalctl --since today --reverse'
 alias kat='killall -15 -r'
 alias ln='ln -sT'
-alias lsblk='lsblk -f'
 alias ls='ls --color=always -A'
+alias lsblk='lsblk -f'
 alias md='mkdir -p'
 alias mkdir='mkdir -p'
 alias nix-shell="nix-shell --run zsh"
 alias nowin='sudo efibootmgr -N'
 alias o=xdg-open
-alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
-alias pg='pgrep -fal'
-alias pkill='pkill -c'
-alias pk='pkill -fc'
 alias p=wl-paste
-alias R='cd $(git rev-parse --show-toplevel)'
+alias pg='pgrep -fal'
+alias pk='pkill -fc'
+alias pkill='pkill -c'
 alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias rsync='rsync -aP'
 alias scl='systemctl --user'
 alias sdn='shutdown now'
 alias se="sudo -e"
-alias T="$HOME/.local/share/Trash/files"
+alias t=touch
 alias trash='trash -v'
-alias t=/tmp
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
 alias x="$NNN_COMM"

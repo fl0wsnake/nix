@@ -85,14 +85,41 @@ input type:touchpad {
 }
 
 bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
-bindsym $mod+Shift+Return exec vicinae toggle
+bindsym $mod+Shift+Return exec $SCRIPTS_SWAY/clipboard-select
 bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+x exec $TERMINAL -e $SHELL -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e $SHELL -c "$EDITOR"
 bindsym $mod+p exec $TERMINAL -e $SHELL -c "htop"
 bindsym $mod+v exec ripdrag $(cat "$NNN_SEL")
-bindsym $mod+Escape exec $SCRIPTS/poweroff-gracefully
+bindsym $mod+Escape exec poweroff-gracefully
 # bindsym $mod+Shift+c exec hyprpicker -n | xargs pastel format name
+
+bindsym $mod+period split h
+bindsym $mod+period+Shift input type:keyboard xkb_layout "us,ru"
+bindsym $mod+comma split v
+bindsym $mod+comma+Shift input type:keyboard xkb_layout "us,ua"
+
+bindsym --to-code $mod+q kill
+bindsym --to-code $mod+Shift+q exec kill -9 $($focused_window_pid)
+# bindsym --to-code $mod+Control+q exec $focused_window_pid | wl-copy
+bindsym --to-code $mod+Control+Shift+q exec $focused_window | wl-copy
+# swaymsg -t get_tree | jq '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
+# bindsym --to-code $mod+w fullscreen toggle
+bindsym --to-code $mod+w layout toggle tabbed split
+bindsym --to-code $mod+Shift+w fullscreen toggle
+bindsym --to-code $mod+Control+w floating toggle
+bindsym --to-code $mod+b exec blueman-manager
+bindsym --to-code $mod+t exec $SCRIPTS/syncthing-open
+
+# Swap focus between the tiling area and the floating area
+bindsym $mod+space focus mode_toggle
+
+default_border pixel 2
+
+bindsym $mod+Ctrl+h resize shrink width 50px
+bindsym $mod+Ctrl+j resize grow height 50px
+bindsym $mod+Ctrl+k resize shrink height 50px
+bindsym $mod+Ctrl+l resize grow width 50px
 
 
 floating_modifier $mod normal
@@ -149,23 +176,23 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 set $a_workspace 10:A
 bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR +Wiki"
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
-bindsym --to-code $mod+a+Control exec $sway_scripts/move_workspace $current_ws_name $a_workspace
+bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
 bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || brave"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
-bindsym --to-code $mod+s+Control exec $sway_scripts/move_workspace $current_ws_name $s_workspace
+bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (viber & telegram-desktop & whatsapp-electron)"
+bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (viber & Telegram & whatsapp-electron)"
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
-bindsym --to-code $mod+d+Control exec $sway_scripts/move_workspace $current_ws_name $d_workspace
+bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
 bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window || transmission-gtk"
 bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
-bindsym --to-code $mod+f+Control exec $sway_scripts/move_workspace $current_ws_name $f_workspace
+bindsym --to-code $mod+f+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $f_workspace
 set $g_workspace 14:G
 bindsym --to-code $mod+g workspace $g_workspace
 bindsym --to-code $mod+g+Shift move container to workspace $g_workspace
-bindsym --to-code $mod+g+Control exec $sway_scripts/move_workspace $current_ws_name $g_workspace
+bindsym --to-code $mod+g+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $g_workspace
 workspace $g_workspace output HEADLESS-1
 
 set $1_workspace 31:1
@@ -208,33 +235,6 @@ set $0_workspace 40:0
 bindsym $mod+0 workspace $0_workspace
 bindsym $mod+0+Shift move container to workspace $0_workspace
 bindsym $mod+0+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $0_workspace
-
-bindsym $mod+period split h
-bindsym $mod+period+Shift input type:keyboard xkb_layout "us,ru"
-bindsym $mod+comma split v
-bindsym $mod+comma+Shift input type:keyboard xkb_layout "us,ua"
-
-bindsym --to-code $mod+q kill
-bindsym --to-code $mod+Shift+q exec kill -9 $($focused_window_pid)
-# bindsym --to-code $mod+Control+q exec $focused_window_pid | wl-copy
-bindsym --to-code $mod+Control+Shift+q exec $focused_window | wl-copy
-# swaymsg -t get_tree | jq '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
-# bindsym --to-code $mod+w fullscreen toggle
-bindsym --to-code $mod+w layout toggle tabbed split
-bindsym --to-code $mod+Shift+w fullscreen toggle
-bindsym --to-code $mod+Control+w floating toggle
-bindsym --to-code $mod+b exec blueman-manager
-bindsym --to-code $mod+t exec $SCRIPTS/syncthing-open
-
-# Swap focus between the tiling area and the floating area
-bindsym $mod+space focus mode_toggle
-
-default_border pixel 2
-
-bindsym $mod+Ctrl+h resize shrink width 50px
-bindsym $mod+Ctrl+j resize grow height 50px
-bindsym $mod+Ctrl+k resize shrink height 50px
-bindsym $mod+Ctrl+l resize grow width 50px
 
 # bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
 # bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
@@ -295,7 +295,7 @@ exec $SCRIPTS_SWAY/watch-config
 workspace $0_workspace
 exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
 exec $SCRIPTS_SWAY/watch-udiskie
-exec vicinae server
+exec wl-paste --watch cliphist store
 exec flameshot
 exec mako
 exec wlsunset -S 4:30 -s 20:00

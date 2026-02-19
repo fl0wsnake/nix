@@ -14,6 +14,22 @@ let
     LC_COLLATE = "C"; # affects all file pickers
     GTK_THEME = "Adwaita:dark"; # affects firefox, gparted etc.
   };
+  poweroffGracefully =
+    with pkgs;
+    writeShellScriptBin "poweroff-gracefully" ''
+      ${systemd}/bin/systemd-run -M ${config.environment.sessionVariables.USER}@ --user ${pkgs.sway}/bin/swaymsg '[app_id=.*]kill' # To avoid `restore session` popups in chromium based browsers
+      if [ "$(id -u)" -eq 0 ]; then
+        ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff
+      else
+        sudo ${systemd}/bin/systemctl poweroff
+      fi
+    '';
+  zshAutoNotify = pkgs.fetchFromGitHub {
+    owner = "MichaelAquilina";
+    repo = "zsh-auto-notify";
+    rev = "0.11.1";
+    sha256 = "0pr1jab3msn966wzwpi008k0kq05j71v8ml8pcpfs4mbnzic7qfp";
+  };
 in
 {
   nix.settings.auto-optimise-store = true;
@@ -205,6 +221,11 @@ in
     enableBashCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
+    ohMyZsh.enable = true;
+    ohMyZsh.plugins = [ "git" ];
+    interactiveShellInit = ''
+      source ${zshAutoNotify}/auto-notify.plugin.zsh
+    '';
   };
 
   programs.direnv.enable = true;
@@ -220,15 +241,16 @@ in
     wheelNeedsPassword = false;
   };
 
-  # NOTE: Enable automatic login for the user.
+  # INFO: Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "nix";
-
-  # NOTE: Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+  # INFO: Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
+  services.gnome.gnome-keyring.enable = true; # INFO: fix brave being unable to restore encrypted user cookies due to autologin disabling keyring
+  security.pam.services.greetd.enableGnomeKeyring = true;
+  services.dbus.packages = [ pkgs.gcr ];
 
-  # NOTE: Install firefox.
   programs.firefox.enable = true;
 
   programs.tmux = {
@@ -240,51 +262,26 @@ in
     wrapperFeatures.gtk = true;
   };
 
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-    ];
-    # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
-  };
-
-  # NOTE From nix-flatpak flake input
-  services.flatpak = {
-    enable = true;
-    packages = [
-      "app.zen_browser.zen"
-      "com.github.tchx84.Flatseal"
-    ];
-    overrides = {
-      global = {
-        Context = {
-          sockets = [
-            "x11"
-            "wayland"
-          ]; # Ensure display sockets are available
-          filesystems = [ "home" ]; # for user conf
-        };
-        Environment = sessionVariablesFlatpak;
-      };
-    };
-  };
-
-  services.dbus.enable = true;
-
   nixpkgs.config.permittedInsecurePackages = [
     "ventoy-1.1.10"
   ];
 
   environment.sessionVariables = sessionVariablesFlatpak // {
-    PATH = "$HOME/.npm/bin:$PATH";
     USER = "nix";
     NIX_BUILD_CORES = 0;
     NIXPKGS_ALLOW_UNFREE = 1;
   };
 
+  environment.variables = {
+    # ZSH = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
+    PATH = [
+      "$HOME/.npm/bin"
+    ];
+  };
+
+  ### PACKAGES
   environment.systemPackages = with pkgs; [
-    # SCREEN CASTING
+    ### SCREEN CASTING
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good
@@ -299,6 +296,8 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    gofumpt
+    golangci-lint-langserver
     claude-code
     gitkraken
     google-cloud-sdk
@@ -337,10 +336,6 @@ in
     rustc
     eww
     ### MEDIA
-    microsoft-edge
-    (brave.override {
-      commandLineArgs = "--restore-last-session";
-    })
     shotcut
     kdePackages.kdenlive
     nsxiv
@@ -395,7 +390,14 @@ in
     nnn
     bat
     ### NETWORK
-    # chromium
+    (pkgs.brave.override {
+      commandLineArgs = [
+        "--restore-last-session"
+        "--disable-session-crashed-bubble"
+      ];
+    })
+    microsoft-edge
+    google-chrome
     nix-search-cli
     wget
     transmission_4-gtk
@@ -431,8 +433,10 @@ in
     dict
     fzf
     ### WM/SYSTEM
+    hyprpicker # colorpick
+    pastel # colorpick
     ripdrag
-    vicinae
+    cliphist
     efibootmgr # for auto Win reboot
     ventoy
     expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
@@ -464,7 +468,41 @@ in
     i3status-rust
     ### DEV
     imlib2Full # building nsxiv
+    ### CUSTOM
+    poweroffGracefully
   ];
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
+    # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
+  };
+
+  # NOTE From nix-flatpak flake input
+  services.flatpak = {
+    enable = true;
+    packages = [
+      "app.zen_browser.zen"
+      "com.github.tchx84.Flatseal"
+    ];
+    overrides = {
+      global = {
+        Context = {
+          sockets = [
+            "x11"
+            "wayland"
+          ]; # Ensure display sockets are available
+          filesystems = [ "home" ]; # for user conf
+        };
+        Environment = sessionVariablesFlatpak;
+      };
+    };
+  };
+
+  services.dbus.enable = true;
 
   services.dictd = {
     enable = true;
@@ -480,7 +518,7 @@ in
   ];
 
   systemd.settings.Manager = {
-    DefaultTimeoutStopSec = "2s";
+    DefaultTimeoutStopSec = "5s";
   };
   # INFO: Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
@@ -497,10 +535,8 @@ in
       EXPECTED=$(cat /run/expected_rtc_wake)
       rm /run/expected_rtc_wake
       if [ "$NOW" -ge "$EXPECTED" ]; then
-        echo "Wake-up threshold reached. Initiating poweroff..."
-        ${pkgs.systemd}/bin/systemd-run -M ${config.environment.sessionVariables.USER}@ --user ${pkgs.sway}/bin/swaymsg exit
-        ${pkgs.systemd}/bin/systemd-run --on-active=2s ${pkgs.systemd}/bin/systemctl poweroff
-        else
+        ${poweroffGracefully}/bin/poweroff-gracefully
+      else
         echo "Manual wake-up detected before timeout. Staying awake."
       fi
     fi

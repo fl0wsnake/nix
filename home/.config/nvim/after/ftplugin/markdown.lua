@@ -1,4 +1,10 @@
-vim.cmd('setl sw=2 sts=0')
+vim.cmd('setl sw=2 sts=0 wrap lbr noexpandtab')
+vim.o.conceallevel = 2
+-- vim.g.vim_markdown_folding_disabled = 1 TODO idk if I need it
+
+vim.keymap.set({ 'n', 'x' }, '<c-cr>', ']]', { remap = true, buffer = true })
+vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '[[', { remap = true })
+
 -- LINKS
 local url_re_str = vim.fn.escape(
   [[https?://(www\.)?[-a-zA-Z0-9@:%\._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}[-a-zA-Z0-9()@:%_+\.~#\?&/=;]*]], '?(){'
@@ -26,6 +32,44 @@ local function string_replace_range(text, replace_text, replace_first_byte, repl
     replace_text,
     string.sub(text, replace_last_byte + 2)
   )
+end
+
+local function title_as_page_title(line, url, url_start, url_end)
+  local url_for_curl = vim.fn.substitute(url, '^https://www.reddit.com/', 'https://old.reddit.com/', '')
+  vim.fn.jobstart({ "curl", "-sL", url_for_curl }, {
+    stdout_buffered = true,
+    on_stdout = function(_, fetch_response)
+      local parse_handle = vim.fn.jobstart({ "grep", "-oP", '(?<=<title>).*?(?=</title>)' },
+        {
+          stdout_buffered = true,
+          on_stdout = function(_, parse_response)
+            local title = parse_response[1]
+            vim.schedule(function()
+              vim.fn.setline(line,
+                string_replace_range(vim.fn.getline(line), string.format('[%s](%s)', title, url),
+                  url_start, url_end))
+            end)
+          end
+        }
+      )
+      vim.fn.chansend(parse_handle, fetch_response)
+      vim.fn.chanclose(parse_handle, "stdin")
+    end
+  })
+end
+
+--- @param line number
+--- @param url string
+--- @param url_start number
+--- @param url_end number
+local function title_as_url_shorthand(line, url, url_start, url_end)
+  local domain, path = url:match("%a+://([^/]+).*(/[^/%?]+)")
+  local title = domain .. path
+  vim.schedule(function()
+    vim.fn.setline(line,
+      string_replace_range(vim.fn.getline(line), string.format('[%s](%s)', title, url),
+        url_start, url_end))
+  end)
 end
 
 local function mdlinkify(line_idx, col)
@@ -57,28 +101,7 @@ local function mdlinkify(line_idx, col)
       url_end = url_end + search_start
       if url_start < col and col <= url_end then -- url link
         local url = string.sub(line, url_start + 1, url_end)
-        local url_for_curl = vim.fn.substitute(url, '^https://www.reddit.com/', 'https://old.reddit.com/', '')
-        local line, url, url_start, url_end = line_idx, url, url_start, url_end
-        vim.fn.jobstart({ "curl", "-sL", url_for_curl }, {
-          stdout_buffered = true,
-          on_stdout = function(_, fetch_response)
-            local parse_handle = vim.fn.jobstart({ "grep", "-oP", '(?<=<title>).*?(?=</title>)' },
-              {
-                stdout_buffered = true,
-                on_stdout = function(_, parse_response)
-                  local title = parse_response[1]
-                  vim.schedule(function()
-                    vim.fn.setline(line,
-                      string_replace_range(vim.fn.getline(line), string.format('[%s](%s)', title, url),
-                        url_start, url_end))
-                  end)
-                end
-              }
-            )
-            vim.fn.chansend(parse_handle, fetch_response)
-            vim.fn.chanclose(parse_handle, "stdin")
-          end
-        })
+        title_as_url_shorthand(line_idx, url, url_start, url_end)
         break
       else
         search_start = search_start + url_end

@@ -67,7 +67,9 @@ end, Silent)
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>', Silent)
 vim.keymap.set("", "j", 'gj', Silent)
 vim.keymap.set("", "k", 'gk', Silent)
-vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent)
+vim.keymap.set("", "<c-j>", 'j', Silent)
+vim.keymap.set("", "<c-k>", 'k', Silent)
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent) -- TODO remember the reason I added this
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
 
 --- DISABLE MOUSE
@@ -103,19 +105,19 @@ vim.cmd('set nofixeol') -- Automatic newline before eol messes git diffs and spe
 
 -- COMMENTING
 vim.api.nvim_set_keymap('n', 'z', 'gc', {})
-vim.api.nvim_set_keymap('n', 'Z', 'gcc', {})
 vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
+vim.api.nvim_set_keymap('x', 'z', 'gc', {})
 
--- AUTO FORMATTING
-vim.api.nvim_create_autocmd("BufEnter", {
-  pattern = '*',
-  callback = function()
-    if vim.o.ft ~= '' and vim.o.ft ~= 'text' and vim.o.ft ~= 'markdown' then
-      vim.keymap.set("n", "p", "p`]=`[", { noremap = true, silent = true })
-      vim.keymap.set("v", "p", "p`]=`[", { noremap = true, silent = true })
-    end
-  end
-})
+-- -- AUTOFORMATTING -- XXX: breaks Xpaste mapped to Easyclip despite `remap = true`
+-- vim.api.nvim_create_autocmd("BufEnter", {
+--   pattern = '*',
+--   callback = function()
+--     if vim.o.ft ~= '' and vim.o.ft ~= 'text' and vim.o.ft ~= 'markdown' then
+--       vim.keymap.set("n", "p", "p`]=`[", { remap = true, silent = true })
+--       vim.keymap.set("v", "p", "p`]=`[", { remap = true, silent = true })
+--     end
+--   end
+-- })
 
 --- LINE SWAPPING
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
@@ -169,7 +171,7 @@ vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
 vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
 
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr><cmd>tabmove<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
@@ -193,7 +195,7 @@ vim.api.nvim_set_keymap('', '<C-5>', '5gt', Silent)
 vim.api.nvim_set_keymap('', '<C-6>', '6gt', Silent)
 vim.api.nvim_set_keymap('', '<C-7>', '7gt', Silent)
 vim.api.nvim_set_keymap('', '<C-8>', '8gt', Silent)
-vim.api.nvim_set_keymap('', '<C-9>', '9gt', Silent)
+vim.api.nvim_set_keymap('', '<C-9>', '<cmd>tabl<cr>', Silent)
 
 --- CMD ABBREVIATIONS
 vim.cmd("command! -nargs=1 -complete=help H h <args> | on")
@@ -202,7 +204,7 @@ vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'Man'
 vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function() vim.cmd('on') end })
 
 --- BOOKMARKS
-vim.cmd('command! Wiki e $WIKI/index.md|tabe $WIKI/projects.md|tabp') -- for external use
+vim.cmd('command! Wiki e $WIKI/index.md|tabe $WIKI/projects/projects.md|tabp') -- for external use
 vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end, Silent)
 vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
@@ -210,7 +212,8 @@ vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua')
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end, Silent)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
-vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
+vim.keymap.set('', '<leader>bP', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
+vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end, Silent)
 vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
   Silent)

@@ -58,6 +58,7 @@ return {
     init = function()
       vim.lsp.enable({
         "gopls",
+        "golangci-lint-langserver",
         "zls",
         "html", -- for formatting
         "bashls",
@@ -69,6 +70,17 @@ return {
         "ruff",
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
       })
+      vim.lsp.config.gopls = {
+        settings = {
+          gopls = {
+            analyses = {
+              unusedparams = true,
+            },
+            staticcheck = true,
+            gofumpt = true, -- Set to true if you use gofumpt
+          },
+        },
+      }
       vim.lsp.config.zls = {
         root_markers = { "build.zig" }, -- prevent zls from running in all buffers
       }
