@@ -6,7 +6,7 @@ edit-history() {
 zle -N edit-history
 
 man-command() {
-  line_first_word=$(awk '{print $1;}'<<<"$BUFFER")
+  line_first_word=$(awk '{print $1;}' <<<"$BUFFER")
   if type -p "$line_first_word" &>/dev/null; then
     man "$line_first_word"
   fi
@@ -14,7 +14,7 @@ man-command() {
 zle -N man-command
 
 yank-line() {
-  wl-copy -n<<<"$BUFFER"
+  wl-copy -n <<<"$BUFFER"
 }
 zle -N yank-line
 
@@ -22,18 +22,18 @@ toggle-sudo-prefix() {
   BUFFER_ARRAY=($(echo $BUFFER))
   if [[ ${BUFFER_ARRAY[1]} == 'sudo' ]]; then
     buflen=${#BUFFER}
-    CURSOR=$((CURSOR-5))
+    CURSOR=$((CURSOR - 5))
     BUFFER=$(echo "$BUFFER" | sed -E 's/^\s*sudo\s*//')
   else
     BUFFER="sudo $BUFFER"
-    CURSOR=$((CURSOR+5))
+    CURSOR=$((CURSOR + 5))
   fi
 }
 zle -N toggle-sudo-prefix
 
 edit-command-line() {
   tmp_file=$(mktemp)
-  echo "$BUFFER" > "$tmp_file"
+  printf '%s' "$BUFFER" >"$tmp_file"
   $EDITOR +'se ft=sh' "$tmp_file"
   BUFFER="$(<"$tmp_file")"
   rm "$tmp_file"
@@ -60,11 +60,10 @@ zle -N explorer
 expand-alias() { # zshall docs state possibility of disabling completion bahvior of _expand_alias via styles but they are lying.
   if [[ -n ${aliases[${LBUFFER##* }]} ]]; then
     zle self-insert # exit completion mode unconditionally
-    CURSOR=$((CURSOR-1))
+    CURSOR=$((CURSOR - 1))
     zle _expand_alias || zle self-insert && zle delete-char # if word coincided with alias
   else
     zle self-insert
   fi
 }
 zle -N expand-alias
-

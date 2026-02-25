@@ -9,3 +9,5 @@
   ui = auto
 [safe]
 	directory = /home/nix/.config/nixos-rice # for nixos-upgrade.service enabled by system.autoUpgrade
+
+# TODO add delta (repo) for pager

@@ -21,7 +21,7 @@ let
       if [ "$(id -u)" -eq 0 ]; then
         ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff
       else
-        sudo ${systemd}/bin/systemctl poweroff
+        sudo ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff
       fi
     '';
   zshAutoNotify = pkgs.fetchFromGitHub {
@@ -64,15 +64,18 @@ in
 
   nix.optimise.automatic = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = false; # Conflicts with NetworkManager
+  networking.hostName = "nixos";
+
+  # INFO Cause wpa_supplicant takes minutes to wake up; iwd, seconds
+  networking.wireless.enable = false;
+  networking.networkmanager = {
+    enable = true;
+    wifi.backend = "iwd";
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   # time.timeZone = "Europe/Kyiv";
@@ -184,10 +187,10 @@ in
     options psmouse elantech_smbus=0
   ''; # 2 for [t480s touchpad issue](https://wiki.archlinux.org/title/Laptop#Elantech)
 
-  # INFO: Enable CUPS to print documents.
+  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # INFO: Enable sound with pipewire.
+  # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true; # Required for low-latency audio
   services.pipewire = {
@@ -203,10 +206,11 @@ in
     #media-session.enable = true;
   };
 
-  # INFO: Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nix = {
     isNormalUser = true;
     extraGroups = [
+      "transmission" # fix transmission hanging when downloading to a udiskie mount
       "networkmanager"
       "wheel"
       "video" # for eGPU
@@ -214,7 +218,7 @@ in
     ];
     shell = pkgs.zsh;
   };
-  # INFO: bash's alias expansion isn't good enough
+  # bash's alias expansion isn't good enough
   users.defaultUserShell = pkgs.zsh;
   programs.zsh = {
     enable = true;
@@ -241,13 +245,13 @@ in
     wheelNeedsPassword = false;
   };
 
-  # INFO: Enable automatic login for the user.
+  # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "nix";
-  # INFO: Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+  # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
-  services.gnome.gnome-keyring.enable = true; # INFO: fix brave being unable to restore encrypted user cookies due to autologin disabling keyring
+  services.gnome.gnome-keyring.enable = true; # fix brave being unable to restore encrypted user cookies due to autologin disabling keyring
   security.pam.services.greetd.enableGnomeKeyring = true;
   services.dbus.packages = [ pkgs.gcr ];
 
@@ -273,7 +277,6 @@ in
   };
 
   environment.variables = {
-    # ZSH = "${pkgs.oh-my-zsh}/share/oh-my-zsh";
     PATH = [
       "$HOME/.npm/bin"
     ];
@@ -314,6 +317,7 @@ in
     basedpyright
     ruff
     tree-sitter
+    pkgconf # INFO to find needed C packages for zig
     zig
     (python3.withPackages (
       p: with p; [
@@ -355,7 +359,6 @@ in
     ### HARDWARE
     pciutils # for tb3/egpu
     usbutils
-    tlp
     acpi
     ### FILESYSTEM
     exfatprogs # for disk formatting
@@ -376,6 +379,7 @@ in
     clang-tools
     trash-cli
     fd
+    gh
     git-credential-manager
     ripgrep
     nautilus
@@ -396,11 +400,11 @@ in
         "--disable-session-crashed-bubble"
       ];
     })
+    transmission_4-gtk
     microsoft-edge
     google-chrome
     nix-search-cli
     wget
-    transmission_4-gtk
     vivaldi
     dropbox
     ### DEPS
@@ -433,6 +437,7 @@ in
     dict
     fzf
     ### WM/SYSTEM
+    swww
     hyprpicker # colorpick
     pastel # colorpick
     ripdrag
@@ -481,7 +486,7 @@ in
     # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
   };
 
-  # NOTE From nix-flatpak flake input
+  # INFO From nix-flatpak flake input
   services.flatpak = {
     enable = true;
     packages = [
@@ -504,6 +509,9 @@ in
 
   services.dbus.enable = true;
 
+  services.geoclue2.enable = true; # INFO for automatic tz
+  services.automatic-timezoned.enable = true; # INFO works
+
   services.dictd = {
     enable = true;
   };
@@ -520,7 +528,7 @@ in
   systemd.settings.Manager = {
     DefaultTimeoutStopSec = "5s";
   };
-  # INFO: Ever sleep for TIMEOUT max, then poweroff gracefully
+  # Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
     TIMEOUT=43200
     TARGET_TIME=$(( $(date +%s) + $TIMEOUT ))
@@ -529,7 +537,7 @@ in
     echo "+$TIMEOUT" > /sys/class/rtc/rtc0/wakealarm
   '';
   powerManagement.resumeCommands = ''
-    sudo modprobe -r psmouse && sudo modprobe psmouse
+    modprobe -r psmouse && modprobe psmouse
     if [ -f /run/expected_rtc_wake ]; then
       NOW=$(date +%s)
       EXPECTED=$(cat /run/expected_rtc_wake)
@@ -554,7 +562,12 @@ in
   fonts = {
     packages =
       with pkgs;
-      [ font-awesome ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+      [
+        jetbrains-mono
+        terminus_font
+        font-awesome
+      ]
+      ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
     fontconfig = {
       enable = true;
     };
@@ -563,9 +576,8 @@ in
   hardware.bluetooth.enable = true;
   services.blueman.enable = true; # Enables the Blueman graphical tool
 
-  # NOTE: nixing coz nix runs `systemctl enable` for each one
   systemd.user.services = {
-    # NOTE: upower signals are not handled by wayland
+    # upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
@@ -631,7 +643,7 @@ in
       wantedBy = [ "timers.target" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${pkgs.trash-cli}/bin/trash-empty 28";
+        ExecStart = "${pkgs.trash-cli}/bin/trash-empty 14";
       };
     };
   };
@@ -673,7 +685,7 @@ in
     openFirewall = true;
   }; # for casting
 
-  # NOTE: fix flatpak apps not using xdg-open correctly
+  # fix flatpak apps not using xdg-open correctly
   systemd.user.services.xdg-desktop-portal = {
     environment = pkgs.lib.mkForce {
       PATH = "$PATH:/run/current-system/sw/bin:/var/lib/flatpak/exports/bin";
@@ -681,20 +693,34 @@ in
   };
 
   services.udisks2 = {
-    enable = true; # NOTE: required for udiskie
-    mountOnMedia = true; # NOTE: otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
+    enable = true; # required for udiskie
+    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {
-          ntfs_drivers = "ntfs-3g,ntfs3"; # NOTE: fix mounting error
+          ntfs_drivers = "ntfs-3g,ntfs3"; # fix mounting error
         };
       };
     };
   };
 
-  users.users.transmission = {
-    group = "users";
-    isSystemUser = true;
+  services.transmission = {
+    # NOTE: careful not to enable the daemon, that will make the gui create broken states.
+    settings = {
+      umask = 2; # 002 umask, files created as 664/775
+    };
+  };
+
+  # Fixes transmission lagging on external drive
+  boot.kernel.sysctl = {
+    "vm.dirty_background_ratio" = 5;
+    "vm.dirty_ratio" = 10;
+  };
+  services.tlp = {
+    enable = true;
+    settings = {
+      USB_AUTOSUSPEND = 0;
+    };
   };
 
   # Some programs need SUID wrappers, can be configured further or are

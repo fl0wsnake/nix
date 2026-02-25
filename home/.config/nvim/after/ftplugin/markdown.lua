@@ -1,6 +1,5 @@
-vim.cmd('setl sw=2 sts=0 wrap lbr noexpandtab')
+vim.cmd('setl sw=2 sts=0 lbr noexpandtab')
 vim.o.conceallevel = 2
--- vim.g.vim_markdown_folding_disabled = 1 TODO idk if I need it
 
 vim.keymap.set({ 'n', 'x' }, '<c-cr>', ']]', { remap = true, buffer = true })
 vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '[[', { remap = true })

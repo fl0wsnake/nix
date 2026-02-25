@@ -81,9 +81,6 @@ return {
           },
         },
       }
-      vim.lsp.config.zls = {
-        root_markers = { "build.zig" }, -- prevent zls from running in all buffers
-      }
       vim.lsp.config.clangd = {
         cmd = { 'clangd', '--query-driver=/run/current-system/sw/bin/gcc,/run/current-system/sw/bin/clang' }
       }

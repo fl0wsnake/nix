@@ -25,13 +25,15 @@ alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias cpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
-alias d=dict # TODO commented because expand-alias was trying to expand `nmcli d`
+alias d=dict
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
-alias dr="sudo nixos-rebuild switch && notify-send 'nixos-rebuild switch' || (notify-send 'failed'; exit 1)"
+alias dq='nix-env -qaP | grep'
+alias dr="sudo nixos-rebuild switch"
 alias drb="dr && reboot"
 alias drs="dr && shutdown now"
+alias dt='nix-store --gc'
 alias du='du -h'
 alias dun='nix-env --uninstall'
 alias dus='du -h * | sort -h'
@@ -88,13 +90,13 @@ alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 . "$ZDOTDIR"/modules/expand-dots
 
 # `^` for `ctrl`, `^[` for `alt`
-bindkey "^[h" edit-history
-bindkey "^[m" man-command
-bindkey "^[c" yank-line
-bindkey "^[s" toggle-sudo-prefix
-bindkey "^[e" edit-command-line
-bindkey '^[z' zshrc-edit
-bindkey '^[x' explorer
+bindkey "^[h" edit-history # a-h
+bindkey "^[m" man-command # a-m
+bindkey "^[c" yank-line # a-c
+bindkey "^[s" toggle-sudo-prefix # a-s
+bindkey "^[e" edit-command-line # a-e
+bindkey '^[z' zshrc-edit # a-z
+bindkey '^[x' explorer # a-x
 bindkey ' ' expand-alias
 
 # WIDGETS FOR BASH STANDARD BINDINGS
@@ -111,7 +113,9 @@ bindkey '^[[1;5D' backward-word      # left
 
 # COMMANDS
 di() {
-  nix profile add nixpkgs/nixos-unstable#$@
+  for arg in $@; do
+    nix profile add nixpkgs/nixos-unstable#$arg
+  done
 }
 ds() {
   unbuffer nix-search -d "$@" | less

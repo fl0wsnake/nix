@@ -17,7 +17,6 @@ return {
       vim.keymap.set('', '<a-cr>', '<Plug>(GitGutterNextHunk)')
     end
   },
-  {},
   {
     "https://github.com/sindrets/diffview.nvim",
     init = function()

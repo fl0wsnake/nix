@@ -35,5 +35,6 @@ return {
       -- vim.g.EasyClipAutoFormat = true -- `=` pasted lines <- often butchers text TODO remove
     end
   },
-  'https://github.com/glts/vim-radical' -- `gA` to convert decimal, hex, octal, binary numbers
+  'https://github.com/glts/vim-radical', -- `gA` to convert decimal, hex, octal, binary numbers
+  'https://github.com/michaeljsmith/vim-indent-object'
 }

@@ -40,6 +40,7 @@ export GRIM_DEFAULT_DIR="$SCREENSHOTS"
 export NVIM_SESSION=$HOME/.local/state/nvim/session
 export SXIV_SEL=/tmp/.nsxiv.sel
 export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
+export ZIG_GLOBAL_CACHE_DIR=~/.cache/zig
 
 # GDK_SCALE="1.5"; # Gnome only supports non-fractional scaling by default. "2" is too much for 2560x1440 and "1" is too little.
 # QT_SCALE_FACTOR="1.5";
