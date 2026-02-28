@@ -251,9 +251,11 @@ in
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
-  services.gnome.gnome-keyring.enable = true; # fix brave being unable to restore encrypted user cookies due to autologin disabling keyring
-  security.pam.services.greetd.enableGnomeKeyring = true;
-  services.dbus.packages = [ pkgs.gcr ];
+
+  # NOTE: fix brave being unable to restore encrypted user cookies due to autologin disabling keyring. The fix is unreliable as long as autologin is enabled because I may still open brave before I unlock the keyring, which makes brave delete all user cookies! The easiest solution is just disabling brave dependance on the keyring by using plaintext storage.
+  # services.gnome.gnome-keyring.enable = true;
+  # security.pam.services.greetd.enableGnomeKeyring = true;
+  # services.dbus.packages = [ pkgs.gcr ];
 
   programs.firefox.enable = true;
 
@@ -339,6 +341,7 @@ in
     cargo
     rustc
     eww
+    sysstat
     ### MEDIA
     shotcut
     kdePackages.kdenlive
@@ -373,7 +376,8 @@ in
     ntfs3g
     ffmpeg-full
     inotify-tools
-    tig
+    # tig TODO do I need this?
+    delta # readable git diff
     git
     vimiv-qt
     clang-tools
@@ -396,7 +400,8 @@ in
     ### NETWORK
     (pkgs.brave.override {
       commandLineArgs = [
-        "--restore-last-session"
+        "--password-store=basic" # This works
+        "--restore-last-session" # These don't do anything
         "--disable-session-crashed-bubble"
       ];
     })

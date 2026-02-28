@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-cliphist list | rofi -dmenu -i -show-icons | cliphist decode | wl-copy
+if selection="$(cliphist list | rofi -dmenu -i -show-icons)"; then
+  (cliphist decode | wl-copy) <<<"$selection"
+fi

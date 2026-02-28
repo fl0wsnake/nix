@@ -7,7 +7,7 @@ style="032" #0087D7
 style="105"
 
 [custom.hr]
-command="printf '%.s~' $(seq 1 $COLUMNS)"
+command="printf '%.s─' $(seq 1 $COLUMNS)"
 style='#6A9FB5' # Orange - #FE8019
 when=true
 
