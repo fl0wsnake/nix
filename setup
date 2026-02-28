@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO migrate to https://www.gnu.org/software/stow/manual/stow.html?
+
 ### Symlinks to backup places
 ln -ST "$HOME/Pictures" "$HOME/Syncthing/0Phone/Pictures"
 

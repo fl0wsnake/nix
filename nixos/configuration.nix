@@ -376,8 +376,7 @@ in
     ntfs3g
     ffmpeg-full
     inotify-tools
-    # tig TODO do I need this?
-    delta # readable git diff
+    diffnav # better than diffview
     git
     vimiv-qt
     clang-tools
