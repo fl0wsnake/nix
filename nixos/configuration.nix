@@ -301,6 +301,7 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    pipx
     gofumpt
     golangci-lint-langserver
     claude-code
@@ -321,28 +322,25 @@ in
     tree-sitter
     pkgconf # INFO to find needed C packages for zig
     zig
-    (python3.withPackages (
-      p: with p; [
-        yt-dlp
-        curl-cffi
-      ]
-    ))
+    yt-dlp
     gnumake # for vim-jsdoc
     bash-language-server
     vscode-langservers-extracted # LSPs: css html eslint json markdown
     nodejs
+    typescript # for ts_ls
+    typescript-language-server # for ts_ls
+    bun
     nodePackages.prettier
     black
     go
     gopls
-    typescript
-    typescript-language-server
     lua
     cargo
     rustc
     eww
     sysstat
     ### MEDIA
+    rclip
     shotcut
     kdePackages.kdenlive
     nsxiv
@@ -376,8 +374,9 @@ in
     ntfs3g
     ffmpeg-full
     inotify-tools
-    diffnav # better than diffview
     git
+    delta
+    lazygit
     vimiv-qt
     clang-tools
     trash-cli
@@ -412,6 +411,7 @@ in
     vivaldi
     dropbox
     ### DEPS
+    chromium # for puppeteer
     mpv # for nnn previews
     libappindicator # for Dropbox
     # libappindicator-gtk3 # for waybar
@@ -480,6 +480,8 @@ in
     ### CUSTOM
     poweroffGracefully
   ];
+
+  # programs.nix-ld.enable = true; # Allows pip to work
 
   xdg.portal = {
     enable = true;
@@ -581,6 +583,13 @@ in
   services.blueman.enable = true; # Enables the Blueman graphical tool
 
   systemd.user.services = {
+    wallpaper = {
+      wantedBy = [ "default.target" ];
+      serviceConfig = {
+        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
+        Restart = "always";
+      };
+    };
     # upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];
@@ -707,6 +716,7 @@ in
       };
     };
   };
+  # programs.fuse.userAllowOther = true; # NOTE might be needed on exfat external drive for apps
 
   services.transmission = {
     # NOTE: careful not to enable the daemon, that will make the gui create broken states.

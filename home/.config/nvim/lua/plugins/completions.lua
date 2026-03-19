@@ -10,9 +10,19 @@ return {
         "L3MON4D3/LuaSnip",
         dependencies = { "rafamadriz/friendly-snippets" },
         init = function()
-          local luasnip = require 'luasnip'
-          vim.keymap.set({ 'i', 's' }, '<c-j>', function() if luasnip.locally_jumpable(1) then luasnip.jump(1) end end)
-          vim.keymap.set({ 'i', 's' }, '<c-k>', function() if luasnip.locally_jumpable(-1) then luasnip.jump(-1) end end)
+          local ls = require 'luasnip'
+          vim.keymap.set({ 'i', 's' }, '<c-j>', function() if ls.locally_jumpable(1) then ls.jump(1) end end)
+          vim.keymap.set({ 'i', 's' }, '<c-k>', function() if ls.locally_jumpable(-1) then ls.jump(-1) end end)
+          ls.add_snippets("go", {
+            ls.snippet("iferr", {
+              ls.text_node({ "if err != nil {", "\tlog.Fatal(err)", "}" }),
+            }),
+          })
+          ls.add_snippets("go", {
+            ls.snippet("pln", {
+              ls.text_node({ "fmt.Println()" }),
+            }),
+          })
         end
       },
     }

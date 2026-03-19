@@ -7,8 +7,8 @@ vim.keymap.set("n", "<leader>dD", "_d$", Silent)
 vim.keymap.set("n", "yY", "_y$$", Silent)
 
 return {
+  'https://github.com/jiangmiao/auto-pairs',
   {
-    'https://github.com/jiangmiao/auto-pairs',
     'https://github.com/windwp/nvim-ts-autotag', -- autoclose and autorename html tag
     init = function()
       require('nvim-ts-autotag').setup({
@@ -36,5 +36,5 @@ return {
     end
   },
   'https://github.com/glts/vim-radical', -- `gA` to convert decimal, hex, octal, binary numbers
-  'https://github.com/michaeljsmith/vim-indent-object'
+  'https://github.com/michaeljsmith/vim-indent-object',
 }

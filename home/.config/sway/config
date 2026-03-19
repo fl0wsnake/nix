@@ -11,6 +11,7 @@ set $up k
 set $right l
 set $term alacritty
 
+# TODO focused_window detects only `nodes`, `not floating_nodes`
 set $focused_window swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
 set $focused_window_pid $focused_window | jq '.pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
@@ -164,7 +165,7 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 # bindsym $mod+0 workspace number 10
 
 set $a_workspace 10:A
-bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR +Wiki"
+bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR -S \"$HOME/.cache/nvim/session_1\""
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
@@ -277,13 +278,11 @@ assign [title="^Transmission.*"] $f_workspace
 exec brave
 
 # exec dropbox
-# exec watch-udiskie
 exec $SCRIPTS_SWAY/bar
 exec $SCRIPTS_SWAY/watch-config
 
 workspace $0_workspace
 exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
-exec $SCRIPTS_SWAY/watch-udiskie
 exec wl-paste --watch cliphist store
 exec flameshot
 exec mako
@@ -295,4 +294,11 @@ exec wlsunset -S 4:30 -s 20:00
 workspace $s_workspace
 workspace $1_workspace
 exec nvim-smart
+
+exec $HOME/WS/wp-daemon/main
+exec whatsapp-electron
+exec viber
+exec Telegram
+exec swaymsg [class="Viber"]kill
+exec swaymsg [app_id="org.telegram.desktop"]kill
 

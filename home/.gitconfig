@@ -10,4 +10,6 @@
 [safe]
 	directory = /home/nix/.config/nixos-rice # for nixos-upgrade.service enabled by system.autoUpgrade
 [core]
-  pager=diffnav
+  pager=delta
+[alias]
+	open = !xdg-open $(git remote get-url origin) 2>/dev/null || open $(git remote get-url origin)

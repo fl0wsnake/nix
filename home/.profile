@@ -18,12 +18,12 @@ export TERMINAL='alacritty'
 export BROWSER='brave'
 
 ### SYNC
-export SYNC="$HOME/Syncthing/0Phone/Documents"
-. "$SYNC/.config/.profile"
-export SCRIPTS_SYNC="${SYNC}/.config/scripts"
-export WIKI="${SYNC}/Wiki"
-export TODOS="${SYNC}/Todos"
-export SCREENSHOTS="${SYNC}/Screenshots"
+export SYNC="$HOME/Syncthing"
+. "$SYNC/Data/.config/.profile"
+export SCRIPTS_SYNC="${SYNC}/Data/.config/scripts"
+export WIKI="${SYNC}/Data/Wiki"
+export CAMERA="${SYNC}/DCIM/Camera"
+export SCREENSHOTS="${SYNC}/DCIM/Screenshots"
 
 ### DIRS
 export RICE="$HOME/.config/nixos-rice"
@@ -37,7 +37,6 @@ export FZF_DEFAULT_OPTS="--color ${FZF_COLORS} --ansi --history=/tmp/.fzf-histor
 export GCM_CREDENTIAL_STORE='plaintext'
 export GREP_COLORS='always'
 export GRIM_DEFAULT_DIR="$SCREENSHOTS"
-export NVIM_SESSION=$HOME/.local/state/nvim/session
 export SXIV_SEL=/tmp/.nsxiv.sel
 export VIMIV_TAGFILE=$HOME/.local/share/vimiv/tags/0
 export ZIG_GLOBAL_CACHE_DIR=~/.cache/zig

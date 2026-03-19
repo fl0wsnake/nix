@@ -52,7 +52,8 @@ alias gcl='git clone --recurse-submodules -j8'
 alias gd='(R && git diff)'
 alias gds='(R && git diff --staged)'
 alias gemini='gemini -r || gemini'
-alias gl="git log --graph --oneline --decorate --all"
+alias gl='git log -p --'
+alias glg="git log --graph --oneline --decorate --all"
 alias gp='git push'
 alias gparted='sudo -E gparted'
 alias gr="git reset"
@@ -61,10 +62,11 @@ alias h="$EDITOR $HISTFILE"
 alias j='jj'
 alias jo='journalctl --since today --reverse'
 alias kat='killall -15 -r'
+alias lg='lazygit'
+alias lgf='lazygit -f'
 alias ln='ln -sT'
 alias ls='ls --color=always -A'
 alias lsblk='lsblk -f'
-alias md='mkdir -p'
 alias mkdir='mkdir -p'
 alias nix-shell="nix-shell --run zsh"
 alias nowin='sudo efibootmgr -N'
@@ -79,6 +81,8 @@ alias scl='systemctl --user'
 alias sdn='shutdown now'
 alias se="sudo -e"
 alias t=touch
+alias transr='trans :ru'
+alias transu='trans :uk'
 alias trash='trash -v'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
@@ -120,6 +124,14 @@ di() {
 }
 ds() {
   unbuffer nix-search -d "$@" | less
+}
+unalias md
+md() {
+  if [ $#@ -gt 1 ]; then
+    mkdir -p $@ 
+  else
+    mkdir -p $@ && cd $_
+  fi
 }
 subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then

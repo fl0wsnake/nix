@@ -31,29 +31,6 @@ end)
 
 return {
   {
-    'https://github.com/direnv/direnv.vim',
-    init = function()
-      vim.api.nvim_create_autocmd("User", {
-        pattern = "DirenvLoaded",
-        callback = function()
-          vim.cmd("LspRestart")
-        end,
-      })
-    end
-  },
-  {
-    'https://github.com/stevearc/aerial.nvim',
-    init = function()
-      require("aerial").setup({
-        on_attach = function(bufnr)
-          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
-        end,
-      })
-      vim.keymap.set("n", "<leader>o", "<cmd>AerialToggle left<CR>")
-    end
-  },
-  {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.enable({
@@ -64,36 +41,43 @@ return {
         "bashls",
         "jsonls",
         "ts_ls",
+        "cssls",
         "nixd",
         "lua_ls",
         "basedpyright",
         "ruff",
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
       })
-      vim.lsp.config.gopls = {
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      lspconfig = require("lspconfig")
+      capabilities.textDocument.completion.completionItem.snippetSupport = true
+      vim.lsp.config("*", {
+        capabilities = capabilities
+      })
+      vim.lsp.config("gopls", {
         settings = {
           gopls = {
             analyses = {
               unusedparams = true,
             },
             staticcheck = true,
-            gofumpt = true, -- Set to true if you use gofumpt
+            gofumpt = true,
           },
         },
-      }
-      vim.lsp.config.clangd = {
+      })
+      vim.lsp.config("clangd", {
         cmd = { 'clangd', '--query-driver=/run/current-system/sw/bin/gcc,/run/current-system/sw/bin/clang' }
-      }
-      vim.lsp.config.ts_ls = {
+      })
+      vim.lsp.config("ts_ls", {
         settings = {
           codeActionsOnSave = {
             ["source.addMissingImports"] = true
           }
         }
-      }
-      vim.lsp.config.bashls = {
-        filetypes = { "sh", "bash" }
-      }
+      })
+      vim.lsp.config("bashls", {
+        filetypes = { "sh", "bash", "zsh" }
+      })
       vim.lsp.config('lua_ls', {
         on_init = function(client)
           if client.workspace_folders then
@@ -129,18 +113,38 @@ return {
     end
   },
   {
-    'https://github.com/nvimtools/none-ls.nvim',
-    dependencies = { 'https://github.com/nvim-lua/plenary.nvim' },
+    "https://github.com/NotAShelf/direnv.nvim",
+    config = function()
+      require("direnv").setup({
+        keybindings = false
+      })
+    end,
+  },
+  {
+    'https://github.com/stevearc/aerial.nvim',
     init = function()
-      local null_ls = require("null-ls")
-      null_ls.setup {
-        sources = {
-          -- null_ls.builtins.formatting.prettier, -- works for markdown, but do I want it there?
-          null_ls.builtins.formatting.black,
-        }
-      }
+      require("aerial").setup({
+        on_attach = function(bufnr)
+          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
+        end,
+      })
+      vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")
     end
   },
+  -- {
+  --   'https://github.com/nvimtools/none-ls.nvim',
+  --   dependencies = { 'https://github.com/nvim-lua/plenary.nvim' },
+  --   init = function()
+  --     local null_ls = require("null-ls")
+  --     null_ls.setup {
+  --       sources = {
+  --         -- null_ls.builtins.formatting.prettier, -- works for markdown, but do I want it there?
+  --         null_ls.builtins.formatting.black,
+  --       }
+  --     }
+  --   end
+  -- },
   {
     'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
     init = function()

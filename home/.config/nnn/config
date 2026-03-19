@@ -35,17 +35,17 @@ y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"
-C:$HOME/Dropbox;
-D:$SYNC;
+D:$HOME/Dropbox;
 S:$SCREENSHOTS;
 T:$HOME/.local/share/Trash/files;
 W:$WIKI;
-c:$HOME/Syncthing/0Phone/Camera;
+c:$CAMERA;
 d:$HOME/Downloads;
+l:$SYNC/Large;
 m:/media;
-n:$HOME/Syncthing/9Large/nsfw;
+n:$SYNC/Large/nsfw;
 p:$HOME/Pictures;
-s:$HOME/Syncthing;
+s:$SYNC;
 t:/tmp;
 w:$HOME/WS;
 ")

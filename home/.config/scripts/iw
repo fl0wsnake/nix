@@ -1,0 +1,7 @@
+#!/bin/sh
+
+"${@}" &
+inotifywait -rqme MODIFY "$0" | while read _; do
+  pkill "${@}" 2>/dev/null
+  "${@}" &
+done

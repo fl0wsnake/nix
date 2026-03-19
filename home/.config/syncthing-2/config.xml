@@ -119,7 +119,7 @@
         <connectionPriorityUpgradeThreshold>0</connectionPriorityUpgradeThreshold>
     </options>
     <defaults>
-        <folder id="" label="" path="" type="sendreceive" rescanIntervalS="3600" fsWatcherEnabled="true" fsWatcherDelayS="10" fsWatcherTimeoutS="0" ignorePerms="false" autoNormalize="true">
+    <folder id="" label="" path="/media/My Passport/0Syncthing" type="sendreceive" rescanIntervalS="3600" fsWatcherEnabled="true" fsWatcherDelayS="10" fsWatcherTimeoutS="0" ignorePerms="false" autoNormalize="true">
             <filesystemType>basic</filesystemType>
             <device id="6SD26KC-M75ZRF6-HZZHXPZ-MFYBHPF-NZTRSA4-C7H33FU-SLAT32V-VLG3TAI" introducedBy="">
                 <encryptionPassword></encryptionPassword>

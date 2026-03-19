@@ -1,8 +1,8 @@
 vim.cmd('setl sw=2 sts=0 lbr noexpandtab')
 vim.o.conceallevel = 2
 
-vim.keymap.set({ 'n', 'x' }, '<c-cr>', ']]', { remap = true, buffer = true })
-vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '[[', { remap = true })
+-- vim.keymap.set({ 'n', 'x' }, '<c-cr>', ']]', { remap = true, buffer = true })
+-- vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '[[', { remap = true, buffer = true })
 
 -- LINKS
 local url_re_str = vim.fn.escape(
@@ -163,22 +163,22 @@ end
 
 local embolden_item = '**'
 _G.embolden_operator = make_surround_operator('**')
-vim.keymap.set('n', '<C-b>', function()
+vim.keymap.set('n', '<a-b>', function()
   vim.go.operatorfunc = 'v:lua.embolden_operator'
   return 'g@'
 end, { expr = true, desc = 'Bold motion' })
-vim.keymap.set('n', '<C-b><C-b>', function()
+vim.keymap.set('n', '<a-b><a-b>', function()
   vim.go.operatorfunc = 'v:lua.embolden_operator'
   return 'g@_'
 end, { expr = true, desc = 'Bold current line' })
-vim.keymap.set('v', '<C-b>', 'c' .. embolden_item .. '<C-r>"' .. embolden_item .. '<Esc>', { desc = 'Bold selection' })
+vim.keymap.set('v', '<a-b>', 'c' .. embolden_item .. '<C-r>"' .. embolden_item .. '<Esc>', { desc = 'Bold selection' })
 
 local italicize_item = '_'
 _G.italicize_operator = make_surround_operator(italicize_item)
-vim.keymap.set('n', '<C-i>', function()
+vim.keymap.set('n', '<a-i>', function()
   vim.go.operatorfunc = 'v:lua.italicize_operator'
   return 'g@'
 end, { expr = true, desc = 'Italicize motion' })
-vim.keymap.set('n', '<C-i><C-i>', '0<C-i>$', { remap = true, desc = 'Italicize whole line' })
-vim.keymap.set('v', '<C-i>', 'c' .. italicize_item .. '<C-r>"' .. italicize_item .. '<Esc>',
+vim.keymap.set('n', '<a-i><a-i>', '0<a-i>$', { remap = true, desc = 'Italicize whole line' })
+vim.keymap.set('v', '<a-i>', 'c' .. italicize_item .. '<C-r>"' .. italicize_item .. '<Esc>',
   { desc = 'Embolden selection' })

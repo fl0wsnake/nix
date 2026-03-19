@@ -1,8 +1,6 @@
 --- MARKDOWN
 vim.api.nvim_set_hl(0, "@markup.math.latex", {})
 vim.api.nvim_set_hl(0, "@nospell.latex", {})
---         vim.keymap.set({ 'n', 'x' }, '<c-cr>', '<Plug>Markdown_MoveToNextHeader', b)
---         vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '<Plug>Markdown_MoveToPreviousHeader', b)
 
 require("config.utils")
 Silent = { silent = true }
@@ -80,23 +78,23 @@ function _G.git_relative_path()
 end
 
 vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
-vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r%=%-14.(%l,%c%V%) %L'
+vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
 
 --- TYPING
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>', Silent)
 vim.keymap.set("", "j", 'gj', Silent)
 vim.keymap.set("", "k", 'gk', Silent)
-vim.keymap.set("", "<c-j>", 'j', Silent)
-vim.keymap.set("", "<c-k>", 'k', Silent)
-vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent) -- TODO remember the reason I added this
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent) -- keep expected behavior when wrap
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
 
---- DISABLE MOUSE
+--- INTERFACE
 vim.opt.mouse = ''
 
 --- SEARCH
 vim.cmd('set ignorecase smartcase')
 vim.keymap.set({ "n", 'i' }, "<a-/>", function() vim.fn.setreg("/", "") end, Silent)
+vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true, noremap = true }) -- n searches forward regardless of / or ?
+vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true, noremap = true }) -- N searches backward regardless of / or ?
 
 --- SELECTION
 vim.keymap.set("n", "<a-v>", "`[v`]") -- Pasted or yanked text
@@ -118,6 +116,7 @@ vim.api.nvim_create_autocmd(
 )
 
 --- EDITING
+vim.cmd('set number relativenumber diffopt+=vertical')
 vim.cmd('set cindent')  -- Format .nix files same as `=`
 vim.cmd('set tabstop=2 expandtab shiftwidth=2')
 vim.cmd('set nofixeol') -- Automatic newline before eol messes git diffs and specific file requirements
@@ -138,31 +137,29 @@ vim.api.nvim_set_keymap('x', 'z', 'gc', {})
 --   end
 -- })
 
---- LINE SWAPPING
+--- TABLES
+vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>", Silent)
+vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
+
+--- SORTING
+vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>", Silent)
+vim.keymap.set("n", "<a-s>", "vip:'<,'>!sort<cr>", Silent)
+vim.keymap.set("v", "<a-s-s>", ":'<,'>!sort -r<cr>", Silent)
+vim.keymap.set("n", "<a-s-s>", "vip:'<,'>!sort -r<cr>", Silent)
+
+--- MOVING AROUND
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
 vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi", Silent)
 vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv", Silent)
 vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
-
---- TABLES
-vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>", Silent)
-vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
-
---- SORTING
-vim.keymap.set("v", "<a-t>", ":'<,'>!sort<cr>", Silent)
-vim.keymap.set("n", "<a-t>", "vip:'<,'>!sort<cr>", Silent)
-vim.keymap.set("v", "<a-s-t>", ":'<,'>!sort -r<cr>", Silent)
-vim.keymap.set("n", "<a-s-t>", "vip:'<,'>!sort -r<cr>", Silent)
-
---- MOVING AROUND
-vim.keymap.set("", "<c-j>", Down_v, Silent)
-vim.keymap.set("", "<c-k>", Up_v, Silent)
+vim.keymap.set("", "<a-h>", Up_v, Silent)
+vim.keymap.set("", "<a-l>", Down_v, Silent)
 
 --- PRESENTATION
 vim.o.list = true
-vim.o.listchars = 'tab:▸ ,precedes:❮,extends:❯,trail:·,nbsp:…'
+vim.o.listchars = 'tab:  ,precedes:❮,extends:❯,trail:·,nbsp:…'
 vim.cmd('set cursorline nowrap scrolloff=999 sidescrolloff=10')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
@@ -185,12 +182,8 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Uniquely distunguish [No Name] buff
 })
 
 
---- WINDOW MANAGEMENT
-vim.keymap.set('', '<A-h>', '<C-w>h', Silent)
-vim.keymap.set('', '<A-l>', '<C-w>l', Silent)
-
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr><cmd>tabmove<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>', Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
@@ -223,7 +216,7 @@ vim.cmd("cnoreabbrev <expr> m (getcmdtype() == ':' && getcmdline()=~'^m' ? 'Man'
 vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function() vim.cmd('on') end })
 
 --- BOOKMARKS
-vim.cmd('command! Wiki e $WIKI/index.md|tabe $WIKI/projects/projects.md|tabp') -- for external use
+vim.cmd('command! Wiki e $WIKI/index.md')
 vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end, Silent)
 vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end, Silent)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
@@ -238,12 +231,12 @@ vim.keymap.set('', '<leader>l',
   Silent)
 
 --- SESSION
-vim.cmd('se shortmess+=A') -- disable prompt on launch with -S option
+vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
 vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
-    for _, el in pairs(vim.v.argv) do
-      if el == '-S' then
-        vim.cmd("mksession! " .. os.getenv("NVIM_SESSION"))
+    for arg_i, arg in pairs(vim.v.argv) do
+      if arg == '-S' then
+        vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
       end
     end
   end,
