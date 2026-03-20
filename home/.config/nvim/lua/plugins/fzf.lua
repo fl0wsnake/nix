@@ -111,6 +111,30 @@ local function helptags()
   })
 end
 
+local function fzf_lsp_symbols()
+  local params = { textDocument = vim.lsp.util.make_text_document_params() }
+  vim.lsp.buf_request(0, 'textDocument/documentSymbol', params, function(err, result, _, _)
+    if err or not result then return end
+
+    local items = {}
+    local function flatten(res)
+      for _, symbol in ipairs(res) do
+        table.insert(items, string.format("%d: %s", symbol.range.start.line + 1, symbol.name))
+        if symbol.children then flatten(symbol.children) end
+      end
+    end
+
+    flatten(result)
+    vim.fn['fzf#run'](vim.fn['fzf#wrap']({
+      source = items,
+      sink = function(selected)
+        local line = selected:match("(%d+):")
+        vim.api.nvim_win_set_cursor(0, { tonumber(line), 0 })
+      end
+    }))
+  end)
+end
+
 return {
   {
     'https://github.com/junegunn/fzf.vim',
@@ -123,6 +147,7 @@ return {
     init = function()
       vim.g.fzf_layout = { window = 'enew' }
       vim.keymap.set('', '<leader>sl', blines)
+      vim.keymap.set('', '<leader>so', fzf_lsp_symbols)
       vim.keymap.set('', '<leader>f', Files(pwd))
       vim.keymap.set('', '<leader>r', Files(gitRoot))
       vim.keymap.set('', '<leader>sf', FileLines(pwd))
