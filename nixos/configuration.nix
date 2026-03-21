@@ -99,7 +99,8 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
+        # command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
+        command = "${pkgs.niri}/bin/niri";
         user = "nix";
       };
     };
@@ -263,10 +264,12 @@ in
     enable = true;
   };
 
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-  };
+  programs.niri.enable = true;
+
+  # programs.sway = {
+  #   enable = true;
+  #   wrapperFeatures.gtk = true;
+  # };
 
   nixpkgs.config.permittedInsecurePackages = [
     "ventoy-1.1.10"
@@ -302,8 +305,8 @@ in
     pkg-config
     ### CODE
     pipx
+    golangci-lint
     gofumpt
-    golangci-lint-langserver
     claude-code
     gitkraken
     google-cloud-sdk

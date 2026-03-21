@@ -35,7 +35,7 @@ return {
     init = function()
       vim.lsp.enable({
         "gopls",
-        "golangci-lint-langserver",
+        "golangci_lint_ls",
         "zls",
         "html", -- for formatting
         "bashls",

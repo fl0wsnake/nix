@@ -295,7 +295,6 @@ workspace $s_workspace
 workspace $1_workspace
 exec nvim-smart
 
-exec $HOME/WS/wp-daemon/main >~/.cache/wp-log
 exec whatsapp-electron
 exec viber
 exec Telegram
