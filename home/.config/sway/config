@@ -11,8 +11,7 @@ set $up k
 set $right l
 set $term alacritty
 
-# TODO focused_window detects only `nodes`, `not floating_nodes`
-set $focused_window swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
+set $focused_window swaymsg -t get_tree | jq -e '.nodes|map(select(.active))[0].nodes|map(.nodes,.floating_nodes)|flatten|.[]|recurse(.nodes[])|select(.focused)'
 set $focused_window_pid $focused_window | jq '.pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
 set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"

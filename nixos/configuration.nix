@@ -99,11 +99,14 @@ in
     enable = true;
     settings = {
       default_session = {
-        # command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
-        command = "${pkgs.niri}/bin/niri";
+        command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
         user = "nix";
       };
     };
+  };
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
   };
 
   # # for gnome-network-displays & casting
@@ -263,13 +266,6 @@ in
   programs.tmux = {
     enable = true;
   };
-
-  programs.niri.enable = true;
-
-  # programs.sway = {
-  #   enable = true;
-  #   wrapperFeatures.gtk = true;
-  # };
 
   nixpkgs.config.permittedInsecurePackages = [
     "ventoy-1.1.10"
