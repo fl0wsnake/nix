@@ -14,16 +14,6 @@ let
     LC_COLLATE = "C"; # affects all file pickers
     GTK_THEME = "Adwaita:dark"; # affects firefox, gparted etc.
   };
-  poweroffGracefully =
-    with pkgs;
-    writeShellScriptBin "poweroff-gracefully" ''
-      ${systemd}/bin/systemd-run -M ${config.environment.sessionVariables.USER}@ --user ${pkgs.sway}/bin/swaymsg '[app_id=.*]kill' # To avoid `restore session` popups in chromium based browsers
-      if [ "$(id -u)" -eq 0 ]; then
-        ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff
-      else
-        sudo ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff
-      fi
-    '';
   zshAutoNotify = pkgs.fetchFromGitHub {
     owner = "MichaelAquilina";
     repo = "zsh-auto-notify";
@@ -229,8 +219,6 @@ in
     enableBashCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
-    ohMyZsh.enable = true;
-    ohMyZsh.plugins = [ "git" ];
     interactiveShellInit = ''
       source ${zshAutoNotify}/auto-notify.plugin.zsh
     '';
@@ -478,8 +466,6 @@ in
     i3status-rust
     ### DEV
     imlib2Full # building nsxiv
-    ### CUSTOM
-    poweroffGracefully
   ];
 
   # programs.nix-ld.enable = true; # Allows pip to work
@@ -543,14 +529,15 @@ in
     echo 0 > /sys/class/rtc/rtc0/wakealarm
     echo "+$TIMEOUT" > /sys/class/rtc/rtc0/wakealarm
   '';
-  powerManagement.resumeCommands = ''
+  powerManagement.resumeCommands = with pkgs; ''
     modprobe -r psmouse && modprobe psmouse
     if [ -f /run/expected_rtc_wake ]; then
       NOW=$(date +%s)
       EXPECTED=$(cat /run/expected_rtc_wake)
       rm /run/expected_rtc_wake
       if [ "$NOW" -ge "$EXPECTED" ]; then
-        ${poweroffGracefully}/bin/poweroff-gracefully
+        ${procps}/bin/pkill -u ${config.environment.sessionVariables.USER} -x --ignore-ancestors 2>/dev/null # To avoid `restore session` popups in chromium based browsers
+        ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff # Only way to poweroff from resumeCommands that works
       else
         echo "Manual wake-up detected before timeout. Staying awake."
       fi

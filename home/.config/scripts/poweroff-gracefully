@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+pkill -u "$USER" -x --ignore-ancestors 2>/dev/null
+sleep 0.1
+sudo poweroff
