@@ -16,5 +16,5 @@ case "$@" in
 'y' | 'C-y') wl-copy -t "$(xdg-mime query filetype "$imgs")" <"$imgs" && notify-send "Image clipped" ;;
 'p' | 'C-p') wl-copy <<<"$imgs" && notify-send "Image path clipped" ;;
 'e' | 'C-e') gimp -sdf "$imgs" & ;;
-'d' | 'C-d') ripdrag -a "$imgs" & ;;
+'d' | 'C-d') ripdrag -a $(echo "$imgs" | xargs -d'\n' readlink -e) & ;;
 esac

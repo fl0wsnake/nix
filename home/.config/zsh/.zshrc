@@ -1,5 +1,5 @@
 function set_terminal_title() {
-  echo -en "\e]2;$(sed s@^$HOME@~@<<<$PWD)" # it had \a at the end on the Internet where I found it
+  echo -en "\e]2;$(sed s@^$HOME@~@ <<<$PWD)" # it had \a at the end on the Internet where I found it
 }
 autoload -U add-zsh-hook && add-zsh-hook precmd set_terminal_title
 
@@ -25,6 +25,7 @@ alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias cpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
+alias cx='codex'
 alias d=dict
 alias dR="nix profile list --json | jq '.elements | keys[]' | xargs nix profile remove && nix-store --gc"
 alias df='df -h'
@@ -45,22 +46,37 @@ alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,ma
 alias fdisk='sudo fdisk -l'
 alias ga='git add -A'
 alias gb='git branch'
-alias gc='(R && git commit -v)'
-alias gca='(R && git commit --amend --no-edit)'
+alias gc='git commit -v'
+alias gca='git commit --amend --no-edit'
 alias gch='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
-alias gd='(R && git diff)'
-alias gds='(R && git diff --staged)'
+alias gd='git diff'
+alias gds='git diff --staged'
 alias gemini='gemini -r || gemini'
 alias gl='git log -p --'
 alias glg="git log --graph --oneline --decorate --all"
+alias gop='xdg-open $(git remote get-url origin)'
 alias gp='git push'
 alias gparted='sudo -E gparted'
 alias gr="git reset"
-alias gs='(R && git status)'
+alias gs='git status'
 alias h="$EDITOR $HISTFILE"
 alias j='jj'
-alias jo='journalctl --since today --reverse'
+alias jcl='journalctl --since today --reverse'
+alias jd='jj diff -s'
+alias jdd='jj diff --stat'
+alias jddd='jj diff'
+alias je='jj edit'
+alias jf='jj git fetch'
+alias ji='jj git init --colocate'
+alias jl='jj log'
+alias jla="jj log -r 'all()'"
+alias jn='jj new'
+alias jo='jj op log'
+alias jop='jj op log'
+alias jp='jj git push'
+alias jr='jj rebase'
+alias js='jj status'
 alias kat='killall -15 -r'
 alias lg='lazygit'
 alias lgf='lazygit -f'
@@ -95,13 +111,13 @@ alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 . "$ZDOTDIR"/modules/expand-dots
 
 # `^` for `ctrl`, `^[` for `alt`
-bindkey "^[h" edit-history # a-h
-bindkey "^[m" man-command # a-m
-bindkey "^[c" yank-line # a-c
+bindkey "^[h" edit-history       # a-h
+bindkey "^[m" man-command        # a-m
+bindkey "^[c" yank-line          # a-c
 bindkey "^[s" toggle-sudo-prefix # a-s
-bindkey "^[e" edit-command-line # a-e
-bindkey '^[z' zshrc-edit # a-z
-bindkey '^[x' explorer # a-x
+bindkey "^[e" edit-command-line  # a-e
+bindkey '^[z' zshrc-edit         # a-z
+bindkey '^[x' explorer           # a-x
 bindkey ' ' expand-alias
 
 # WIDGETS FOR BASH STANDARD BINDINGS
@@ -109,12 +125,12 @@ bindkey '^[.' insert-last-word
 bindkey '^n' down-history
 bindkey '^p' up-history
 bindkey '^[[Z' reverse-menu-complete # shift-tab
-bindkey '^@' forward-word # ctrl-space
+bindkey '^@' forward-word            # ctrl-space
 bindkey '^f' end-of-line
 bindkey '^H' backward-kill-word # ctrl-backspace
-bindkey '^[[3;5~' kill-word          # ctrl-del
-bindkey '^[[1;5C' forward-word       # right
-bindkey '^[[1;5D' backward-word      # left
+bindkey '^[[3;5~' kill-word     # ctrl-del
+bindkey '^[[1;5C' forward-word  # right
+bindkey '^[[1;5D' backward-word # left
 
 # COMMANDS
 di() {
@@ -125,14 +141,14 @@ di() {
 ds() {
   unbuffer nix-search -d "$@" | less
 }
-unalias md
-md() {
-  if [ $#@ -gt 1 ]; then
-    mkdir -p $@ 
-  else
-    mkdir -p $@ && cd $_
-  fi
-}
+# unalias md
+# md() {
+#   if [ $#@ -gt 1 ]; then
+#     mkdir -p $@
+#   else
+#     mkdir -p $@ && cd $_
+#   fi
+# }
 subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -maxdepth 1 -name '*.mkv' -type f | while read -r file; do
@@ -140,7 +156,7 @@ subs_set_default() { # set eng subs
       subs_set_default_file "$file"
     done
   else
-  subs_set_default_file "$@"
+    subs_set_default_file "$@"
   fi
 }
 subs_set_default_file() {
@@ -148,7 +164,7 @@ subs_set_default_file() {
   eng_sub_count=
   while read -r line; do
     if [[ $line =~ 'Track type: subtitles' ]]; then
-      ((sub_count+=1))
+      ((sub_count += 1))
     elif [[ $line =~ 'Language: eng' ]]; then
       eng_sub_count=$sub_count
     fi
@@ -157,8 +173,9 @@ subs_set_default_file() {
   mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
-mkvify() { Samsung Smart TV does not support .avi
-  for file in "$@"; do 
+mkvify() {
+  Samsung Smart TV does not support .avi
+  for file in "$@"; do
     ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
   done
 }

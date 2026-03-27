@@ -37,11 +37,12 @@ return {
         "gopls",
         "golangci_lint_ls",
         "zls",
-        "html", -- for formatting
-        "bashls",
+        "html",   -- for formatting
+        "bashls", -- on zsh files it just eats a cpu
         "jsonls",
         "ts_ls",
         "cssls",
+        "rust_analyzer",
         "nixd",
         "lua_ls",
         "basedpyright",
@@ -74,9 +75,6 @@ return {
             ["source.addMissingImports"] = true
           }
         }
-      })
-      vim.lsp.config("bashls", {
-        filetypes = { "sh", "bash", "zsh" }
       })
       vim.lsp.config('lua_ls', {
         on_init = function(client)

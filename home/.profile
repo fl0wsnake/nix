@@ -62,5 +62,9 @@ export HISTSIZE=100000
 export HISTFILESIZE=100000
 export HISTCONTROL=ignoredups:erasedups
 
+### CODE
+export GOTRACEBACK=all # may be too verbose
+export RUST_BACKTRACE=1
+
 ### NNN
 . "$HOME/.config/nnn/config"

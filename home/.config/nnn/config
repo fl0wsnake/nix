@@ -35,7 +35,8 @@ y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"
-D:$HOME/Dropbox;
+D:$SYNC/Data;
+r:$HOME/Dropbox;
 S:$SCREENSHOTS;
 T:$HOME/.local/share/Trash/files;
 W:$WIKI;

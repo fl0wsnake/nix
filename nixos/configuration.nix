@@ -310,6 +310,8 @@ in
     cursor-cli
     clojure-lsp
     zls
+    rust-analyzer
+    rustfmt
     direnv
     aider-chat
     shfmt
