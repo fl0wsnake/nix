@@ -9,7 +9,13 @@
   ui = auto
 [safe]
 	directory = /home/nix/.config/nixos-rice # for nixos-upgrade.service enabled by system.autoUpgrade
-[core]
-  pager=delta
 [alias]
 	open = !xdg-open $(git remote get-url origin) 2>/dev/null || open $(git remote get-url origin)
+[init]
+	defaultBranch = main
+[core]
+  pager = less -+F
+[pager]
+  log = less -+F
+  show = delta
+  diff = delta

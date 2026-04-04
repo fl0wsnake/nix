@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-pkill -u "$USER" -x --ignore-ancestors 2>/dev/null
-sleep 0.1
+# INFO: # To avoid `restore session` popups in chromium based browsers.
+swaymsg '[app_id=.*]kill' # INFO: browser should be targeted specifically, ie `pkill -u $USER` won't help
+sleep 1
 sudo poweroff

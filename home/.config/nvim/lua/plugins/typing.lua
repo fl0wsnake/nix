@@ -7,6 +7,15 @@ vim.keymap.set("n", "<leader>dD", "_d$", Silent)
 vim.keymap.set("n", "yY", "_y$$", Silent)
 
 return {
+  {
+    'https://github.com/glts/vim-textobj-comment',
+    dependencies = { "https://github.com/kana/vim-textobj-user" },
+    init = function()
+      vim.g.textobj_comment_no_default_key_mappings = 1
+      vim.keymap.set({ "x", "o" }, "z", "<Plug>(textobj-comment-a)")
+      vim.keymap.set({ "x", "o" }, "iz", "<Plug>(textobj-comment-i)")
+    end
+  },
   'https://github.com/jiangmiao/auto-pairs',
   {
     'https://github.com/windwp/nvim-ts-autotag', -- autoclose and autorename html tag

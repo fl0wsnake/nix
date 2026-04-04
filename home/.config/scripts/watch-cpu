@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-avg_busy=$((100 / $(getconf _NPROCESSORS_ONLN) / 2))
-extra_info_avg_required=50 # TODO what is this
+avg_busy=$((100 / $(getconf _NPROCESSORS_ONLN) / 4)) # / 4 drop the bar low enough to see nix-collect-garbage etc.
+extra_info_avg_required=50                           # TODO what is this
 interval=2
 
 mpstat --dec=0 $interval | awk 'NR >= 4{print 100-$12; fflush()}' | while read -r avg; do

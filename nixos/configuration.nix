@@ -483,6 +483,7 @@ in
   services.flatpak = {
     enable = true;
     packages = [
+      # "com.ktechpit.whatsie"
       "app.zen_browser.zen"
       "com.github.tchx84.Flatseal"
     ];
@@ -536,8 +537,8 @@ in
       EXPECTED=$(cat /run/expected_rtc_wake)
       rm /run/expected_rtc_wake
       if [ "$NOW" -ge "$EXPECTED" ]; then
-        ${procps}/bin/pkill -u ${config.environment.sessionVariables.USER} -x --ignore-ancestors 2>/dev/null # To avoid `restore session` popups in chromium based browsers
-        ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff # Only way to poweroff from resumeCommands that works
+        ${systemd}/bin/systemd-run -M ${config.environment.sessionVariables.USER}@ --user ${pkgs.sway}/bin/swaymsg '[app_id=.*]kill'
+        ${systemd}/bin/systemd-run --on-active=5s ${systemd}/bin/systemctl poweroff # The only way to poweroff from resumeCommands that works
       else
         echo "Manual wake-up detected before timeout. Staying awake."
       fi

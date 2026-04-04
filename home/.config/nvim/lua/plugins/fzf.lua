@@ -123,8 +123,11 @@ local function fzf_lsp_symbols()
         if symbol.children then flatten(symbol.children) end
       end
     end
-
     flatten(result)
+    table.sort(items, function(a, b)
+      return tonumber(a:match("([^:]+)")) > tonumber(b:match("([^:]+)"))
+    end)
+
     vim.fn['fzf#run'](vim.fn['fzf#wrap']({
       source = items,
       sink = function(selected)

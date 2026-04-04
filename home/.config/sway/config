@@ -172,7 +172,7 @@ bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || brave"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec "$focused_window || (viber & Telegram & whatsapp-electron)"
+bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & whatsapp-electron &)
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
@@ -266,6 +266,7 @@ assign [class="Slack"] $d_workspace
 assign [class="discord"] $d_workspace
 assign [title="^Telegram.*"] $d_workspace
 assign [app_id="whatsapp-electron"] $d_workspace
+assign [app_id="com.ktechpit.whatsie"] $d_workspace
 assign [title="^Rakuten Viber"] $d_workspace
 
 assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
@@ -293,7 +294,9 @@ exec wlsunset -S 4:30 -s 20:00
 workspace $s_workspace
 workspace $1_workspace
 exec nvim-smart
+exec ~/WS/wp-daemon-rust/target/debug/wp-daemon-rust
 
+# exec com.ktechpit.whatsie
 exec whatsapp-electron
 exec viber
 exec Telegram

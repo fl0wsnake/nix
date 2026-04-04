@@ -44,6 +44,7 @@ alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
 alias fdisk='sudo fdisk -l'
+alias g="git log --graph --all --reflog --oneline --date-order --color=always"
 alias ga='git add -A'
 alias gb='git branch'
 alias gc='git commit -v'
@@ -53,13 +54,21 @@ alias gcl='git clone --recurse-submodules -j8'
 alias gd='git diff'
 alias gds='git diff --staged'
 alias gemini='gemini -r || gemini'
-alias gl='git log -p --'
-alias glg="git log --graph --oneline --decorate --all"
+alias gi='git init'
+alias gjj="git for-each-ref --format='delete %(refname)' refs/jj/ | git update-ref --stdin"
+alias gl='git -c pager.log=delta log -p --'
+alias glg="git log --graph --all --reflog --oneline --date-order --color=always"
+alias gms='git merge --squash'
 alias gop='xdg-open $(git remote get-url origin)'
 alias gp='git push'
 alias gparted='sudo -E gparted'
-alias gr="git reset"
+alias gr="git reset --soft"
+alias grb='git rebase -i'
+alias gre="git reflog --date=relative"
+alias grh='git reset --hard'
+alias grt='git read-tree'
 alias gs='git status'
+alias gsm='git switch --merge'
 alias h="$EDITOR $HISTFILE"
 alias j='jj'
 alias jcl='journalctl --since today --reverse'
@@ -133,14 +142,9 @@ bindkey '^[[1;5C' forward-word  # right
 bindkey '^[[1;5D' backward-word # left
 
 # COMMANDS
-di() {
-  for arg in $@; do
-    nix profile add nixpkgs/nixos-unstable#$arg
-  done
-}
-ds() {
-  unbuffer nix-search -d "$@" | less
-}
+di() { for arg in $@; do nix profile add nixpkgs/nixos-unstable#$arg; done }
+ds() { unbuffer nix-search -d "$@" | less }
+mt() { mkdir -p "$(dirname "$1")" && touch "$1" && xdg-open "$1"}
 # unalias md
 # md() {
 #   if [ $#@ -gt 1 ]; then

@@ -40,3 +40,30 @@ function Up_v()
     end
   end
 end
+
+function Sort_paragraph(reverse)
+  return function()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1] -- 1-indexed
+
+    local start = row
+    while start > 1 and vim.fn.getline(start - 1) ~= "" do
+      start = start - 1
+    end
+
+    local last = vim.fn.line("$")
+    local finish = row
+    while finish < last and vim.fn.getline(finish + 1) ~= "" do
+      finish = finish + 1
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(0, start - 1, finish, false)
+    table.sort(lines, function(a, b)
+      return reverse and a > b or a < b
+    end)
+    vim.api.nvim_buf_set_lines(0, start - 1, finish, false, lines)
+
+    local target = math.max(start, math.min(row, finish))
+    vim.api.nvim_win_set_cursor(0, { target, cursor[2] })
+  end
+end

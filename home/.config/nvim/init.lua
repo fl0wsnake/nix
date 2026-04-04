@@ -143,9 +143,9 @@ vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
 
 --- SORTING
 vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>", Silent)
-vim.keymap.set("n", "<a-s>", "vip:'<,'>!sort<cr>", Silent)
+vim.keymap.set("n", "<a-s>", Sort_paragraph(), Silent)
 vim.keymap.set("v", "<a-s-s>", ":'<,'>!sort -r<cr>", Silent)
-vim.keymap.set("n", "<a-s-s>", "vip:'<,'>!sort -r<cr>", Silent)
+vim.keymap.set("n", "<a-s-s>", Sort_paragraph(true), Silent)
 
 --- MOVING AROUND
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
