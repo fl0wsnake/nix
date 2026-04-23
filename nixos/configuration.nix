@@ -2,7 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, unstable, lib, ... }:
+{
+  config,
+  pkgs,
+  unstable,
+  lib,
+  ...
+}:
 
 let
   sessionVariablesFlatpak = {
@@ -15,9 +21,13 @@ let
     rev = "0.11.1";
     sha256 = "0pr1jab3msn966wzwpi008k0kq05j71v8ml8pcpfs4mbnzic7qfp";
   };
-in {
+in
+{
   nix.settings.auto-optimise-store = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   imports = [
     # Include the results of the hardware scan.
@@ -184,10 +194,14 @@ in {
 
   programs.firefox.enable = true;
 
-  programs.tmux = { enable = true; };
+  programs.tmux = {
+    enable = true;
+  };
 
-  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.05" ];
-  nixpkgs.config = { allowUnfree = true; };
+  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.10" ];
+  nixpkgs.config = {
+    allowUnfree = true;
+  };
 
   environment.sessionVariables = sessionVariablesFlatpak // {
     USER = "nix";
@@ -195,7 +209,9 @@ in {
     NIXPKGS_ALLOW_UNFREE = 1;
   };
 
-  environment.variables = { PATH = [ "$HOME/.npm/bin" ]; };
+  environment.variables = {
+    PATH = [ "$HOME/.npm/bin" ];
+  };
 
   ### PACKAGES
   environment.systemPackages = with pkgs; [
@@ -209,9 +225,9 @@ in {
     gst_all_1.gst-libav # For software H.264/AAC fallback
     gst_all_1.gst-rtsp-server # Often needed for the WFD stream
     gnome-network-displays
-    ### MAKE
-    pkg-config
     ### CODE
+    pkg-config
+    pkgconf # INFO to find needed C packages for zig
     bubblewrap # for codex
     pipx
     golangci-lint
@@ -232,8 +248,6 @@ in {
     basedpyright
     ruff
     tree-sitter
-    pkgconf # INFO to find needed C packages for zig
-    zig
     yt-dlp
     gnumake # for vim-jsdoc
     bash-language-server
@@ -266,7 +280,7 @@ in {
     libva
     vlc-bittorrent
     ### SOCIAL
-    viber
+    unstable.viber
     telegram-desktop
     unstable.whatsapp-electron
     ### HARDWARE
@@ -307,7 +321,7 @@ in {
     nnn
     bat
     ### NETWORK
-    (pkgs.brave.override {
+    (unstable.brave.override {
       commandLineArgs = [
         "--password-store=basic" # This works
         "--restore-last-session" # These don't do anything
@@ -338,7 +352,7 @@ in {
     tabbed
     zathura
     nixd
-    nixfmt
+    nixfmt-rfc-style
     lua-language-server
     ### TEXT/LANGUAGE/PARSING
     tesseract
@@ -408,7 +422,10 @@ in {
     overrides = {
       global = {
         Context = {
-          sockets = [ "x11" "wayland" ]; # Ensure display sockets are available
+          sockets = [
+            "x11"
+            "wayland"
+          ]; # Ensure display sockets are available
           filesystems = [ "home" ]; # for user conf
         };
         Environment = sessionVariablesFlatpak;
@@ -421,14 +438,18 @@ in {
   services.geoclue2.enable = true; # INFO for automatic tz
   services.automatic-timezoned.enable = true; # INFO works
 
-  services.dictd = { enable = true; };
+  services.dictd = {
+    enable = true;
+  };
 
-  programs.dconf.profiles.user.databases = [{
-    settings."org/gnome/desktop/interface" = {
-      gtk-theme = "Adwaita-dark";
-      color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
-    };
-  }];
+  programs.dconf.profiles.user.databases = [
+    {
+      settings."org/gnome/desktop/interface" = {
+        gtk-theme = "Adwaita-dark";
+        color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
+      };
+    }
+  ];
 
   # systemd.settings.Manager = {
   #   DefaultTimeoutStopSec = "5s";
@@ -457,20 +478,26 @@ in {
     echo 0 > /sys/class/rtc/rtc0/wakealarm
   '';
 
-  services.logind = {
-    lidSwitch = "ignore";
-    lidSwitchDocked = "ignore";
-    lidSwitchExternalPower = "ignore";
-    powerKey = "poweroff";
-    powerKeyLongPress = "sleep";
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandlePowerKey = "poweroff";
+    HandlePowerKeyLongPress = "sleep";
   };
 
   fonts = {
-    packages = with pkgs;
-      [ jetbrains-mono terminus_font font-awesome ]
-      ++ builtins.filter lib.attrsets.isDerivation
-      (builtins.attrValues pkgs.nerd-fonts);
-    fontconfig = { enable = true; };
+    packages =
+      with pkgs;
+      [
+        jetbrains-mono
+        terminus_font
+        font-awesome
+      ]
+      ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+    fontconfig = {
+      enable = true;
+    };
   };
 
   hardware.bluetooth.enable = true;
@@ -480,8 +507,7 @@ in {
     wallpaper = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart =
-          "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
+        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
         Restart = "always";
       };
     };
@@ -489,8 +515,7 @@ in {
     batsignal = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart =
-          "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
+        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
         Restart = "always";
       };
     };
@@ -578,10 +603,12 @@ in {
       5353 # mDNS
       7236 # Miracast stream
     ];
-    allowedUDPPortRanges = [{
-      from = 32768;
-      to = 65535; # for gnome-network-displays
-    }];
+    allowedUDPPortRanges = [
+      {
+        from = 32768;
+        to = 65535; # for gnome-network-displays
+      }
+    ];
   };
 
   services.avahi = {
@@ -599,8 +626,7 @@ in {
 
   services.udisks2 = {
     enable = true; # required for udiskie
-    mountOnMedia =
-      true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
+    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {
@@ -625,7 +651,9 @@ in {
   };
   services.tlp = {
     enable = true;
-    settings = { USB_AUTOSUSPEND = 0; };
+    settings = {
+      USB_AUTOSUSPEND = 0;
+    };
   };
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -653,5 +681,5 @@ in {
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.11"; # Did you read the comment?
 }

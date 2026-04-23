@@ -20,12 +20,13 @@ paths=(
   ~/.bash_profile # to prevent tmux from running ~/.profile
   ~/.bashrc
   ~/.blerc
-  ~/.config/jj/config.toml
   ~/.config/alacritty
   ~/.config/eww
   ~/.config/flameshot
   ~/.config/i3status-rust
+  ~/.config/jj
   ~/.config/kitty
+  ~/.config/lazygit
   ~/.config/lf
   ~/.config/mako
   ~/.config/mimeapps.list

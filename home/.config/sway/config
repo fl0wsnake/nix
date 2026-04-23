@@ -273,8 +273,6 @@ assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
 assign [title="^Transmission.*"] $f_workspace
 
 ### Apps
-# INFO: Brave requires clearing the "Crashed" status after pressing PowerOff button
-# exec jq '.profile.exit_type = "Normal" | .profile.exited_cleanly = true' ~/.config/BraveSoftware/Brave-Browser/Default/Preferences >/tmp/Preferences && mv /tmp/Preferences ~/.config/BraveSoftware/Brave-Browser/Default/Preferences && brave
 
 # exec dropbox
 exec $SCRIPTS_SWAY/bar

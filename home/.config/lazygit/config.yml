@@ -1,0 +1,8 @@
+# https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md
+
+gui:
+  scrollHeight: 15
+git:
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
