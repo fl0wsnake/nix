@@ -172,7 +172,7 @@ bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || brave"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & com.ktechpit.whatsie &)
+bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & telegram-desktop & com.ktechpit.whatsie &)
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
@@ -275,7 +275,6 @@ assign [title="^Transmission.*"] $f_workspace
 ### Apps
 # INFO: Brave requires clearing the "Crashed" status after pressing PowerOff button
 # exec jq '.profile.exit_type = "Normal" | .profile.exited_cleanly = true' ~/.config/BraveSoftware/Brave-Browser/Default/Preferences >/tmp/Preferences && mv /tmp/Preferences ~/.config/BraveSoftware/Brave-Browser/Default/Preferences && brave
-exec brave
 
 # exec dropbox
 exec $SCRIPTS_SWAY/bar
@@ -288,15 +287,12 @@ exec flameshot
 exec mako
 exec wlsunset -S 4:30 -s 20:00
 
-# exec systemctl --user import-environment PATH
-# exec systemctl --user restart xdg-desktop-portal.service
-
+exec brave
 workspace $s_workspace
 workspace $1_workspace
 exec nvim-smart
 exec ~/WS/wp-daemon-rust/target/debug/wp-daemon-rust
 
-# exec com.ktechpit.whatsie
 exec com.ktechpit.whatsie
 exec viber
 exec Telegram

@@ -118,7 +118,7 @@ return {
     opts = {
       async = true,
       on_direnv_finished = function()
-        vim.cmd("lsp enable")
+        vim.cmd("LspStart")
       end
     }
   },

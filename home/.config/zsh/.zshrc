@@ -28,7 +28,6 @@ alias cpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias cx='codex'
 alias d=dict
-alias dR="nix profile list --json | jq '.elements | keys[]' | xargs nix profile remove && nix-store --gc"
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
@@ -36,7 +35,7 @@ alias dq='nix-env -qaP | grep'
 alias dr="sudo nixos-rebuild switch"
 alias drb="dr && reboot"
 alias drs="dr && shutdown now"
-alias dt='nix-store --gc'
+alias dt="nix profile list --json | jq '.elements | keys[]' | xargs nix profile remove && nix-store --gc"
 alias du='du -h'
 alias dun='nix-env --uninstall'
 alias dus='du -h * | sort -h'

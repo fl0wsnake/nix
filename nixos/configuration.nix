@@ -2,12 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ config, pkgs, unstable, lib, ... }:
 
 let
   sessionVariablesFlatpak = {
@@ -20,13 +15,9 @@ let
     rev = "0.11.1";
     sha256 = "0pr1jab3msn966wzwpi008k0kq05j71v8ml8pcpfs4mbnzic7qfp";
   };
-in
-{
+in {
   nix.settings.auto-optimise-store = true;
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   imports = [
     # Include the results of the hardware scan.
@@ -89,7 +80,7 @@ in
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.sway}/bin/sway --unsupported-gpu"; # Using nvidia drivers for ollama, for graphics will need nouveau
+        command = "${pkgs.sway}/bin/sway";
         user = "nix";
       };
     };
@@ -99,21 +90,19 @@ in
     wrapperFeatures.gtk = true;
   };
 
-  services.hardware.bolt.enable = true;
-  nixpkgs.config = {
-    allowUnfree = true; # for Nvidia drivers etc
-  };
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true; # Helpful for steam and certain drivers
-  }; # needed for ollama to communicate with the driver
-  services.xserver.videoDrivers = [ "nvidia" ]; # `Generic PCI device` ->  `Nvidia card`
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true; # Can cause issues, but saves power
-    open = false; # true for Turing+ architechture
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
+  # services.hardware.bolt.enable = true;
+  # hardware.graphics = {
+  #   enable = true;
+  #   enable32Bit = true; # Helpful for steam and certain drivers
+  # }; # needed for ollama to communicate with the driver
+  # services.xserver.videoDrivers =
+  #   [ "nvidia" ]; # `Generic PCI device` ->  `Nvidia card`
+  # hardware.nvidia = {
+  #   modesetting.enable = true;
+  #   powerManagement.enable = true; # Can cause issues, but saves power
+  #   open = false; # true for Turing+ architechture
+  #   package = config.boot.kernelPackages.nvidiaPackages.stable;
+  # };
 
   zramSwap = {
     enable = true;
@@ -195,13 +184,10 @@ in
 
   programs.firefox.enable = true;
 
-  programs.tmux = {
-    enable = true;
-  };
+  programs.tmux = { enable = true; };
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-1.1.10"
-  ];
+  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.05" ];
+  nixpkgs.config = { allowUnfree = true; };
 
   environment.sessionVariables = sessionVariablesFlatpak // {
     USER = "nix";
@@ -209,11 +195,7 @@ in
     NIXPKGS_ALLOW_UNFREE = 1;
   };
 
-  environment.variables = {
-    PATH = [
-      "$HOME/.npm/bin"
-    ];
-  };
+  environment.variables = { PATH = [ "$HOME/.npm/bin" ]; };
 
   ### PACKAGES
   environment.systemPackages = with pkgs; [
@@ -228,8 +210,6 @@ in
     gst_all_1.gst-rtsp-server # Often needed for the WFD stream
     gnome-network-displays
     ### MAKE
-    libx11
-    imlib2Full
     pkg-config
     ### CODE
     bubblewrap # for codex
@@ -240,7 +220,6 @@ in
     gitkraken
     google-cloud-sdk
     nix-index # to nix-locate `#include <.h>`
-    cursor-cli
     clojure-lsp
     rust-analyzer
     rustfmt
@@ -263,7 +242,7 @@ in
     typescript # for ts_ls
     typescript-language-server # for ts_ls
     bun
-    prettier
+    unstable.prettier
     black
     go
     gopls
@@ -289,7 +268,7 @@ in
     ### SOCIAL
     viber
     telegram-desktop
-    whatsapp-electron
+    unstable.whatsapp-electron
     ### HARDWARE
     pciutils # for tb3/egpu
     usbutils
@@ -318,7 +297,6 @@ in
     git-credential-manager
     ripgrep
     nautilus
-    thunar
     ### TERMINALS
     kitty
     alacritty # kitty has crap scrollback and does not use a -e flag for exec
@@ -374,7 +352,7 @@ in
     dict
     fzf
     ### WM/SYSTEM
-    awww
+    swww
     hyprpicker # colorpick
     pastel # colorpick
     ripdrag
@@ -383,7 +361,7 @@ in
     ventoy
     expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
     go-mtpfs # only one mtp tool that works
-    xev
+    # xev unstable
     rclone
     lsof
     pulseaudioFull # for pactl: watch-volume
@@ -402,9 +380,7 @@ in
     pango # for mako
     dconf # for dark theme in apps
     wl-clipboard
-    (pkgs.rofi.override {
-      plugins = [ pkgs.rofi-emoji ];
-    })
+    (pkgs.rofi.override { plugins = [ pkgs.rofi-emoji ]; })
     hyprsunset
     waybar
     i3status-rust
@@ -417,9 +393,7 @@ in
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-    ];
+    extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
     # config.common.default = [ "gnome" ]; # for gnome-network-displays TODO remove
   };
 
@@ -434,10 +408,7 @@ in
     overrides = {
       global = {
         Context = {
-          sockets = [
-            "x11"
-            "wayland"
-          ]; # Ensure display sockets are available
+          sockets = [ "x11" "wayland" ]; # Ensure display sockets are available
           filesystems = [ "home" ]; # for user conf
         };
         Environment = sessionVariablesFlatpak;
@@ -450,22 +421,18 @@ in
   services.geoclue2.enable = true; # INFO for automatic tz
   services.automatic-timezoned.enable = true; # INFO works
 
-  services.dictd = {
-    enable = true;
-  };
+  services.dictd = { enable = true; };
 
-  programs.dconf.profiles.user.databases = [
-    {
-      settings."org/gnome/desktop/interface" = {
-        gtk-theme = "Adwaita-dark"; # Your chosen dark GTK theme
-        color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
-      };
-    }
-  ];
+  programs.dconf.profiles.user.databases = [{
+    settings."org/gnome/desktop/interface" = {
+      gtk-theme = "Adwaita-dark";
+      color-scheme = "prefer-dark"; # For GTK4/Libadwaita apps
+    };
+  }];
 
-  systemd.settings.Manager = {
-    DefaultTimeoutStopSec = "5s";
-  };
+  # systemd.settings.Manager = {
+  #   DefaultTimeoutStopSec = "5s";
+  # };
   # Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
     TIMEOUT=43200
@@ -490,26 +457,20 @@ in
     echo 0 > /sys/class/rtc/rtc0/wakealarm
   '';
 
-  services.logind.settings.Login = {
-    HandleLidSwitch = "ignore";
-    HandleLidSwitchDocked = "ignore";
-    HandleLidSwitchExternalPower = "ignore";
-    HandlePowerKey = "poweroff";
-    HandlePowerKeyLongPress = "sleep";
+  services.logind = {
+    lidSwitch = "ignore";
+    lidSwitchDocked = "ignore";
+    lidSwitchExternalPower = "ignore";
+    powerKey = "poweroff";
+    powerKeyLongPress = "sleep";
   };
 
   fonts = {
-    packages =
-      with pkgs;
-      [
-        jetbrains-mono
-        terminus_font
-        font-awesome
-      ]
-      ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
-    fontconfig = {
-      enable = true;
-    };
+    packages = with pkgs;
+      [ jetbrains-mono terminus_font font-awesome ]
+      ++ builtins.filter lib.attrsets.isDerivation
+      (builtins.attrValues pkgs.nerd-fonts);
+    fontconfig = { enable = true; };
   };
 
   hardware.bluetooth.enable = true;
@@ -519,7 +480,8 @@ in
     wallpaper = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
+        ExecStart =
+          "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
         Restart = "always";
       };
     };
@@ -527,7 +489,8 @@ in
     batsignal = {
       wantedBy = [ "default.target" ];
       serviceConfig = {
-        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
+        ExecStart =
+          "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
         Restart = "always";
       };
     };
@@ -604,9 +567,7 @@ in
   };
 
   networking.firewall = {
-    trustedInterfaces = [
-      "p2p-wl+"
-    ]; # for gnome-network-displays
+    trustedInterfaces = [ "p2p-wl+" ]; # for gnome-network-displays
     allowedTCPPorts = [
       22000
       22001 # Syncthing instances
@@ -617,12 +578,10 @@ in
       5353 # mDNS
       7236 # Miracast stream
     ];
-    allowedUDPPortRanges = [
-      {
-        from = 32768;
-        to = 65535; # for gnome-network-displays
-      }
-    ];
+    allowedUDPPortRanges = [{
+      from = 32768;
+      to = 65535; # for gnome-network-displays
+    }];
   };
 
   services.avahi = {
@@ -640,7 +599,8 @@ in
 
   services.udisks2 = {
     enable = true; # required for udiskie
-    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
+    mountOnMedia =
+      true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {
@@ -665,9 +625,7 @@ in
   };
   services.tlp = {
     enable = true;
-    settings = {
-      USB_AUTOSUSPEND = 0;
-    };
+    settings = { USB_AUTOSUSPEND = 0; };
   };
 
   # Some programs need SUID wrappers, can be configured further or are

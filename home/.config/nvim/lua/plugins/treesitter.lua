@@ -1,5 +1,6 @@
 return {
   'https://github.com/nvim-treesitter/nvim-treesitter',
+  branch = 'main', -- for nvim 0.12+
   init = function()
     require 'nvim-treesitter.configs'.setup {
       modules = {},
