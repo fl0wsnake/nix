@@ -1,13 +1,16 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    zls.url = "github:zigtools/zls/releases/tag/0.16.0";
+    zls.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
     {
       self,
       nixpkgs,
       nix-flatpak,
+      zls,
       ...
     }:
     {
@@ -16,6 +19,11 @@
         modules = [
           ./configuration.nix
           nix-flatpak.nixosModules.nix-flatpak
+          {
+            environment.systemPackages = [
+              zls.packages.x86_64-linux.zls
+            ];
+          }
         ];
       };
     };

@@ -8,6 +8,7 @@ return {
   {
     'https://github.com/airblade/vim-gitgutter',
     init = function()
+      vim.g.gitgutter_map_keys = 0
       vim.o.updatetime = 100 -- fix unreasonably big delay
       vim.keymap.set('', '<a-z>', '<Plug>(GitGutterPreviewHunk)')
       vim.keymap.set('', '<a-u>', '<Plug>(GitGutterUndoHunk)')

@@ -8,12 +8,19 @@ vim.keymap.set("n", "yY", "_y$$", Silent)
 
 return {
   {
+    "https://github.com/asiryk/auto-hlsearch.nvim",
+    init = function()
+      require("auto-hlsearch").setup()
+    end
+  },
+  {
     'https://github.com/glts/vim-textobj-comment',
     dependencies = { "https://github.com/kana/vim-textobj-user" },
     init = function()
       vim.g.textobj_comment_no_default_key_mappings = 1
-      vim.keymap.set({ "x", "o" }, "z", "<Plug>(textobj-comment-a)")
-      vim.keymap.set({ "x", "o" }, "iz", "<Plug>(textobj-comment-i)")
+      vim.keymap.set({ "o" }, "z", "<Plug>(textobj-comment-a)")
+      vim.keymap.set({ "o" }, "az", "<Plug>(textobj-comment-a)")
+      vim.keymap.set({ "o" }, "iz", "<Plug>(textobj-comment-i)")
     end
   },
   'https://github.com/jiangmiao/auto-pairs',

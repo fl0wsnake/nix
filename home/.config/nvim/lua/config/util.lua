@@ -18,7 +18,7 @@ end
 vim.cmd('command! AnsiColorize lua ansi_colorize()')
 
 function Down_v()
-  local col = vim.fn.col('.')
+  local col = vim.fn.match(vim.fn.getline('.'), [[\S]]) + 1
   local line = vim.fn.line('.')
   while line < vim.api.nvim_buf_line_count(0) do
     line = line + 1
@@ -30,7 +30,7 @@ function Down_v()
 end
 
 function Up_v()
-  local col = vim.fn.col('.')
+  local col = vim.fn.match(vim.fn.getline('.'), [[\S]]) + 1
   local line = vim.fn.line('.')
   while line > 0 do
     line = line - 1

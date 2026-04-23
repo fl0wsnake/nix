@@ -1,9 +1,6 @@
---- MARKDOWN
-vim.api.nvim_set_hl(0, "@markup.math.latex", {})
-vim.api.nvim_set_hl(0, "@nospell.latex", {})
-
-require("config.utils")
+require("config.util")
 Silent = { silent = true }
+_ = {}
 vim.api.nvim_create_augroup('my', { clear = false })
 
 -- vim.cmd('set guicursor=a:Cursor')
@@ -44,10 +41,10 @@ vim.keymap.set("", "<leader>y",
       vim.fn.substitute(vim.fn.expand('%:p'), os.getenv("HOME"), '~', '')))
   end,
   Silent)
-vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end, Silent)
-vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end, Silent)
-vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end, Silent)
-vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end, Silent)
+vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end)
+vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end)
+vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
+vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
 })
@@ -58,7 +55,7 @@ vim.keymap.set("", "<leader>x", function()
     vim.cmd("1s~^~#!/usr/bin/env bash\r\r")
     vim.fn.setreg("/", "")
   end
-end, Silent)
+end)
 
 --- STATUSLINE
 function _G.git_relative_path()
@@ -81,20 +78,20 @@ vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
 vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
 
 --- TYPING
-vim.keymap.set({ "", "i" }, "<c-c>", '<esc>', Silent)
-vim.keymap.set("", "j", 'gj', Silent)
-vim.keymap.set("", "k", 'gk', Silent)
-vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end, Silent) -- keep expected behavior when wrap
-vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end, Silent)
+vim.keymap.set('v', '$', 'g_')
+vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
+vim.keymap.set("", "j", 'gj')
+vim.keymap.set("", "k", 'gk')
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end) -- keep expected behavior when wrap
+vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end)
 
 --- INTERFACE
 vim.opt.mouse = ''
 
 --- SEARCH
 vim.cmd('set ignorecase smartcase')
-vim.keymap.set({ "n", 'i' }, "<a-/>", function() vim.fn.setreg("/", "") end, Silent)
-vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true, noremap = true }) -- n searches forward regardless of / or ?
-vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true, noremap = true }) -- N searches backward regardless of / or ?
+vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true }) -- n searches forward regardless of / or ?
+vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true }) -- N searches backward regardless of / or ?
 
 --- SELECTION
 vim.keymap.set("n", "<a-v>", "`[v`]") -- Pasted or yanked text
@@ -104,7 +101,7 @@ vim.keymap.set("n", "<a-V>", "ggVG")  -- All text
 vim.keymap.set("", "<a-w>", function()
   vim.cmd('set wrap!')
   print("wrap == " .. tostring(vim.o.wrap))
-end, Silent)
+end)
 
 --- DISABLE AUTOCOMMETING NEXT LINE
 vim.api.nvim_create_autocmd(
@@ -122,9 +119,9 @@ vim.cmd('set tabstop=2 expandtab shiftwidth=2')
 vim.cmd('set nofixeol') -- Automatic newline before eol messes git diffs and specific file requirements
 
 -- COMMENTING
-vim.api.nvim_set_keymap('n', 'z', 'gc', {})
-vim.api.nvim_set_keymap('n', 'zz', 'gcgc', {})
-vim.api.nvim_set_keymap('x', 'z', 'gc', {})
+vim.api.nvim_set_keymap('n', 'z', 'gc', _)
+vim.api.nvim_set_keymap('n', 'zz', 'gcgc', _)
+vim.api.nvim_set_keymap('x', 'z', 'gc', _)
 
 -- -- AUTOFORMATTING -- XXX: breaks Xpaste mapped to Easyclip despite `remap = true`
 -- vim.api.nvim_create_autocmd("BufEnter", {
@@ -138,24 +135,24 @@ vim.api.nvim_set_keymap('x', 'z', 'gc', {})
 -- })
 
 --- TABLES
-vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>", Silent)
-vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>", Silent)
+vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>")
+vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>")
 
 --- SORTING
-vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>", Silent)
-vim.keymap.set("n", "<a-s>", Sort_paragraph(), Silent)
-vim.keymap.set("v", "<a-s-s>", ":'<,'>!sort -r<cr>", Silent)
-vim.keymap.set("n", "<a-s-s>", Sort_paragraph(true), Silent)
+vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>")
+vim.keymap.set("n", "<a-s>", Sort_paragraph())
+vim.keymap.set("v", "<a-s-s>", ":'<,'>!sort -r<cr>")
+vim.keymap.set("n", "<a-s-s>", Sort_paragraph(true))
 
 --- MOVING AROUND
-vim.keymap.set("n", "<a-j>", ":m .+1<cr>", Silent)
-vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi", Silent)
-vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv", Silent)
-vim.keymap.set("n", "<a-k>", ":m .-2<cr>", Silent)
-vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi", Silent)
-vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv", Silent)
-vim.keymap.set("", "<a-h>", Up_v, Silent)
-vim.keymap.set("", "<a-l>", Down_v, Silent)
+vim.keymap.set("n", "<a-j>", ":m .+1<cr>")
+vim.keymap.set("i", "<a-j>", "<esc>:m .+1<cr>==gi")
+vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv")
+vim.keymap.set("n", "<a-k>", ":m .-2<cr>")
+vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi")
+vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv")
+vim.keymap.set("", "<a-h>", Up_v)
+vim.keymap.set("", "<a-l>", Down_v)
 
 --- PRESENTATION
 vim.o.list = true
@@ -183,31 +180,31 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Uniquely distunguish [No Name] buff
 
 
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>', Silent)
-vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>', Silent)
-vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end, Silent)
-vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end, Silent)
-vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
+vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>')
+vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>')
+vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end)
+vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end)
+vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end)
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = 'fzf',
   callback = function()
-    vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end, Silent)
+    vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end)
   end
 })
-vim.keymap.set({ '', 'i' }, '<C-S-Tab>', function() vim.cmd 'tabp' end, Silent)
-vim.api.nvim_set_keymap('', '<C-h>', '<C-w>h', Silent)
-vim.api.nvim_set_keymap('', '<C-j>', '<C-w>j', Silent)
-vim.api.nvim_set_keymap('', '<C-k>', '<C-w>k', Silent)
-vim.api.nvim_set_keymap('', '<C-l>', '<C-w>l', Silent)
-vim.api.nvim_set_keymap('', '<C-1>', '1gt', Silent)
-vim.api.nvim_set_keymap('', '<C-2>', '2gt', Silent)
-vim.api.nvim_set_keymap('', '<C-3>', '3gt', Silent)
-vim.api.nvim_set_keymap('', '<C-4>', '4gt', Silent)
-vim.api.nvim_set_keymap('', '<C-5>', '5gt', Silent)
-vim.api.nvim_set_keymap('', '<C-6>', '6gt', Silent)
-vim.api.nvim_set_keymap('', '<C-7>', '7gt', Silent)
-vim.api.nvim_set_keymap('', '<C-8>', '8gt', Silent)
-vim.api.nvim_set_keymap('', '<C-9>', '<cmd>tabl<cr>', Silent)
+vim.keymap.set({ '', 'i' }, '<C-S-Tab>', function() vim.cmd 'tabp' end)
+vim.api.nvim_set_keymap('', '<C-h>', '<C-w>h', _)
+vim.api.nvim_set_keymap('', '<C-j>', '<C-w>j', _)
+vim.api.nvim_set_keymap('', '<C-k>', '<C-w>k', _)
+vim.api.nvim_set_keymap('', '<C-l>', '<C-w>l', _)
+vim.api.nvim_set_keymap('', '<C-1>', '1gt', _)
+vim.api.nvim_set_keymap('', '<C-2>', '2gt', _)
+vim.api.nvim_set_keymap('', '<C-3>', '3gt', _)
+vim.api.nvim_set_keymap('', '<C-4>', '4gt', _)
+vim.api.nvim_set_keymap('', '<C-5>', '5gt', _)
+vim.api.nvim_set_keymap('', '<C-6>', '6gt', _)
+vim.api.nvim_set_keymap('', '<C-7>', '7gt', _)
+vim.api.nvim_set_keymap('', '<C-8>', '8gt', _)
+vim.api.nvim_set_keymap('', '<C-9>', '<cmd>tabl<cr>', _)
 
 --- CMD ABBREVIATIONS
 vim.cmd("command! -nargs=1 -complete=help H h <args> | on")
@@ -217,17 +214,18 @@ vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function()
 
 --- BOOKMARKS
 vim.cmd('command! Wiki e $WIKI/index.md')
-vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end, Silent)
-vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end, Silent)
-vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end, Silent)
-vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end, Silent)
-vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end, Silent)
-vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end, Silent)
-vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end, Silent)
-vim.keymap.set('', '<leader>bP', function() vim.cmd('e ~/.local/share/nvim/lazy') end, Silent)
-vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end, Silent)
+vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end)
+vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end)
+vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end)
+vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end)
+vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end)
+vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end)
+vim.keymap.set('', "<leader>bz", function() vim.cmd('e ~/.cache/zig/.index') end)
+vim.keymap.set('', '<leader>bl', function() vim.cmd('e ~/.local/share/nvim/lazy') end)
+vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end)
 vim.keymap.set('', '<leader>l',
-  function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
+  -- function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
+  function() vim.cmd('h lspconfig-all | on') end,
   Silent)
 
 --- SESSION

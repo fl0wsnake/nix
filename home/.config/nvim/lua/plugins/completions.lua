@@ -7,12 +7,18 @@ return {
     {
       'https://github.com/saadparwaiz1/cmp_luasnip',
       dependencies = {
-        "L3MON4D3/LuaSnip",
+        "https://github.com/L3MON4D3/LuaSnip",
+        build = "make install_jsregexp",
         dependencies = { "rafamadriz/friendly-snippets" },
         init = function()
           local ls = require 'luasnip'
           vim.keymap.set({ 'i', 's' }, '<c-j>', function() if ls.locally_jumpable(1) then ls.jump(1) end end)
           vim.keymap.set({ 'i', 's' }, '<c-k>', function() if ls.locally_jumpable(-1) then ls.jump(-1) end end)
+          ls.add_snippets("zig", {
+            ls.snippet("print", {
+              ls.text_node({ "std.debug.print(\"{}\\n\", .{});" }),
+            }),
+          })
           ls.add_snippets("go", {
             ls.snippet("iferr", {
               ls.text_node({ "if err != nil {", "\tlog.Fatal(err)", "}" }),
@@ -31,6 +37,7 @@ return {
     local cmp = require 'cmp'
     require("luasnip.loaders.from_vscode").lazy_load()
     cmp.setup {
+      expand = function() end,
       preselect = cmp.PreselectMode.None, -- INFO: preselect dumb completions, bye
       completion = {
         autocomplete = { "InsertEnter", "TextChanged" },
@@ -52,8 +59,12 @@ return {
           behavior = cmp.ConfirmBehavior.Replace,
           select = true,
         },
-        ['<C-k>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-j>'] = cmp.mapping.scroll_docs(4),
+        ['<C-y>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-e>'] = cmp.mapping.scroll_docs(4),
+        ['<C-p>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-n>'] = cmp.mapping.scroll_docs(4),
+        ['<C-k>'] = cmp.mapping.select_prev_item(),
+        ['<C-j>'] = cmp.mapping.select_next_item(),
         ['<C-u>'] = function()
           cmp.select_prev_item({ count = 8 })
         end,

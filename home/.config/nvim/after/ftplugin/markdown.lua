@@ -1,6 +1,10 @@
 vim.cmd('setl sw=2 sts=0 lbr noexpandtab')
 vim.o.conceallevel = 2
 
+-- --- MARKDOWN TODO remember why add this
+-- vim.api.nvim_set_hl(0, "@markup.math.latex", {})
+-- vim.api.nvim_set_hl(0, "@nospell.latex", {})
+
 -- vim.keymap.set({ 'n', 'x' }, '<c-cr>', ']]', { remap = true, buffer = true })
 -- vim.keymap.set({ 'n', 'x' }, '<c-s-cr>', '[[', { remap = true, buffer = true })
 

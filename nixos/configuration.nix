@@ -99,77 +99,21 @@ in
     wrapperFeatures.gtk = true;
   };
 
-  # # for gnome-network-displays & casting
-  # services.xserver.config = ''
-  #   Section "Module"
-  #     Load "dri2"
-  #     Load "dri3"
-  #   EndSection
-  # '';
-  # networking.networkmanager.unmanaged = [
-  #   "interface-name:p2p*"
-  #   "interface-name:wfd*"
-  # ];
-
   services.hardware.bolt.enable = true;
-  # boot.blacklistedKernelModules = [ "nouveau" ]; # might wanna remove these boot entries
-  # boot.initrd.kernelModules = [
-  #   "thunderbolt"
-  # ];
-  # boot.kernelModules = [
-  #   "nvidia"
-  #   "nvidia_uvm"
-  # ];
-  boot.kernelParams = [
-    # "pci=assign-busses"
-    # "pci=realloc"
-    # "pcie_port_pm=off"
-    "nvidia-drm.modeset=1"
-  ]; # ikd if needed
   nixpkgs.config = {
     allowUnfree = true; # for Nvidia drivers etc
-    # nvidia.acceptLicense = true;
-    # cudaCapabilities = [ "6.1" ];
   };
   hardware.graphics = {
     enable = true;
     enable32Bit = true; # Helpful for steam and certain drivers
-    # extraPackages = with pkgs; [
-    #   nvidia-vaapi-driver
-    #   vulkan-loader
-    #   vulkan-validation-layers
-    #   vulkan-tools
-    # ];
   }; # needed for ollama to communicate with the driver
   services.xserver.videoDrivers = [ "nvidia" ]; # `Generic PCI device` ->  `Nvidia card`
   hardware.nvidia = {
     modesetting.enable = true;
-    # nvidiaPersistenced = true;
     powerManagement.enable = true; # Can cause issues, but saves power
     open = false; # true for Turing+ architechture
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
-  services.ollama = {
-    enable = true;
-    # acceleration = "vulkan"; # late 2025 feature
-    package = pkgs.ollama-cuda;
-
-    # 2. Force Vulkan via Environment Variables
-    # environmentVariables = {
-    #   OLLAMA_VULKAN = "1";
-    # };
-    # package = pkgs.ollama.override {
-    #   acceleration = "cuda";
-    #   cudaArches = [ "61" ];
-    # };
-    # environmentVariables = {
-    #   CUDA_VISIBLE_DEVICES = "0";
-    # };
-  };
-  # systemd.services.ollama.serviceConfig = {
-  #   # LD_LIBRARY_PATH = "/run/opengl-driver/lib:/run/cudatoolkit/lib";
-  #   Environment = "CUDA_VISIBLE_DEVICES=0";
-  # };
 
   zramSwap = {
     enable = true;
@@ -288,6 +232,7 @@ in
     imlib2Full
     pkg-config
     ### CODE
+    bubblewrap # for codex
     pipx
     golangci-lint
     gofumpt
@@ -297,7 +242,6 @@ in
     nix-index # to nix-locate `#include <.h>`
     cursor-cli
     clojure-lsp
-    zls
     rust-analyzer
     rustfmt
     direnv
@@ -319,7 +263,7 @@ in
     typescript # for ts_ls
     typescript-language-server # for ts_ls
     bun
-    nodePackages.prettier
+    prettier
     black
     go
     gopls
@@ -430,7 +374,7 @@ in
     dict
     fzf
     ### WM/SYSTEM
-    swww
+    awww
     hyprpicker # colorpick
     pastel # colorpick
     ripdrag

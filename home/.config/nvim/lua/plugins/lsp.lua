@@ -36,7 +36,7 @@ return {
       vim.lsp.enable({
         "gopls",
         "golangci_lint_ls",
-        "zls",
+        -- "zls", -- run by direnv
         "html",   -- for formatting
         "bashls", -- on zsh files it just eats a cpu
         "jsonls",
@@ -51,9 +51,12 @@ return {
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       lspconfig = require("lspconfig")
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
+      capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable forcing to edit function argument signatures via weird jump mode
       vim.lsp.config("*", {
         capabilities = capabilities
+      })
+      vim.lsp.config("zls", {
+        autostart = false,
       })
       vim.lsp.config("gopls", {
         settings = {
@@ -111,12 +114,13 @@ return {
     end
   },
   {
-    "https://github.com/NotAShelf/direnv.nvim",
-    config = function()
-      require("direnv").setup({
-        keybindings = false
-      })
-    end,
+    "https://github.com/actionshrimp/direnv.nvim",
+    opts = {
+      async = true,
+      on_direnv_finished = function()
+        vim.cmd("lsp enable")
+      end
+    }
   },
   {
     'https://github.com/stevearc/aerial.nvim',
