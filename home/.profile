@@ -1,9 +1,6 @@
 ### TRASH
 export TRASH=~/.local/share/Trash/files
 
-### HARDWARE
-export CPU_COUNT=$((100 / $(getconf _NPROCESSORS_ONLN)))
-
 ### from .nix
 # export XDG_RUNTIME_DIR="/run/user/$UID"
 # export XDG_SESSION_TYPE='wayland' # Explicitly state the session type

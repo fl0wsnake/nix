@@ -43,7 +43,10 @@ vim.keymap.set("", "<leader>y",
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end)
 vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end)
-vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
+vim.keymap.set({ "", 'i' }, "<C-q>", function()
+  vim.cmd('q')
+  if vim.fn.tabpagenr() > 1 then vim.cmd('tabp') end
+end)
 vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
@@ -84,8 +87,20 @@ vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
 vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end) -- keep expected behavior when wrap
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end)
-
 --- INTERFACE
+
+-- Keep view area to the left always
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+  callback = function()
+    if vim.fn.winsaveview().leftcol > 0 then
+      vim.fn.winrestview({
+        leftcol = math.max(0, vim.fn.virtcol(".") - vim.api.nvim_win_get_width(0) + 43 +
+          vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].textoff)
+      })
+    end
+  end,
+})
+
 vim.opt.mouse = ''
 
 --- SEARCH
@@ -94,8 +109,9 @@ vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true }) -- n searches
 vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true }) -- N searches backward regardless of / or ?
 
 --- SELECTION
-vim.keymap.set("n", "<a-v>", "`[v`]") -- Pasted or yanked text
-vim.keymap.set("n", "<a-V>", "ggVG")  -- All text
+vim.keymap.set("n", "<a-v>", "`[v`]")  -- Pasted or yanked text
+vim.keymap.set("n", "<a-=>", "`[v`]=") -- = format said text
+vim.keymap.set("n", "<a-V>", "ggVG")   -- All text
 
 -- TOGGLES
 vim.keymap.set("", "<a-w>", function()
@@ -157,7 +173,7 @@ vim.keymap.set("", "<a-l>", Down_v)
 --- PRESENTATION
 vim.o.list = true
 vim.o.listchars = 'tab:  ,precedes:❮,extends:❯,trail:·,nbsp:…'
-vim.cmd('set cursorline nowrap scrolloff=999 sidescrolloff=10')
+vim.cmd('set cursorline nowrap scrolloff=999 sidescrolloff=40')
 vim.api.nvim_create_autocmd("VimResized", {
   pattern = '*', command = "wincmd ="
 })
@@ -184,7 +200,10 @@ vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>')
 vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>')
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end)
-vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end)
+vim.keymap.set({ '', 'i' }, '<C-Tab>', function()
+  vim.cmd.stopinsert()
+  vim.cmd 'tabn'
+end)
 vim.api.nvim_create_autocmd("BufEnter", {
   pattern = 'fzf',
   callback = function()

@@ -56,12 +56,13 @@ alias gd='git diff'
 alias gds='git diff --staged'
 alias gi='git init'
 alias gjj="git for-each-ref --format='delete %(refname)' refs/jj/ | git update-ref --stdin"
-alias gl="git log --graph --oneline --date-order --color=always --al"
+alias gl="git log --graph --oneline --date-order --color=always --all --reflog"
+alias md="mkdir -p"
+alias lc='losslesscut'
 alias glp='git -c pager.log=delta log -p --'
-alias glr="git log --graph --oneline --date-order --color=always --all --reflog "
 alias gms='git merge --squash'
 alias gop='xdg-open $(git remote get-url origin)'
-alias gp='git push'
+alias gp='git push -u'
 alias gparted='sudo -E gparted'
 alias gr="git reset"
 alias grb='git rebase -i'
@@ -149,14 +150,13 @@ bindkey '^[[1;5D' backward-word # left
 di() { for arg in $@; do nix profile add nixpkgs/nixos-unstable#$arg; done }
 ds() { unbuffer nix-search -d "$@" | less }
 mt() { mkdir -p "$(dirname "$1")" && touch "$1" && xdg-open "$1"}
-# unalias md
-# md() {
-#   if [ $#@ -gt 1 ]; then
-#     mkdir -p $@
-#   else
-#     mkdir -p $@ && cd $_
-#   fi
-# }
+mdc() {
+  if [ $#@ -gt 1 ]; then
+    mkdir -p $@
+  else
+    mkdir -p $@ && cd $_
+  fi
+}
 subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -maxdepth 1 -name '*.mkv' -type f | while read -r file; do

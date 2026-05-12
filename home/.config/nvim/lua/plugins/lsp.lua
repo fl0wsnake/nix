@@ -15,7 +15,7 @@ vim.keymap.set('n', '<localleader>D', vim.lsp.buf.declaration)
 vim.keymap.set('n', '<localleader>d', vim.lsp.buf.definition)
 vim.keymap.set('n', '<localleader>i', vim.lsp.buf.implementation)
 vim.keymap.set('n', '<localleader>t', vim.lsp.buf.type_definition)
-vim.keymap.set({ 'i', '' }, '<s-c-k>', vim.lsp.buf.signature_help)
+vim.keymap.set({ 'i', '' }, '<c-s-k>', vim.lsp.buf.signature_help)
 vim.keymap.set('n', '<localleader>wa', vim.lsp.buf.add_workspace_folder)
 vim.keymap.set('n', '<localleader>wr', vim.lsp.buf.remove_workspace_folder)
 vim.keymap.set('n', '<localleader>wl', function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end)
@@ -33,6 +33,10 @@ return {
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
+      vim.lsp.inlay_hint.enable(false)
+      vim.diagnostic.config({
+        update_in_insert = false, -- fix zls/other lsp lag
+      })
       vim.lsp.enable({
         "gopls",
         "golangci_lint_ls",
@@ -50,13 +54,16 @@ return {
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      lspconfig = require("lspconfig")
+      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable forcing to edit function argument signatures via weird jump mode
       vim.lsp.config("*", {
         capabilities = capabilities
       })
       vim.lsp.config("zls", {
         autostart = false,
+        on_attach = function(client, bufnr)
+          client.server_capabilities.semanticTokensProvider = nil -- fix lag
+        end,
       })
       vim.lsp.config("gopls", {
         settings = {

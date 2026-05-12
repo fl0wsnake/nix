@@ -23,7 +23,7 @@ return {
       vim.keymap.set({ "o" }, "iz", "<Plug>(textobj-comment-i)")
     end
   },
-  'https://github.com/jiangmiao/auto-pairs',
+  { 'https://github.com/windwp/nvim-autopairs', config = true },
   {
     'https://github.com/windwp/nvim-ts-autotag', -- autoclose and autorename html tag
     init = function()

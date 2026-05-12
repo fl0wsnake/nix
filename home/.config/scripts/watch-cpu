@@ -4,7 +4,7 @@ avg_busy=$((100 / $(getconf _NPROCESSORS_ONLN)))
 extra_info_avg_required=25
 interval=2
 
-mpstat --dec=0 $interval | awk 'NR >= 4{print 100-$12; fflush()}' | while read -r avg; do
+mpstat --dec=0 $interval | awk 'NR >= 4{print 100-$6-$12; fflush()}' | while read -r avg; do
   if [[ $avg -gt $avg_busy ]]; then
     echo '{"avg":'"$avg"',"top":"'"$(
       top -w -bc -n 1 |

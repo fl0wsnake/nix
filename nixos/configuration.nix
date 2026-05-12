@@ -215,19 +215,11 @@ in
 
   ### PACKAGES
   environment.systemPackages = with pkgs; [
-    ### SCREEN CASTING
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-vaapi # This provides the DRI/Hardware link
-    gst_all_1.gst-libav # For software H.264/AAC fallback
-    gst_all_1.gst-rtsp-server # Often needed for the WFD stream
-    gnome-network-displays
     ### CODE
-    pkg-config
-    pkgconf # INFO to find needed C packages for zig
+    # pkg-config
+    # pkgconf # INFO to find needed C packages for zig
+    zig
+    zls
     bubblewrap # for codex
     pipx
     golangci-lint
@@ -266,6 +258,7 @@ in
     eww
     sysstat
     ### MEDIA
+    losslesscut-bin
     rclip
     shotcut
     kdePackages.kdenlive
@@ -375,7 +368,7 @@ in
     ventoy
     expect # `unbuffer` to force TTY mode on nix-search to pipe colors to less
     go-mtpfs # only one mtp tool that works
-    # xev unstable
+    xev
     rclone
     lsof
     pulseaudioFull # for pactl: watch-volume
@@ -395,11 +388,18 @@ in
     dconf # for dark theme in apps
     wl-clipboard
     (pkgs.rofi.override { plugins = [ pkgs.rofi-emoji ]; })
-    hyprsunset
     waybar
     i3status-rust
-    ### DEV
-    imlib2Full # building nsxiv
+    ### SCREEN CASTING
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-vaapi # This provides the DRI/Hardware link
+    gst_all_1.gst-libav # For software H.264/AAC fallback
+    gst_all_1.gst-rtsp-server # Often needed for the WFD stream
+    gnome-network-displays
   ];
 
   # programs.nix-ld.enable = true; # Allows pip to work
@@ -640,19 +640,16 @@ in
   services.transmission = {
     # NOTE: careful not to enable the daemon, that will make the gui create broken states.
     settings = {
+      preallocation = 0; # actually fixes minutes long preallocation
       umask = 2; # 002 umask, files created as 664/775
     };
   };
 
-  # Fixes transmission lagging on external drive
-  boot.kernel.sysctl = {
-    "vm.dirty_background_ratio" = 5;
-    "vm.dirty_ratio" = 10;
-  };
   services.tlp = {
     enable = true;
     settings = {
       USB_AUTOSUSPEND = 0;
+      CPU_SCALING_GOVERNOR_ON_BAT = "performance";
     };
   };
 

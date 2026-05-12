@@ -31,7 +31,7 @@ p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
 s:!echo -n>$NNN_SEL*;
 t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
 v:!$SCRIPTS/iv-paste*;
-y:!printf '%q' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
+y:!printf '%s' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
 ")
 export NNN_BMS
 NNN_BMS=$(tr -d '\n' <<<"
@@ -44,9 +44,10 @@ c:$CAMERA;
 d:$HOME/Downloads;
 l:$SYNC/Large;
 m:/media;
-n:$SYNC/Large/nsfw;
+n:$SYNC/Data/nsfw;
 p:$HOME/Pictures;
 s:$SYNC;
 t:/tmp;
+h:$HOME/Syncthing/Data/Health;
 w:$HOME/WS;
 ")
