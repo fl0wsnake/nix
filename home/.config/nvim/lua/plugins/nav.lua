@@ -136,26 +136,109 @@ end
 
 return {
   {
-    "neutrie/pinbuff.nvim",
+    "https://github.com/ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      require("pinbuff").setup()
-      -- Slot can also be a string. I use integers 1 - 4 in this example.
-      vim.keymap.set("n", "<m-s-1>", require("pinbuff").setter(1))
-      vim.keymap.set("n", "<c-s-2>", require("pinbuff").setter(2))
-      vim.keymap.set("n", "<c-s-3>", require("pinbuff").setter(3))
-      vim.keymap.set("n", "<c-s-4>", require("pinbuff").setter(4))
-      vim.keymap.set("n", "<c-s-5>", require("pinbuff").setter(5))
-      vim.keymap.set("n", "<c-s-6>", require("pinbuff").setter(6))
-      vim.keymap.set("n", "<c-s-7>", require("pinbuff").setter(7))
-      vim.keymap.set("n", "<c-s-8>", require("pinbuff").setter(8))
-      vim.keymap.set("n", "<M-1>", require("pinbuff").jumper(1))
-      vim.keymap.set("n", "<M-2>", require("pinbuff").jumper(2))
-      vim.keymap.set("n", "<M-3>", require("pinbuff").jumper(3))
-      vim.keymap.set("n", "<M-4>", require("pinbuff").jumper(4))
-      vim.keymap.set("n", "<M-5>", require("pinbuff").jumper(5))
-      vim.keymap.set("n", "<M-6>", require("pinbuff").jumper(6))
-      vim.keymap.set("n", "<M-7>", require("pinbuff").jumper(7))
-      vim.keymap.set("n", "<M-8>", require("pinbuff").jumper(8))
+      local harpoon = require("harpoon")
+      local Path = require("plenary.path")
+
+      local function root()
+        return vim.fs.root(0, ".git") or vim.loop.cwd()
+      end
+
+      local function to_abs(path)
+        if path:sub(1, 1) == "/" or path:match("^%a:[/\\]") then
+          return path
+        end
+
+        return root() .. "/" .. path
+      end
+
+      harpoon:setup({
+        settings = {
+          save_on_toggle = true,
+          key = root,
+        },
+        default = {
+          get_root_dir = root,
+          create_list_item = function(config, name)
+            name = name or Path:new(vim.api.nvim_buf_get_name(0)):make_relative(config.get_root_dir())
+            local pos = vim.api.nvim_win_get_cursor(0)
+            return {
+              value = name,
+              context = {
+                -- row = pos[1],
+                -- col = pos[2],
+              },
+            }
+          end,
+          select = function(list_item, _, options)
+            if not list_item then
+              return
+            end
+            options = options or {}
+            local path = vim.fn.fnameescape(to_abs(list_item.value))
+            if options.vsplit then
+              vim.cmd("vsplit " .. path)
+            elseif options.split then
+              vim.cmd("split " .. path)
+            elseif options.tabedit then
+              vim.cmd("tabedit " .. path)
+            else
+              vim.cmd("edit " .. path)
+            end
+            -- local row = list_item.context and list_item.context.row or 1
+            -- local col = list_item.context and list_item.context.col or 0
+            -- local line_count = vim.api.nvim_buf_line_count(0)
+            -- row = math.min(row, line_count)
+            -- col = math.max(col, 0)
+            -- vim.api.nvim_win_set_cursor(0, { row, col })
+          end,
+        },
+      })
+
+      -- local harpoon = require("harpoon")
+      -- local default_select = require("harpoon.config").get_default_config().default.select
+      -- harpoon:setup({
+      --   settings = {
+      --     save_on_toggle = true,
+      --     key = function()
+      --       return vim.fs.root(0, ".git") or vim.loop.cwd()
+      --     end,
+      --   },
+      --   default = {
+      --     get_root_dir = function()
+      --       return vim.fs.root(0, ".git") or vim.loop.cwd()
+      --     end,
+      --   },
+      --   select = function(list_item, list, options)
+      --     if list_item and not require("plenary.path"):new(list_item.value):is_absolute() then
+      --       local root = list.config.get_root_dir()
+      --       if type(root) == "function" then
+      --         root = root()
+      --       end
+      --
+      --       -- Create a temporary item with the absolute path to avoid
+      --       -- accidentally saving absolute paths back to your data file.
+      --       list_item = vim.tbl_extend("force", list_item, {
+      --         value = require("plenary.path"):new(root, list_item.value):absolute()
+      --       })
+      --     end
+      --     default_select(list_item, list, options)
+      --   end,
+      -- })
+      vim.keymap.set("n", "<a-space>", function() harpoon:list():add() end)
+      vim.keymap.set("n", "<a-`>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+      vim.keymap.set("n", "<a-1>", function() harpoon:list():select(1) end)
+      vim.keymap.set("n", "<a-2>", function() harpoon:list():select(2) end)
+      vim.keymap.set("n", "<a-3>", function() harpoon:list():select(3) end)
+      vim.keymap.set("n", "<a-4>", function() harpoon:list():select(4) end)
+      vim.keymap.set("n", "<a-5>", function() harpoon:list():select(5) end)
+      vim.keymap.set("n", "<a-6>", function() harpoon:list():select(6) end)
+      vim.keymap.set("n", "<a-7>", function() harpoon:list():select(7) end)
+      vim.keymap.set("n", "<a-8>", function() harpoon:list():select(8) end)
+      vim.keymap.set("n", "<a-9>", function() harpoon:list():select(9) end)
     end
   },
   {

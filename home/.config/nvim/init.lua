@@ -266,16 +266,16 @@ vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on') end,
   Silent)
 
---- SESSION
-vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
-vim.api.nvim_create_autocmd("VimLeavePre", {
-  callback = function()
-    for arg_i, arg in pairs(vim.v.argv) do
-      if arg == '-S' then
-        vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
-      end
-    end
-  end,
-})
+-- --- SESSION
+-- vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
+-- vim.api.nvim_create_autocmd("VimLeavePre", {
+--   callback = function()
+--     for arg_i, arg in pairs(vim.v.argv) do
+--       if arg == '-S' then
+--         vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
+--       end
+--     end
+--   end,
+-- })
 
 require("config.lazy")

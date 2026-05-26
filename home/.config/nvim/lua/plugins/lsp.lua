@@ -74,7 +74,7 @@ return {
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   --
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable forcing to edit function argument signatures via weird jump mode
       vim.lsp.config("*", {
         capabilities = capabilities
