@@ -44,7 +44,7 @@ alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
 alias fdisk='sudo fdisk -l'
-alias g="git log --graph --oneline --date-order --color=always --all"
+alias g="git status -s && git log --graph --oneline --date-order --color=always --all"
 alias ga='git add -A'
 alias gb='git branch'
 alias gbd='git branch --delete'
@@ -57,21 +57,22 @@ alias gds='git diff --staged'
 alias gi='git init'
 alias gjj="git for-each-ref --format='delete %(refname)' refs/jj/ | git update-ref --stdin"
 alias gl="git log --graph --oneline --date-order --color=always --all --reflog"
-alias md="mkdir -p"
-alias lc='losslesscut'
 alias glp='git -c pager.log=delta log -p --'
+alias gma='git merge --abort'
 alias gms='git merge --squash'
 alias gop='xdg-open $(git remote get-url origin)'
 alias gp='git push -u'
 alias gparted='sudo -E gparted'
 alias gr="git reset"
 alias grb='git rebase -i'
+alias grba='git rebase --abort'
 alias gre="git reflog --date=relative"
 alias grh='git reset --hard'
 alias grs="git reset --soft"
 alias grt='git read-tree'
-alias gs='git status'
+alias gs='git status -s'
 alias gsm='git switch --merge'
+alias gw='git switch'
 alias h="$EDITOR $HISTFILE"
 alias j='jj'
 alias jcl='journalctl --since today --reverse'
@@ -90,11 +91,13 @@ alias jp='jj git push'
 alias jr='jj rebase'
 alias js='jj status'
 alias kat='killall -15 -r'
+alias lc='losslesscut'
 alias lg='lazygit'
 alias lgf='lazygit -f'
 alias ln='ln -sT'
 alias ls='ls --color=always -A'
 alias lsblk='lsblk -f'
+alias md="mkdir -p"
 alias mkdir='mkdir -p'
 alias nix-shell="nix-shell --run zsh"
 alias nowin='sudo efibootmgr -N'
@@ -118,8 +121,8 @@ alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
 alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist $(wl-paste)'
-alias zf='zig fetch --save git+'
 alias zb='zig build --summary none -Doptimize=Debug run --'
+alias zf='zig fetch --save git+'
 
 . "$ZDOTDIR"/modules/keymaps
 . "$ZDOTDIR"/modules/expand-dots

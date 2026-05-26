@@ -97,14 +97,10 @@ end
 local function helptags()
   vim.call('fzf#run', {
     source =
-    -- string.format("grep -Eho '^\\S*' %s",
         string.format(
           "cat %s | cut -d'\t' -f1,2 | column -t -s'\t' -C strictwidth=20",
           table.concat(vim.fn.globpath(vim.o.runtimepath, 'doc/tags', true, true), ' ')
         ),
-    -- options = {
-    --   "--preview", "bat --style=plain --color=always {2} ",
-    -- },
     sink = function(selection)
       vim.cmd('tab h ' .. string.match(selection, '^[^ ]*'))
     end,
@@ -140,11 +136,33 @@ end
 
 return {
   {
+    "neutrie/pinbuff.nvim",
+    config = function()
+      require("pinbuff").setup()
+      -- Slot can also be a string. I use integers 1 - 4 in this example.
+      vim.keymap.set("n", "<m-s-1>", require("pinbuff").setter(1))
+      vim.keymap.set("n", "<c-s-2>", require("pinbuff").setter(2))
+      vim.keymap.set("n", "<c-s-3>", require("pinbuff").setter(3))
+      vim.keymap.set("n", "<c-s-4>", require("pinbuff").setter(4))
+      vim.keymap.set("n", "<c-s-5>", require("pinbuff").setter(5))
+      vim.keymap.set("n", "<c-s-6>", require("pinbuff").setter(6))
+      vim.keymap.set("n", "<c-s-7>", require("pinbuff").setter(7))
+      vim.keymap.set("n", "<c-s-8>", require("pinbuff").setter(8))
+      vim.keymap.set("n", "<M-1>", require("pinbuff").jumper(1))
+      vim.keymap.set("n", "<M-2>", require("pinbuff").jumper(2))
+      vim.keymap.set("n", "<M-3>", require("pinbuff").jumper(3))
+      vim.keymap.set("n", "<M-4>", require("pinbuff").jumper(4))
+      vim.keymap.set("n", "<M-5>", require("pinbuff").jumper(5))
+      vim.keymap.set("n", "<M-6>", require("pinbuff").jumper(6))
+      vim.keymap.set("n", "<M-7>", require("pinbuff").jumper(7))
+      vim.keymap.set("n", "<M-8>", require("pinbuff").jumper(8))
+    end
+  },
+  {
     'https://github.com/junegunn/fzf.vim',
     dependencies = {
       {
         'https://github.com/junegunn/fzf',
-        -- build = function() vim.fn['fzf#install']() end,
       }
     },
     init = function()

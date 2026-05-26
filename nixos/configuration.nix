@@ -12,7 +12,11 @@
 
 let
   sessionVariablesFlatpak = {
-    LC_COLLATE = "C"; # affects all file pickers
+    LC_COLLATE = "C"; # Affects all file pickers; Should be default, because:
+    # LC_COLLATE= ls # no way to put names at very start/end:
+    # ~!_0-9 -> ~!_a-z -> ~!_A-Z
+    # LC_COLLATE=C ls # yes way
+    # ! -> _1Aa -> ~
     GTK_THEME = "Adwaita:dark"; # affects firefox, gparted etc.
   };
   zshAutoNotify = pkgs.fetchFromGitHub {
@@ -216,6 +220,7 @@ in
   ### PACKAGES
   environment.systemPackages = with pkgs; [
     ### CODE
+    rust-bindgen
     # pkg-config
     # pkgconf # INFO to find needed C packages for zig
     zig
@@ -229,7 +234,7 @@ in
     google-cloud-sdk
     nix-index # to nix-locate `#include <.h>`
     clojure-lsp
-    rust-analyzer
+    unstable.rust-analyzer # fix creating /src/target
     rustfmt
     direnv
     aider-chat
@@ -312,6 +317,7 @@ in
     ascii
     neovim
     nnn
+    moreutils # vidir for nnn
     bat
     ### NETWORK
     (unstable.brave.override {
@@ -577,7 +583,7 @@ in
       wantedBy = [ "timers.target" ];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart = "${pkgs.trash-cli}/bin/trash-empty 14";
+        ExecStart = "${pkgs.trash-cli}/bin/trash-empty 7";
       };
     };
   };
@@ -652,6 +658,16 @@ in
       CPU_SCALING_GOVERNOR_ON_BAT = "performance";
     };
   };
+
+  # TODO remove if after enabling trackpoint it still floats
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="TPPS/2 IBM TrackPoint", RUN+="${pkgs.runtimeShell} -c 'echo 0 > /sys/bus/serio/devices/serio1/drift_time'"
+    ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="TPPS/2 IBM TrackPoint", ENV{LIBINPUT_DISABLE_DEVICE}="1"
+  '';
+  systemd.tmpfiles.rules = [
+    "w /sys/bus/serio/devices/serio1/sensitivity -- - - - 0"
+    "w /sys/bus/serio/devices/serio1/speed      -- - - - 0"
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

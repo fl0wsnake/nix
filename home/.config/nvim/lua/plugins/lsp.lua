@@ -29,6 +29,26 @@ vim.keymap.set('', '<a-f>', function()
   print("fmt_on_save == " .. tostring(vim.g.fmt_on_save))
 end)
 
+local function scroll_hover(delta)
+  local cmd
+  if (delta < 0) then
+    cmd = "norm! " .. math.abs(delta) .. "k"
+  else
+    cmd = "norm! " .. delta .. "j"
+  end
+  return function()
+    local winid = vim.b.lsp_floating_preview
+    if winid and vim.api.nvim_win_is_valid(winid) then
+      vim.api.nvim_win_call(winid, function()
+        vim.cmd(cmd)
+      end)
+    end
+  end
+end
+vim.keymap.set("n", "<C-n>", scroll_hover(4))
+vim.keymap.set("n", "<C-p>", scroll_hover(-4))
+
+
 return {
   {
     'https://github.com/neovim/nvim-lspconfig',
@@ -54,7 +74,7 @@ return {
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+      -- capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable forcing to edit function argument signatures via weird jump mode
       vim.lsp.config("*", {
         capabilities = capabilities
@@ -129,18 +149,18 @@ return {
       end
     }
   },
-  {
-    'https://github.com/stevearc/aerial.nvim',
-    init = function()
-      require("aerial").setup({
-        on_attach = function(bufnr)
-          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
-        end,
-      })
-      vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")
-    end
-  },
+  -- { deprecated?
+  --   'https://github.com/stevearc/aerial.nvim',
+  --   init = function()
+  --     require("aerial").setup({
+  --       on_attach = function(bufnr)
+  --         vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+  --         vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
+  --       end,
+  --     })
+  --     vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")
+  --   end
+  -- },
   -- {
   --   'https://github.com/nvimtools/none-ls.nvim',
   --   dependencies = { 'https://github.com/nvim-lua/plenary.nvim' },

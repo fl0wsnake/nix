@@ -56,8 +56,7 @@ return {
       },
       mapping = cmp.mapping.preset.insert({
         ['<C-space>'] = cmp.mapping.confirm {
-          behavior = cmp.ConfirmBehavior.Replace,
-          select = true,
+          behavior = cmp.ConfirmBehavior.Insert, select = true,
         },
         ['<C-y>'] = cmp.mapping.scroll_docs(-4),
         ['<C-e>'] = cmp.mapping.scroll_docs(4),

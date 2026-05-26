@@ -33,6 +33,7 @@ smart_borders on
 # exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 # exec hash dbus-update-activation-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 
+output * adaptive_sync off
 output HEADLESS-1 pos -1920 0 res 1920x1080
 # output HDMI-A-2 pos -1920 0 res 1920x1080
 
@@ -79,6 +80,9 @@ input type:touchpad {
   tap enabled
   natural_scroll enabled
 }
+input "2:14:ETPS/2_Elantech_TrackPoint" {
+  events disabled
+}
 
 bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec $SCRIPTS_SWAY/clipboard-select
@@ -89,6 +93,7 @@ bindsym $mod+Shift+e exec rofi -modi emoji -show emoji
 bindsym $mod+p exec $TERMINAL -e $SHELL -c "htop"
 bindsym $mod+v exec ripdrag $(cat "$NNN_SEL")
 bindsym $mod+Escape exec poweroff-gracefully
+bindsym $mod+Shift+Escape exec reboot-gracefully
 bindsym $mod+Shift+c exec hyprpicker -n | wl-copy
 bindsym $mod+Control+Shift+c exec hyprpicker -n | xargs pastel format name | wl-copy
 
@@ -169,7 +174,7 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || brave"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave && brave --profile-directory=2)"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D

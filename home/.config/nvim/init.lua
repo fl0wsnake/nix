@@ -1,18 +1,14 @@
 require("config.util")
 Silent = { silent = true }
 _ = {}
-vim.api.nvim_create_augroup('my', { clear = false })
+vim.api.nvim_create_augroup('default', { clear = false })
 
--- vim.cmd('set guicursor=a:Cursor')
--- vim.cmd('highlight Cursor gui=NONE guifg=NONE guibg=NONE ctermfg=NONE ctermbg=NONE')
 vim.cmd([[
   highlight Cursor guibg=#00FF00 guifg=NONE
   highlight iCursor guibg=#00FF00 guifg=NONE
   highlight vCursor guibg=#00FF00 guifg=NONE
   highlight rCursor guibg=#00FF00 guifg=NONE
 ]])
-
--- vim.cmd('highlight Cursor guibg=white')
 
 vim.o.encoding = 'utf-8'
 vim.o.fileencoding = 'utf-8'
@@ -21,6 +17,7 @@ vim.g.maplocalleader = ","
 
 --- PROCESS INTEGRATION
 vim.cmd('set termguicolors title titlestring=%t')
+
 --- FILESYSTEM
 vim.api.nvim_create_autocmd(
   { "BufWritePre" },
@@ -43,10 +40,7 @@ vim.keymap.set("", "<leader>y",
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end)
 vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end)
-vim.keymap.set({ "", 'i' }, "<C-q>", function()
-  vim.cmd('q')
-  if vim.fn.tabpagenr() > 1 then vim.cmd('tabp') end
-end)
+vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
 vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
@@ -60,7 +54,34 @@ vim.keymap.set("", "<leader>x", function()
   end
 end)
 
+--- TABLINE
+vim.o.tabline = "%!v:lua.MyTabLine()"
+function MyTabLine()
+  local res = ""
+  for tab_i = 1, vim.fn.tabpagenr("$") do
+    if tab_i == vim.fn.tabpagenr() then
+      res = res .. "%#TabLineSel#"
+    else
+      res = res .. "%#TabLine#"
+    end
+    if tab_i ~= 1 then
+      res = res .. "|"
+    end
+    res = res .. tab_i .. ":"
+    local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
+    if bufname ~= "" then
+      res = res .. vim.fn.fnamemodify(bufname, ":t")
+    else
+      res = res .. "[No Name]"
+    end
+  end
+  res = res .. "%#TabLineFill#%T"
+  return res
+end
+
 --- STATUSLINE
+vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
+vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
 function _G.git_relative_path()
   local filepath = vim.fn.expand('%:p')
   if filepath == '' then return '[No Name]' end
@@ -77,18 +98,16 @@ function _G.git_relative_path()
   return '%#StatusLineBold#' .. root_dirname .. '%#StatusLine#/' .. relative
 end
 
-vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
-vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
-
 --- TYPING
-vim.keymap.set('v', '$', 'g_')
+vim.keymap.set('i', '<C-S-w>', '<C-o>dw') -- delete word forward
+vim.keymap.set('v', '$', 'g_')            -- fix grabbing newline
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
 vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
 vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end) -- keep expected behavior when wrap
 vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end)
---- INTERFACE
 
+--- INTERFACE
 -- Keep view area to the left always
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
   callback = function()
@@ -124,7 +143,7 @@ vim.api.nvim_create_autocmd(
   'FileType',
   {
     pattern = "*",
-    command = 'set formatoptions-=ro'
+    command = 'set formatoptions-=cro'
   }
 )
 
