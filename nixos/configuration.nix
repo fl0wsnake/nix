@@ -179,6 +179,8 @@ in
 
   programs.starship.enable = true;
 
+  programs.nix-ld.enable = true; # for cursor install script
+
   security.sudo = {
     enable = true;
     wheelNeedsPassword = false;
@@ -214,14 +216,18 @@ in
   };
 
   environment.variables = {
-    PATH = [ "$HOME/.npm/bin" ];
+    PATH = [
+      "$HOME/.npm/bin"
+      "$HOME/.local/bin" # cursor install script
+    ];
   };
 
   ### PACKAGES
   environment.systemPackages = with pkgs; [
     ### CODE
+    just
     rust-bindgen
-    # pkg-config
+    pkg-config # May or may not be needed globally
     # pkgconf # INFO to find needed C packages for zig
     zig
     zls
@@ -320,11 +326,10 @@ in
     moreutils # vidir for nnn
     bat
     ### NETWORK
+    totp-cli
     (unstable.brave.override {
       commandLineArgs = [
         "--password-store=basic" # This works
-        "--restore-last-session" # These don't do anything
-        "--disable-session-crashed-bubble"
       ];
     })
     transmission_4-gtk

@@ -72,10 +72,11 @@ return {
         "basedpyright",
         "ruff",
         "clangd", -- ccls is worse & creates huge .ccls-cache dirs
+        "just",
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   --
-      capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable forcing to edit function argument signatures via weird jump mode
+      capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   -- fix rust_analyzer stressing about OUT env
+      capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable jumps after snippet completion
       vim.lsp.config("*", {
         capabilities = capabilities
       })

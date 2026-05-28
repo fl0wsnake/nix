@@ -99,8 +99,9 @@ function _G.git_relative_path()
 end
 
 --- TYPING
-vim.keymap.set('i', '<C-S-w>', '<C-o>dw') -- delete word forward
-vim.keymap.set('v', '$', 'g_')            -- fix grabbing newline
+vim.keymap.set('i', '<a-e>', '<c-o>e<c-o>l') -- jump after word end
+vim.keymap.set('i', '<C-S-w>', '<C-o>dw')    -- delete word forward
+vim.keymap.set('v', '$', 'g_')               -- fix selecting newline
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
 vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
@@ -266,16 +267,16 @@ vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on') end,
   Silent)
 
--- --- SESSION
--- vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
--- vim.api.nvim_create_autocmd("VimLeavePre", {
---   callback = function()
---     for arg_i, arg in pairs(vim.v.argv) do
---       if arg == '-S' then
---         vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
---       end
---     end
---   end,
--- })
+--- SESSION
+vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    for arg_i, arg in pairs(vim.v.argv) do
+      if arg == '-S' then
+        vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
+      end
+    end
+  end,
+})
 
 require("config.lazy")

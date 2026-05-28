@@ -142,9 +142,39 @@ return {
     config = function()
       local harpoon = require("harpoon")
       local Path = require("plenary.path")
+      local Data = require("harpoon.data")
+
+      local last_root
+      local loaded_root
 
       local function root()
-        return vim.fs.root(0, ".git") or vim.loop.cwd()
+        local buf = vim.api.nvim_get_current_buf()
+
+        -- When closing/saving the Harpoon menu, the current buffer is the menu
+        -- buffer, not a project file. Reuse the project root that opened it.
+        if vim.bo[buf].filetype == "harpoon" and last_root then
+          return last_root
+        end
+
+        local dir = vim.fs.root(buf, ".git") or vim.loop.cwd()
+        last_root = dir
+        return dir
+      end
+
+      local function ensure_project_data()
+        local dir = root()
+
+        -- Harpoon reads its backing file during setup. If setup happened before the
+        -- project buffer was current, reload the data object before decoding the list.
+        if loaded_root ~= dir then
+          harpoon.data = Data.Data:new(harpoon.config)
+          loaded_root = dir
+        end
+      end
+
+      local function list(name)
+        ensure_project_data()
+        return harpoon:list(name)
       end
 
       local function to_abs(path)
@@ -164,13 +194,9 @@ return {
           get_root_dir = root,
           create_list_item = function(config, name)
             name = name or Path:new(vim.api.nvim_buf_get_name(0)):make_relative(config.get_root_dir())
-            local pos = vim.api.nvim_win_get_cursor(0)
             return {
               value = name,
-              context = {
-                -- row = pos[1],
-                -- col = pos[2],
-              },
+              context = {},
             }
           end,
           select = function(list_item, _, options)
@@ -188,48 +214,12 @@ return {
             else
               vim.cmd("edit " .. path)
             end
-            -- local row = list_item.context and list_item.context.row or 1
-            -- local col = list_item.context and list_item.context.col or 0
-            -- local line_count = vim.api.nvim_buf_line_count(0)
-            -- row = math.min(row, line_count)
-            -- col = math.max(col, 0)
-            -- vim.api.nvim_win_set_cursor(0, { row, col })
           end,
         },
       })
 
-      -- local harpoon = require("harpoon")
-      -- local default_select = require("harpoon.config").get_default_config().default.select
-      -- harpoon:setup({
-      --   settings = {
-      --     save_on_toggle = true,
-      --     key = function()
-      --       return vim.fs.root(0, ".git") or vim.loop.cwd()
-      --     end,
-      --   },
-      --   default = {
-      --     get_root_dir = function()
-      --       return vim.fs.root(0, ".git") or vim.loop.cwd()
-      --     end,
-      --   },
-      --   select = function(list_item, list, options)
-      --     if list_item and not require("plenary.path"):new(list_item.value):is_absolute() then
-      --       local root = list.config.get_root_dir()
-      --       if type(root) == "function" then
-      --         root = root()
-      --       end
-      --
-      --       -- Create a temporary item with the absolute path to avoid
-      --       -- accidentally saving absolute paths back to your data file.
-      --       list_item = vim.tbl_extend("force", list_item, {
-      --         value = require("plenary.path"):new(root, list_item.value):absolute()
-      --       })
-      --     end
-      --     default_select(list_item, list, options)
-      --   end,
-      -- })
-      vim.keymap.set("n", "<a-space>", function() harpoon:list():add() end)
-      vim.keymap.set("n", "<a-`>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+      vim.keymap.set("n", "<a-`>", function() harpoon:list():add() end)
+      vim.keymap.set("n", "<a-space>", function() harpoon.ui:toggle_quick_menu(list()) end)
       vim.keymap.set("n", "<a-1>", function() harpoon:list():select(1) end)
       vim.keymap.set("n", "<a-2>", function() harpoon:list():select(2) end)
       vim.keymap.set("n", "<a-3>", function() harpoon:list():select(3) end)

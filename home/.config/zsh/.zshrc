@@ -39,7 +39,7 @@ alias dt="nix profile list --json | jq '.elements | keys[]' | xargs nix profile 
 alias du='du -h'
 alias dun='nix-env --uninstall'
 alias dus='du -h * | sort -h'
-alias e=nvim-smart
+alias e='nvim-session-socket'
 alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16

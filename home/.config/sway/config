@@ -192,7 +192,7 @@ bindsym --to-code $mod+g+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_n
 workspace $g_workspace output HEADLESS-1
 
 set $1_workspace 31:1
-bindsym $mod+1 workspace $1_workspace; exec "$focused_window || $TERMINAL -e $SHELL -c "$EDITOR""
+bindsym $mod+1 workspace $1_workspace; exec "$focused_window || nvim-session-socket"
 bindsym $mod+1+Shift move container to workspace $1_workspace
 bindsym $mod+1+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $1_workspace
 set $2_workspace 32:2
@@ -294,7 +294,7 @@ exec wlsunset -S 5:00 -s 20:00
 exec brave
 workspace $s_workspace
 workspace $1_workspace
-exec nvim-smart
+exec nvim-session-socket
 exec ~/WS/wp-daemon-rust/target/debug/wp-daemon-rust
 
 exec com.ktechpit.whatsie

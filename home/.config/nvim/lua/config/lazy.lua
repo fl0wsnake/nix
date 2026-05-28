@@ -16,6 +16,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  timeout = 86400, -- fix github being shit
   spec = {
     { import = "plugins" },
   },
