@@ -172,9 +172,9 @@ return {
         end
       end
 
-      local function list(name)
+      local function list()
         ensure_project_data()
-        return harpoon:list(name)
+        return harpoon:list()
       end
 
       local function to_abs(path)
@@ -187,8 +187,8 @@ return {
 
       harpoon:setup({
         settings = {
-          save_on_toggle = true,
           key = root,
+          save_on_toggle = true,
         },
         default = {
           get_root_dir = root,
@@ -218,17 +218,17 @@ return {
         },
       })
 
-      vim.keymap.set("n", "<a-`>", function() harpoon:list():add() end)
+      vim.keymap.set("n", "<a-`>", function() list():add() end)
       vim.keymap.set("n", "<a-space>", function() harpoon.ui:toggle_quick_menu(list()) end)
-      vim.keymap.set("n", "<a-1>", function() harpoon:list():select(1) end)
-      vim.keymap.set("n", "<a-2>", function() harpoon:list():select(2) end)
-      vim.keymap.set("n", "<a-3>", function() harpoon:list():select(3) end)
-      vim.keymap.set("n", "<a-4>", function() harpoon:list():select(4) end)
-      vim.keymap.set("n", "<a-5>", function() harpoon:list():select(5) end)
-      vim.keymap.set("n", "<a-6>", function() harpoon:list():select(6) end)
-      vim.keymap.set("n", "<a-7>", function() harpoon:list():select(7) end)
-      vim.keymap.set("n", "<a-8>", function() harpoon:list():select(8) end)
-      vim.keymap.set("n", "<a-9>", function() harpoon:list():select(9) end)
+      vim.keymap.set("n", "<a-1>", function() list():select(1) end)
+      vim.keymap.set("n", "<a-2>", function() list():select(2) end)
+      vim.keymap.set("n", "<a-3>", function() list():select(3) end)
+      vim.keymap.set("n", "<a-4>", function() list():select(4) end)
+      vim.keymap.set("n", "<a-5>", function() list():select(5) end)
+      vim.keymap.set("n", "<a-6>", function() list():select(6) end)
+      vim.keymap.set("n", "<a-7>", function() list():select(7) end)
+      vim.keymap.set("n", "<a-8>", function() list():select(8) end)
+      vim.keymap.set("n", "<a-9>", function() list():select(9) end)
     end
   },
   {
