@@ -90,10 +90,11 @@ bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/
 bindsym $mod+x exec $TERMINAL -e $SHELL -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e $SHELL -c "$EDITOR"
 bindsym $mod+Shift+e exec rofi -modi emoji -show emoji
-bindsym $mod+p exec $TERMINAL -e $SHELL -c "htop"
+bindsym $mod+p exec $TERMINAL -e $SHELL -c "sudo htop"
 bindsym $mod+v exec ripdrag $(cat "$NNN_SEL")
-bindsym $mod+Escape exec poweroff-gracefully
-bindsym $mod+Shift+Escape exec reboot-gracefully
+bindsym $mod+Escape exec graceful-poweroff
+bindsym $mod+Shift+Escape exec graceful-reboot
+bindsym $mod+Control+Shift+Escape exec graceful-exit
 bindsym $mod+Shift+c exec hyprpicker -n | wl-copy
 bindsym $mod+Control+Shift+c exec hyprpicker -n | xargs pastel format name | wl-copy
 
@@ -174,15 +175,15 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave && brave --profile-directory=2)"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave --profile-directory=Default & brave --profile-directory=Profile\ 1)"
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & telegram-desktop & com.ktechpit.whatsie &)
+bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & zapzap &)
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
-bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window || transmission-gtk"
+bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window || qbittorrent"
 bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
 bindsym --to-code $mod+f+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $f_workspace
 set $g_workspace 14:G
@@ -273,6 +274,7 @@ assign [class="discord"] $d_workspace
 assign [title="^Telegram.*"] $d_workspace
 assign [app_id="whatsapp-electron"] $d_workspace
 assign [app_id="com.ktechpit.whatsie"] $d_workspace
+assign [title="ZapZap"] $d_workspace
 assign [title="^Rakuten Viber"] $d_workspace
 
 assign [app_id="org.qbittorrent.qBittorrent"] $f_workspace
@@ -291,7 +293,8 @@ exec flameshot
 exec mako
 exec wlsunset -S 5:00 -s 20:00
 
-exec brave
+exec brave --profile-directory=Default
+exec brave --profile-directory=Profile\ 1
 workspace $s_workspace
 workspace $1_workspace
 exec nvim-session-socket

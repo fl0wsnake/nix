@@ -23,8 +23,8 @@ alias bootfix='NIXOS_INSTALL_BOOTLOADER=1 /run/current-system/bin/switch-to-conf
 alias c=wl-copy
 alias ca=calc
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
+alias colorpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias cp='rsync -aP --info=progress2 --timeout=300'
-alias cpick='sleep 1; hyprpicker -n | xargs pastel format name'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias cx='codex'
 alias d=dict
@@ -50,7 +50,7 @@ alias gb='git branch'
 alias gbd='git branch --delete'
 alias gc='git commit -v'
 alias gca='git commit --amend --no-edit'
-alias gch='git checkout'
+alias gck='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
 alias gd='git diff'
 alias gds='git diff --staged'
@@ -116,6 +116,7 @@ alias transr='trans :ru'
 alias transu='trans :uk'
 alias trash='trash -v'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
+alias usenix="echo use nix>.envrc && direnv allow"
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
 alias x="$NNN_COMM"
 alias xd='xdg-mime query default'

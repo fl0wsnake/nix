@@ -43,7 +43,7 @@ W:$WIKI;
 c:$CAMERA;
 d:$HOME/Downloads;
 l:$SYNC/Large;
-m:/media;
+m:/run/media/$USER;
 n:$SYNC/Data/nsfw;
 p:$HOME/Pictures;
 s:$SYNC;

@@ -151,6 +151,7 @@ in
   users.users.nix = {
     isNormalUser = true;
     extraGroups = [
+      "qbittorrent"
       "transmission" # fix transmission hanging when downloading to a udiskie mount
       "networkmanager"
       "wheel"
@@ -286,7 +287,7 @@ in
     ### SOCIAL
     unstable.viber
     telegram-desktop
-    unstable.whatsapp-electron
+    zapzap
     ### HARDWARE
     pciutils # for tb3/egpu
     usbutils
@@ -332,7 +333,8 @@ in
         "--password-store=basic" # This works
       ];
     })
-    transmission_4-gtk
+    transmission_4
+    qbittorrent
     microsoft-edge
     google-chrome
     nix-search-cli
@@ -412,6 +414,15 @@ in
     gst_all_1.gst-rtsp-server # Often needed for the WFD stream
     gnome-network-displays
   ];
+
+  services.qbittorrent = {
+    group = "users";
+    user = "nix";
+  };
+  programs.fuse.userAllowOther = true;
+  systemd.services.qbittorrent.serviceConfig.PrivateMounts = false;
+  systemd.services.qbittorrent.serviceConfig.ReadWritePaths = [ "/media/My Passport" ];
+  systemd.services.qbittorrent.serviceConfig.BindPaths = [ "/media/My Passport" ];
 
   # programs.nix-ld.enable = true; # Allows pip to work
 
@@ -637,7 +648,7 @@ in
 
   services.udisks2 = {
     enable = true; # required for udiskie
-    mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
+    # mountOnMedia = true; # otherwise it creates /run/media/$USER without `x` permissions, which doesn't let Transmission download
     settings = {
       "mount_options.conf" = {
         defaults = {

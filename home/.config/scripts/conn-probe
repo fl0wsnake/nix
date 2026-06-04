@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+beep() {
+  timeout 0.5s speaker-test -t sine -f 500
+}
+
+test_con() {
+  ping -c 1 google.com
+}
+
+while true; do
+  while true; do
+    test_con || break
+    sleep 10
+  done
+  beep
+  sleep 2.5
+  while true; do
+    if test_con; then
+      break
+    else
+      beep
+    fi
+    sleep 2.5
+  done
+done
