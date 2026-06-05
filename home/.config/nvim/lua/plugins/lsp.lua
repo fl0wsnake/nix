@@ -57,35 +57,18 @@ return {
       vim.diagnostic.config({
         update_in_insert = false, -- fix zls/other lsp lag
       })
-      vim.lsp.enable({
-        "gopls",
-        "golangci_lint_ls",
-        -- "zls", -- run by direnv
-        "html",   -- for formatting
-        "bashls", -- on zsh files it just eats a cpu
-        "jsonls",
-        "ts_ls",
-        "cssls",
-        "rust_analyzer",
-        "nixd",
-        "lua_ls",
-        "basedpyright",
-        "ruff",
-        "clangd", -- ccls is worse & creates huge .ccls-cache dirs
-        "just",
-      })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   -- fix rust_analyzer stressing about OUT env
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable jumps after snippet completion
       vim.lsp.config("*", {
         capabilities = capabilities
       })
-      vim.lsp.config("zls", {
-        autostart = false,
-        on_attach = function(client, bufnr)
-          client.server_capabilities.semanticTokensProvider = nil -- fix lag
-        end,
-      })
+      -- vim.lsp.config("zls", {
+      --   autostart = false,
+      --   on_attach = function(client, bufnr)
+      --     client.server_capabilities.semanticTokensProvider = nil -- fix lag
+      --   end,
+      -- })
       vim.lsp.config("gopls", {
         settings = {
           gopls = {
@@ -139,6 +122,23 @@ return {
           Lua = {}
         }
       })
+      vim.lsp.enable({
+        "gopls",
+        "golangci_lint_ls",
+        "zls",    -- run by direnv
+        "html",   -- for formatting
+        "bashls", -- on zsh files it just eats a cpu
+        "jsonls",
+        "ts_ls",
+        "cssls",
+        "rust_analyzer",
+        "nixd",
+        "lua_ls",
+        "basedpyright",
+        "ruff",
+        "clangd", -- ccls is worse & creates huge .ccls-cache dirs
+        "just",
+      })
     end
   },
   {
@@ -146,7 +146,7 @@ return {
     opts = {
       async = true,
       on_direnv_finished = function()
-        vim.cmd("LspStart")
+        -- vim.cmd("LspStart zls")
       end
     }
   },
@@ -175,16 +175,17 @@ return {
   --     }
   --   end
   -- },
-  {
-    'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
-    init = function()
-      require("lsp-format").setup {}
-      vim.api.nvim_create_autocmd('LspAttach', {
-        callback = function(args)
-          local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-          require("lsp-format").on_attach(client, args.buf)
-        end,
-      })
-    end
-  }
+
+  -- {
+  --   'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
+  --   init = function()
+  --     require("lsp-format").setup {}
+  --     vim.api.nvim_create_autocmd('LspAttach', {
+  --       callback = function(args)
+  --         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+  --         require("lsp-format").on_attach(client, args.buf)
+  --       end,
+  --     })
+  --   end
+  -- }
 }

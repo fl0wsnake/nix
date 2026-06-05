@@ -205,7 +205,7 @@ in
     enable = true;
   };
 
-  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.10" ];
+  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.12" ];
   nixpkgs.config = {
     allowUnfree = true;
   };
@@ -233,10 +233,8 @@ in
     zig
     zls
     bubblewrap # for codex
-    pipx
     golangci-lint
     gofumpt
-    claude-code
     gitkraken
     google-cloud-sdk
     nix-index # to nix-locate `#include <.h>`
@@ -358,7 +356,7 @@ in
     tabbed
     zathura
     nixd
-    nixfmt-rfc-style
+    nixfmt
     lua-language-server
     ### TEXT/LANGUAGE/PARSING
     tesseract
@@ -372,7 +370,7 @@ in
     dict
     fzf
     ### WM/SYSTEM
-    swww
+    awww
     hyprpicker # colorpick
     pastel # colorpick
     ripdrag
@@ -710,5 +708,5 @@ in
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "26.05"; # Did you read the comment?
 }
