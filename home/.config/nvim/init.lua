@@ -88,7 +88,7 @@ function _G.git_relative_path()
   local git_root = vim.fn.systemlist('git -C ' ..
     vim.fn.shellescape(vim.fn.fnamemodify(filepath, ':h')) .. ' rev-parse --show-toplevel')[1]
   if vim.v.shell_error ~= 0 or not git_root then
-    return vim.fn.expand('%:t')
+    return vim.fn.expand('%:p')
   end
   local root_dirname = vim.fn.fnamemodify(git_root, ':t')
   local relative = filepath:sub(#git_root + 2) -- strip git_root + trailing slash
@@ -276,6 +276,13 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
         vim.cmd("mksession! " .. vim.v.argv[arg_i + 1])
       end
     end
+  end,
+})
+
+--- TREESITTER
+vim.api.nvim_create_autocmd('FileType', {
+  callback = function()
+    pcall(vim.treesitter.start)
   end,
 })
 

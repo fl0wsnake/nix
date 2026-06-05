@@ -58,6 +58,10 @@ return {
         update_in_insert = false, -- fix zls/other lsp lag
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
+      local ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
+      if ok then
+        capabilities = vim.tbl_deep_extend('force', capabilities, cmp_nvim_lsp.default_capabilities())
+      end
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   -- fix rust_analyzer stressing about OUT env
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable jumps after snippet completion
       vim.lsp.config("*", {
@@ -145,9 +149,9 @@ return {
     "https://github.com/actionshrimp/direnv.nvim",
     opts = {
       async = true,
-      on_direnv_finished = function()
-        -- vim.cmd("LspStart zls")
-      end
+      -- on_direnv_finished = function()
+      --   vim.cmd("LspStart zls")
+      -- end
     }
   },
   -- { deprecated?
@@ -176,16 +180,16 @@ return {
   --   end
   -- },
 
-  -- {
-  --   'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
-  --   init = function()
-  --     require("lsp-format").setup {}
-  --     vim.api.nvim_create_autocmd('LspAttach', {
-  --       callback = function(args)
-  --         local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
-  --         require("lsp-format").on_attach(client, args.buf)
-  --       end,
-  --     })
-  --   end
-  -- }
+  {
+    'https://github.com/lukas-reineke/lsp-format.nvim', -- writes buffers async after formatting
+    init = function()
+      require("lsp-format").setup {}
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(args)
+          local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+          require("lsp-format").on_attach(client, args.buf)
+        end,
+      })
+    end
+  }
 }

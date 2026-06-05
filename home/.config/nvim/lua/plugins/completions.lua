@@ -40,7 +40,7 @@ return {
       expand = function() end,
       preselect = cmp.PreselectMode.None, -- INFO: preselect dumb completions, bye
       completion = {
-        autocomplete = { "InsertEnter", "TextChanged" },
+        autocomplete = { cmp.TriggerEvent.InsertEnter, cmp.TriggerEvent.TextChanged },
       },
       sources = {
         { name = 'nvim_lsp', },
