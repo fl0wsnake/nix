@@ -179,7 +179,7 @@ bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & zapzap &)
+bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & zapzap & zapzap)
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
@@ -291,16 +291,16 @@ exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
 exec wl-paste --watch cliphist store
 exec flameshot
 exec mako
-exec wlsunset -S 5:00 -s 20:00
+exec wlsunset -S 4:00 -s 22:00
 
 exec brave --profile-directory=Default
 exec brave --profile-directory=Profile\ 1
 workspace $s_workspace
 workspace $1_workspace
 exec nvim-session-socket
-exec ~/WS/wp-daemon-rust/target/debug/wp-daemon-rust
+exec cargo run --manifest-path ~/WS/wp-daemon-rust/Cargo.toml
 
-exec com.ktechpit.whatsie
+exec zapzap
 exec viber
 exec Telegram
 exec swaymsg [class="Viber"]kill

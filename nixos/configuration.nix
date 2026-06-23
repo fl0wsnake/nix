@@ -230,8 +230,8 @@ in
     rust-bindgen
     pkg-config # May or may not be needed globally
     # pkgconf # INFO to find needed C packages for zig
-    zig
-    zls
+    zig_0_15
+    zls_0_15
     bubblewrap # for codex
     golangci-lint
     gofumpt
@@ -326,7 +326,7 @@ in
     bat
     ### NETWORK
     totp-cli
-    (unstable.brave.override {
+    (brave.override {
       commandLineArgs = [
         "--password-store=basic" # This works
       ];
@@ -413,6 +413,12 @@ in
     gnome-network-displays
   ];
 
+  systemd.oomd = {
+    enable = true;
+    enableUserSlices = true;
+    enableSystemSlice = true;
+  };
+
   services.qbittorrent = {
     group = "users";
     user = "nix";
@@ -435,7 +441,6 @@ in
   services.flatpak = {
     enable = true;
     packages = [
-      # "com.ktechpit.whatsie"
       "app.zen_browser.zen"
       "com.github.tchx84.Flatseal"
     ];

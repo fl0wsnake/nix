@@ -67,12 +67,12 @@ return {
       vim.lsp.config("*", {
         capabilities = capabilities
       })
-      -- vim.lsp.config("zls", {
-      --   autostart = false,
-      --   on_attach = function(client, bufnr)
-      --     client.server_capabilities.semanticTokensProvider = nil -- fix lag
-      --   end,
-      -- })
+      vim.lsp.config("zls", {
+        autostart = false,
+        on_attach = function(client, bufnr)
+          client.server_capabilities.semanticTokensProvider = nil -- fix lag in 0.15.2
+        end,
+      })
       vim.lsp.config("gopls", {
         settings = {
           gopls = {
@@ -83,9 +83,6 @@ return {
             gofumpt = true,
           },
         },
-      })
-      vim.lsp.config("clangd", {
-        cmd = { 'clangd', '--query-driver=/run/current-system/sw/bin/gcc,/run/current-system/sw/bin/clang' }
       })
       vim.lsp.config("ts_ls", {
         settings = {

@@ -16,7 +16,10 @@ return {
           vim.keymap.set({ 'i', 's' }, '<c-k>', function() if ls.locally_jumpable(-1) then ls.jump(-1) end end)
           ls.add_snippets("zig", {
             ls.snippet("print", {
-              ls.text_node({ "std.debug.print(\"{}\\n\", .{});" }),
+              ls.text_node({ "std.debug.print(\"\\n\", .{});" }),
+            }),
+            ls.snippet("gpa", {
+              ls.text_node({ "gpa: std.mem.Allocator" }),
             }),
           })
           ls.add_snippets("go", {

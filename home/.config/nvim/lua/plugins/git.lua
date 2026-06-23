@@ -11,6 +11,7 @@ return {
       vim.g.gitgutter_map_keys = 0
       vim.o.updatetime = 100 -- fix unreasonably big delay
       vim.keymap.set('', '<a-z>', '<Plug>(GitGutterPreviewHunk)')
+      vim.keymap.set('', '<a-s>', '<Plug>(GitGutterStageHunk)')
       vim.keymap.set('', '<a-u>', '<Plug>(GitGutterUndoHunk)')
       vim.keymap.set('', '<leader>gd', function() vim.cmd('GitGutterDiffOrig') end)
       vim.keymap.set('', '<s-a-cr>', '<Plug>(GitGutterPrevHunk)')

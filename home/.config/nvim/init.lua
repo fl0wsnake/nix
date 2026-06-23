@@ -40,8 +40,6 @@ vim.keymap.set("", "<leader>y",
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end)
 vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end)
-vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
-vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end)
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
   pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
 })
@@ -53,6 +51,24 @@ vim.keymap.set("", "<leader>x", function()
     vim.fn.setreg("/", "")
   end
 end)
+
+-- vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
+-- chromium-like tabs
+vim.api.nvim_create_autocmd("TabLeave", {
+  callback = function()
+    prev_tab = vim.api.nvim_get_current_tabpage()
+  end,
+})
+vim.keymap.set({ "", "i" }, "<C-q>", function()
+  local target = prev_tab
+  vim.cmd("q")
+  if target and vim.api.nvim_tabpage_is_valid(target) then
+    vim.api.nvim_set_current_tabpage(target)
+  end
+  prev_tab = nil
+end)
+
+
 
 --- TABLINE
 vim.o.tabline = "%!v:lua.MyTabLine()"
@@ -99,9 +115,11 @@ function _G.git_relative_path()
 end
 
 --- TYPING
-vim.keymap.set('i', '<a-e>', '<c-o>e<c-o>l') -- jump after word end
-vim.keymap.set('i', '<C-S-w>', '<C-o>dw')    -- delete word forward
-vim.keymap.set('v', '$', 'g_')               -- fix selecting newline
+vim.keymap.set({ 'o', 'x' }, 'ac', 'aB', { remap = true }) -- `c`urly == `B`racket
+vim.keymap.set({ 'o', 'x' }, 'ic', 'iB', { remap = true })
+vim.keymap.set('i', '<a-e>', '<c-o>e<c-o>l')               -- jump after word end
+vim.keymap.set('i', '<C-S-w>', '<C-o>dw')                  -- delete word forward
+vim.keymap.set('v', '$', 'g_')                             -- fix selecting newline
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
 vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
@@ -175,10 +193,10 @@ vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>")
 vim.keymap.set("n", "<leader>t", "vip:'<,'>!column -t -s'|' -o'|'<cr>")
 
 --- SORTING
-vim.keymap.set("v", "<a-s>", ":'<,'>!sort<cr>")
-vim.keymap.set("n", "<a-s>", Sort_paragraph())
-vim.keymap.set("v", "<a-s-s>", ":'<,'>!sort -r<cr>")
-vim.keymap.set("n", "<a-s-s>", Sort_paragraph(true))
+vim.keymap.set("v", "<a-o>", ":'<,'>!sort<cr>")
+vim.keymap.set("n", "<a-o>", Sort_paragraph())
+vim.keymap.set("v", "<a-s-o>", ":'<,'>!sort -r<cr>")
+vim.keymap.set("n", "<a-s-o>", Sort_paragraph(true))
 
 --- MOVING AROUND
 vim.keymap.set("n", "<a-j>", ":m .+1<cr>")
@@ -216,7 +234,34 @@ vim.api.nvim_create_autocmd("BufEnter", { -- Uniquely distunguish [No Name] buff
 
 
 --- TABS
-vim.keymap.set({ '', 'i' }, '<C-t>', '<cmd>tab split<cr>')
+vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
+vim.keymap.set({ "", 'i' }, "<C-S-q>", function() vim.cmd('tabclose') end)
+-- Chromium-like close
+local tab_prev = nil
+local tab_prev_should_use = false
+vim.api.nvim_create_autocmd("TabLeave", {
+  callback = function()
+    tab_prev = vim.api.nvim_get_current_tabpage()
+    tab_prev_should_use = false
+  end,
+})
+vim.keymap.set({ "", "i" }, "<C-q>", function()
+  local tab_prev_local = tab_prev
+  local tab_prev_should_use_local = tab_prev_should_use
+  vim.cmd("q")
+  if tab_prev_should_use_local and tab_prev_local and vim.api.nvim_tabpage_is_valid(tab_prev_local) then
+    vim.api.nvim_set_current_tabpage(tab_prev_local)
+  end
+  tab_prev = nil
+end)
+vim.api.nvim_create_autocmd("TabNewEntered", {
+  callback = function()
+    tab_prev_should_use = true
+  end
+})
+vim.keymap.set({ '', 'i' }, '<C-t>', function()
+  vim.cmd('tab split')
+end)
 vim.keymap.set({ '', 'i' }, '<C-S-t>', '<cmd>tabe<cr>')
 vim.keymap.set({ '', 'i' }, '<C-S-PageUp>', function() vim.cmd '-tabm' end)
 vim.keymap.set({ '', 'i' }, '<C-S-PageDown>', function() vim.cmd '+tabm' end)
@@ -259,7 +304,7 @@ vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end)
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end)
-vim.keymap.set('', "<leader>bz", function() vim.cmd('e ~/.cache/zig/.index') end)
+vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end)
 vim.keymap.set('', '<leader>bl', function() vim.cmd('e ~/.local/share/nvim/lazy') end)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end)
 vim.keymap.set('', '<leader>l',

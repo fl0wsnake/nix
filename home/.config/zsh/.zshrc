@@ -15,6 +15,21 @@ alias f='file="$(~/.config/scripts/fuzzy)" && nnn "$file" && . "$NNN_TMPFILE"'
 alias D="cd $RICE"
 
 # alias gemini='gemini -r'
+# alias j='jj'
+# alias jd='jj diff'
+# alias jdd='jj diff -s'
+# alias jddd='jj diff --stat'
+# alias je='jj edit'
+# alias jf='jj git fetch'
+# alias ji='jj git init --colocate'
+# alias jl='jj log'
+# alias jla="jj log -r 'all()'"
+# alias jn='jj new'
+# alias jo='jj op log'
+# alias jop='jj op log'
+# alias jp='jj git push'
+# alias jr='jj rebase'
+# alias js='jj status'
 alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
 alias R='cd $(git rev-parse --show-toplevel)'
 alias T=/tmp
@@ -50,7 +65,6 @@ alias gb='git branch'
 alias gbd='git branch --delete'
 alias gc='git commit -v'
 alias gca='git commit --amend --no-edit'
-alias gck='git checkout'
 alias gcl='git clone --recurse-submodules -j8'
 alias gd='git diff'
 alias gds='git diff --staged'
@@ -66,30 +80,18 @@ alias gparted='sudo -E gparted'
 alias gr="git reset"
 alias grb='git rebase -i'
 alias grba='git rebase --abort'
+alias grbx='git rebase -X ours'
 alias gre="git reflog --date=relative"
 alias grh='git reset --hard'
 alias grs="git reset --soft"
 alias grt='git read-tree'
 alias gs='git status -s'
 alias gsm='git switch --merge'
+alias gt='git checkout'
 alias gw='git switch'
 alias h="$EDITOR $HISTFILE"
-alias j='jj'
 alias jcl='journalctl --since today --reverse'
-alias jd='jj diff'
-alias jdd='jj diff -s'
-alias jddd='jj diff --stat'
-alias je='jj edit'
-alias jf='jj git fetch'
-alias ji='jj git init --colocate'
-alias jl='jj log'
-alias jla="jj log -r 'all()'"
-alias jn='jj new'
-alias jo='jj op log'
-alias jop='jj op log'
-alias jp='jj git push'
-alias jr='jj rebase'
-alias js='jj status'
+alias jr='just run'
 alias kat='killall -15 -r'
 alias lc='losslesscut'
 alias lg='lazygit'
@@ -122,8 +124,9 @@ alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
 alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist $(wl-paste)'
-alias zb='zig build --summary none -Doptimize=Debug run --'
+alias zb='zig build --prominent-compile-errors --summary none -Doptimize=Debug'
 alias zf='zig fetch --save git+'
+alias zr='zig build --prominent-compile-errors --summary none -Doptimize=Debug run --'
 
 . "$ZDOTDIR"/modules/keymaps
 . "$ZDOTDIR"/modules/expand-dots
@@ -202,4 +205,5 @@ timestampify() {
 }
 
 # eval "$(fzf --zsh)" # for <C-r> history search
-# eval "$(direnv hook zsh)"
+
+eval "$(direnv hook zsh)"
