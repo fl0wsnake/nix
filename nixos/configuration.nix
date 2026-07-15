@@ -1,6 +1,7 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# NOTE: fix brave being unable to restore encrypted user cookies due to autologin disabling keyring. The fix is unreliable as long as autologin is enabled because I may still open brave before I unlock the keyring, which makes brave delete all user cookies! The easiest solution is just disabling brave dependance on the keyring by using plaintext storage.
+# services.gnome.gnome-keyring.enable = true;
+# security.pam.services.greetd.enableGnomeKeyring = true;
+# services.dbus.packages = [ pkgs.gcr ];
 
 {
   config,
@@ -42,7 +43,7 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 0;
+  boot.loader.timeout = 1;
 
   boot.tmp.useTmpfs = true;
 
@@ -188,16 +189,17 @@ in
   };
 
   # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "nix";
+  services.displayManager.autoLogin = {
+    enable = true;
+    user = "nix";
+  };
   # Workaround for GNOME autologin: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
-
-  # NOTE: fix brave being unable to restore encrypted user cookies due to autologin disabling keyring. The fix is unreliable as long as autologin is enabled because I may still open brave before I unlock the keyring, which makes brave delete all user cookies! The easiest solution is just disabling brave dependance on the keyring by using plaintext storage.
-  # services.gnome.gnome-keyring.enable = true;
-  # security.pam.services.greetd.enableGnomeKeyring = true;
-  # services.dbus.packages = [ pkgs.gcr ];
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 5;
+  };
 
   programs.firefox.enable = true;
 
@@ -262,7 +264,7 @@ in
     black
     go
     gopls
-    lua
+    lua5_1
     cargo
     rustc
     eww
@@ -328,7 +330,7 @@ in
     totp-cli
     (brave.override {
       commandLineArgs = [
-        "--password-store=basic" # This works
+        "--password-store=basic" # otherwise uses keyring, which is unlocked via password, which doesn't happen with autologin, making brave drop user sessions.
       ];
     })
     transmission_4
@@ -343,8 +345,6 @@ in
     chromium # for puppeteer
     mpv # for nnn previews
     libappindicator # for Dropbox
-    # libappindicator-gtk3 # for waybar
-    # libdbusmenu-gtk3 # for waybar
     luarocks-nix # for nvim
     gzip # for treesitter
     gcc # for treesitter. Clang works the same.
@@ -370,6 +370,7 @@ in
     dict
     fzf
     ### WM/SYSTEM
+    batsignal
     awww
     hyprpicker # colorpick
     pastel # colorpick
@@ -412,12 +413,6 @@ in
     gst_all_1.gst-rtsp-server # Often needed for the WFD stream
     gnome-network-displays
   ];
-
-  systemd.oomd = {
-    enable = true;
-    enableUserSlices = true;
-    enableSystemSlice = true;
-  };
 
   services.qbittorrent = {
     group = "users";
@@ -515,6 +510,7 @@ in
     packages =
       with pkgs;
       [
+        b612
         jetbrains-mono
         terminus_font
         font-awesome
@@ -529,13 +525,6 @@ in
   services.blueman.enable = true; # Enables the Blueman graphical tool
 
   systemd.user.services = {
-    wallpaper = {
-      wantedBy = [ "default.target" ];
-      serviceConfig = {
-        ExecStart = "${pkgs.batsignal}/bin/batsignal -w 40 -c 30 -d 20 -D 'shutdown now'";
-        Restart = "always";
-      };
-    };
     # upower signals are not handled by wayland
     batsignal = {
       wantedBy = [ "default.target" ];

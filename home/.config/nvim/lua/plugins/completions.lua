@@ -21,6 +21,10 @@ return {
             ls.snippet("gpa", {
               ls.text_node({ "gpa: std.mem.Allocator" }),
             }),
+            ls.snippet("NULL", {
+              ls.text_node({ "const NULL = @as(?*anyopaque, null);" }),
+            }),
+
           })
           ls.add_snippets("go", {
             ls.snippet("iferr", {

@@ -116,7 +116,7 @@ bindsym --to-code $mod+b exec blueman-manager
 bindsym --to-code $mod+t exec $SCRIPTS/syncthing-open
 
 # Swap focus between the tiling area and the floating area
-bindsym $mod+space focus mode_toggle
+# bindsym $mod+space focus mode_toggle
 
 default_border pixel 2
 
@@ -295,14 +295,14 @@ exec wlsunset -S 4:00 -s 22:00
 
 exec brave --profile-directory=Default
 exec brave --profile-directory=Profile\ 1
+
 workspace $s_workspace
 workspace $1_workspace
-exec nvim-session-socket
-exec cargo run --manifest-path ~/WS/wp-daemon-rust/Cargo.toml
+
+exec cargo run --manifest-path ~/WS/wp-daemon-rust/Cargo.toml 2>&1 >/tmp/wp-daemon-rust.log
 
 exec zapzap
 exec viber
 exec Telegram
-exec swaymsg [class="Viber"]kill
-exec swaymsg [app_id="org.telegram.desktop"]kill
 
+exec nvim-session-socket

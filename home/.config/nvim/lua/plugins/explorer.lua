@@ -16,6 +16,14 @@ return {
       }
     })
     vim.keymap.set('', '<A-x>', function() vim.cmd('Oil') end, Silent)
+    vim.api.nvim_create_autocmd("BufEnter", -- autochdir
+      {
+        pattern = "oil://*",
+        callback = function()
+          local dir = require("oil").get_current_dir()
+          if dir then vim.cmd.cd(dir) end
+        end,
+      })
   end,
   dependencies = {
     'https://github.com/nvim-tree/nvim-web-devicons',

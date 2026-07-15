@@ -51,24 +51,42 @@ vim.keymap.set("n", "<C-p>", scroll_hover(-4))
 
 return {
   {
+    "https://github.com/romus204/tree-sitter-manager.nvim",
+    dependencies = {}, -- tree-sitter CLI must be installed system-wide
+    config = function()
+      require("tree-sitter-manager").setup(
+        { auto_install = true, }
+      )
+    end,
+  },
+  {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
-      vim.lsp.inlay_hint.enable(false)
+      vim.lsp.config["gitlab_duo"] = { filetypes = {} } -- XXX: KEEP THIS OR DIE
+
+      -- vim.lsp.inlay_hint.enable(false) -- false by default, check by is_enabled() if in doubt. Idk why its here
+
+      vim.lsp.config["lua_ls"] = {
+        settings = {
+          Lua = {
+            workspace = {
+              library = {
+                vim.env.VIMRUNTIME -- Only index runtime api
+              },
+            },
+          },
+        },
+      }
       vim.diagnostic.config({
         update_in_insert = false, -- fix zls/other lsp lag
       })
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local ok, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
-      if ok then
-        capabilities = vim.tbl_deep_extend('force', capabilities, cmp_nvim_lsp.default_capabilities())
-      end
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false   -- fix rust_analyzer stressing about OUT env
       capabilities.textDocument.completion.completionItem.snippetSupport = false -- disable jumps after snippet completion
       vim.lsp.config("*", {
         capabilities = capabilities
       })
       vim.lsp.config("zls", {
-        autostart = false,
         on_attach = function(client, bufnr)
           client.server_capabilities.semanticTokensProvider = nil -- fix lag in 0.15.2
         end,
@@ -89,38 +107,6 @@ return {
           codeActionsOnSave = {
             ["source.addMissingImports"] = true
           }
-        }
-      })
-      vim.lsp.config('lua_ls', {
-        on_init = function(client)
-          if client.workspace_folders then
-            local path = client.workspace_folders[1].name
-            if
-                path ~= vim.fn.stdpath('config')
-                and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
-            then
-              return
-            end
-          end
-
-          client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-            runtime = {
-              version = 'LuaJIT',
-              path = {
-                'lua/?.lua',
-                'lua/?/init.lua',
-              },
-            },
-            workspace = {
-              checkThirdParty = false,
-              library = {
-                vim.env.VIMRUNTIME
-              }
-            }
-          })
-        end,
-        settings = {
-          Lua = {}
         }
       })
       vim.lsp.enable({
@@ -145,10 +131,15 @@ return {
   {
     "https://github.com/actionshrimp/direnv.nvim",
     opts = {
-      async = true,
-      -- on_direnv_finished = function()
-      --   vim.cmd("LspStart zls")
-      -- end
+      -- async = true,
+      on_direnv_finished = function()
+        if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
+          vim.cmd("lsp restart")
+        end
+      end,
+      on_direnv_finished_opts = {
+        pattern = { "DirenvReady", "DirenvNotFound" },
+      },
     }
   },
   -- { deprecated?

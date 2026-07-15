@@ -20,7 +20,7 @@ vim.cmd('set termguicolors title titlestring=%t')
 
 --- FILESYSTEM
 vim.api.nvim_create_autocmd(
-  { "BufWritePre" },
+  "BufWritePre", -- mkdir on save
   {
     callback = function()
       if vim.o.ft ~= 'oil' then
@@ -40,9 +40,10 @@ vim.keymap.set("", "<leader>y",
   Silent)
 vim.keymap.set("", "<leader>p", function() vim.cmd('e ' .. vim.fn.getreg('+')) end)
 vim.keymap.set("", "<c-s>", function() if vim.o.ft == 'oil' then vim.cmd('w') else vim.cmd('sil! wa') end end)
-vim.api.nvim_create_autocmd({ "FocusLost" }, {
-  pattern = '*', callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, nested = true
-})
+vim.api.nvim_create_autocmd("FocusLost",
+  {                                                                                                           -- wa on FocusLost
+    pattern = '*', nested = true, callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, -- nested for write aucmds
+  })
 vim.keymap.set("", "<leader>x", function()
   io.popen("sudo chmod +x " .. vim.fn.expand('%'))
   vim.o.filetype = 'sh'
@@ -142,14 +143,16 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 vim.opt.mouse = ''
 
 --- SEARCH
-vim.cmd('set ignorecase smartcase')
 vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true }) -- n searches forward regardless of / or ?
 vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true }) -- N searches backward regardless of / or ?
+vim.keymap.set("n", "<c-/>", "/\\c")                               -- N searches backward regardless of / or ?
 
 --- SELECTION
-vim.keymap.set("n", "<a-v>", "`[v`]")  -- Pasted or yanked text
+vim.keymap.set("n", "<a-V>", "`[v`]")  -- Pasted or yanked text
 vim.keymap.set("n", "<a-=>", "`[v`]=") -- = format said text
-vim.keymap.set("n", "<a-V>", "ggVG")   -- All text
+vim.keymap.set("n", "<a-v>", "ggVG")   -- All text
+-- vim.keymap.set("n", "<", "`[")
+-- vim.keymap.set("n", ">", "`]")
 
 -- TOGGLES
 vim.keymap.set("", "<a-w>", function()
@@ -176,17 +179,6 @@ vim.cmd('set nofixeol') -- Automatic newline before eol messes git diffs and spe
 vim.api.nvim_set_keymap('n', 'z', 'gc', _)
 vim.api.nvim_set_keymap('n', 'zz', 'gcgc', _)
 vim.api.nvim_set_keymap('x', 'z', 'gc', _)
-
--- -- AUTOFORMATTING -- XXX: breaks Xpaste mapped to Easyclip despite `remap = true`
--- vim.api.nvim_create_autocmd("BufEnter", {
---   pattern = '*',
---   callback = function()
---     if vim.o.ft ~= '' and vim.o.ft ~= 'text' and vim.o.ft ~= 'markdown' then
---       vim.keymap.set("n", "p", "p`]=`[", { remap = true, silent = true })
---       vim.keymap.set("v", "p", "p`]=`[", { remap = true, silent = true })
---     end
---   end
--- })
 
 --- TABLES
 vim.keymap.set("v", "<leader>t", ":'<,'>!column -t -s'|' -o'|'<cr>")
@@ -269,7 +261,7 @@ vim.keymap.set({ '', 'i' }, '<C-Tab>', function()
   vim.cmd.stopinsert()
   vim.cmd 'tabn'
 end)
-vim.api.nvim_create_autocmd("BufEnter", {
+vim.api.nvim_create_autocmd("BufEnter", { -- Fix C-Tab in fzf
   pattern = 'fzf',
   callback = function()
     vim.keymap.set({ '', 'i' }, '<C-Tab>', function() vim.cmd 'tabn' end)
@@ -305,6 +297,7 @@ vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua')
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end)
+vim.keymap.set('', "<leader>bZ", function() vim.cmd('e ~/.cache/zig') end)
 vim.keymap.set('', '<leader>bl', function() vim.cmd('e ~/.local/share/nvim/lazy') end)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end)
 vim.keymap.set('', '<leader>l',
@@ -325,6 +318,7 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 })
 
 --- TREESITTER
+vim.opt.shortmess:append("sWcI") -- stops "Press ENTER" prompts
 vim.api.nvim_create_autocmd('FileType', {
   callback = function()
     pcall(vim.treesitter.start)

@@ -43,6 +43,9 @@ alias cp='rsync -aP --info=progress2 --timeout=300'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias cx='codex'
 alias d=dict
+alias de='direnv'
+alias dei='echo "watch_file ./shell.nix\nuse nix"> .envrc'
+alias der='direnv reload'
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
@@ -101,13 +104,15 @@ alias ls='ls --color=always -A'
 alias lsblk='lsblk -f'
 alias md="mkdir -p"
 alias mkdir='mkdir -p'
-alias nix-shell="nix-shell --run zsh"
-alias nowin='sudo efibootmgr -N'
+alias nf='nix flake'
+alias ns="nix-shell --run zsh"
+alias nu='nix flake update'
 alias o=xdg-open
 alias p=wl-paste
 alias pg='pgrep -fal'
 alias pk='pkill -fc'
 alias pkill='pkill -c'
+alias re='nmcli d wifi rescan'
 alias rsync-mtp='rsync -aP --no-perms --no-owner --no-group'
 alias rsync='rsync -aP'
 alias scl='systemctl --user'
@@ -119,6 +124,7 @@ alias transu='trans :uk'
 alias trash='trash -v'
 alias tz='sudo timedatectl set-timezone "$(curl https://ipinfo.io/timezone)"'
 alias usenix="echo use nix>.envrc && direnv allow"
+alias win-abort='sudo efibootmgr -N'
 alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\* Windows Boot Manager)')"
 alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
@@ -126,7 +132,7 @@ alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist $(wl-paste)'
 alias zb='zig build --prominent-compile-errors --summary none -Doptimize=Debug'
 alias zf='zig fetch --save git+'
-alias zr='zig build --prominent-compile-errors --summary none -Doptimize=Debug run --'
+alias zr='zig build --prominent-compile-errors --summary none -freference-trace=7 -Doptimize=Debug run -- '
 
 . "$ZDOTDIR"/modules/keymaps
 . "$ZDOTDIR"/modules/expand-dots
@@ -140,6 +146,7 @@ bindkey "^[e" edit-command-line  # a-e
 bindkey '^[z' zshrc-edit         # a-z
 bindkey '^[x' explorer           # a-x
 bindkey ' ' expand-alias
+bindkey '^[[13;2u' insert-cr
 
 # WIDGETS FOR BASH STANDARD BINDINGS
 bindkey '^[.' insert-last-word
@@ -152,10 +159,11 @@ bindkey '^H' backward-kill-word # ctrl-backspace
 bindkey '^[[3;5~' kill-word     # ctrl-del
 bindkey '^[[1;5C' forward-word  # right
 bindkey '^[[1;5D' backward-word # left
+bindkey '^?' backward-delete-char
 
 # COMMANDS
-di() { for arg in $@; do nix profile add nixpkgs/nixos-unstable#$arg; done }
-ds() { unbuffer nix-search -d "$@" | less }
+di() { for arg in $@; do nix profile add nixpkgs#$arg; done }
+ds() { unbuffer nix-search -d "$@" || nix search nixpkgs "$@"| less }
 mt() { mkdir -p "$(dirname "$1")" && touch "$1" && xdg-open "$1"}
 mdc() {
   if [ $#@ -gt 1 ]; then
@@ -188,12 +196,6 @@ subs_set_default_file() {
   mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
-mkvify() {
-  Samsung Smart TV does not support .avi
-  for file in "$@"; do
-    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
-  done
-}
 probe() { # Samsung Smart TV does not support some audio codecs
   for i in "$@"; do
     echo "--> $i"
@@ -205,5 +207,3 @@ timestampify() {
 }
 
 # eval "$(fzf --zsh)" # for <C-r> history search
-
-eval "$(direnv hook zsh)"

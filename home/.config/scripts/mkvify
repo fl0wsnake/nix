@@ -1,0 +1,5 @@
+  # Samsung Smart TV does not support .avi/.mp4
+  for file in "$@"; do
+    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
+  done
+
