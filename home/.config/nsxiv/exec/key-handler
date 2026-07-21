@@ -3,9 +3,9 @@
 imgs=$(cat)
 
 case "$@" in
-'h' | 'C-h') printf '%s' "$imgs" | xargs -0 -P 8 -n 4 mogrify -auto-orient -rotate -90 ;;
-'l' | 'C-l') printf '%s' "$imgs" | xargs -0 -P 8 -n 4 mogrify -auto-orient -rotate 90 ;;
-'j' | 'C-j' | 'k' | 'C-k') printf '%s' "$imgs" | xargs -0 -P 8 -n 4 mogrify -auto-orient -rotate 180 ;;
+'h' | 'C-h') printf '%s' "$imgs" | xargs -P 8 -n 4 mogrify -auto-orient -rotate -90 ;;
+'l' | 'C-l') printf '%s' "$imgs" | xargs -P 8 -n 4 mogrify -auto-orient -rotate 90 ;;
+'j' | 'C-j' | 'k' | 'C-k') printf '%s' "$imgs" | xargs -P 8 -n 4 mogrify -auto-orient -rotate 180 ;;
 'Return' | 'C-Return')
   kill "$("$SCRIPTS_SWAY"/focused-window-pid)"
   nsxiv -t "$(dirname "$imgs")"
@@ -16,5 +16,5 @@ case "$@" in
 'y' | 'C-y') wl-copy -t "$(xdg-mime query filetype "$imgs")" <"$imgs" && notify-send "Image clipped" ;;
 'p' | 'C-p') wl-copy <<<"$imgs" && notify-send "Image path clipped" ;;
 'e' | 'C-e') gimp -sdf "$imgs" & ;;
-'d' | 'C-d') printf '%s' "$imgs" | xargs -0 -P 8 -n 4 ripdrag -a & ;;
+'d' | 'C-d') printf '%s' "$imgs" | xargs -P 8 -n 4 ripdrag -a & ;;
 esac

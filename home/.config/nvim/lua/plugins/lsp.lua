@@ -60,6 +60,16 @@ return {
     end,
   },
   {
+    'https://github.com/nvimdev/lspsaga.nvim',
+    config = function()
+      require('lspsaga').setup({
+        lightbulb = {
+          enable = false
+        }
+      })
+    end,
+  },
+  {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.config["gitlab_duo"] = { filetypes = {} } -- XXX: KEEP THIS OR DIE

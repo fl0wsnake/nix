@@ -97,23 +97,25 @@ function MyTabLine()
 end
 
 --- STATUSLINE
-vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
-vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
-function _G.git_relative_path()
-  local filepath = vim.fn.expand('%:p')
-  if filepath == '' then return '[No Name]' end
-  local git_root = vim.fn.systemlist('git -C ' ..
-    vim.fn.shellescape(vim.fn.fnamemodify(filepath, ':h')) .. ' rev-parse --show-toplevel')[1]
-  if vim.v.shell_error ~= 0 or not git_root then
-    return vim.fn.expand('%:p')
-  end
-  local root_dirname = vim.fn.fnamemodify(git_root, ':t')
-  local relative = filepath:sub(#git_root + 2) -- strip git_root + trailing slash
-  if relative == '' then
-    return root_dirname
-  end
-  return '%#StatusLineBold#' .. root_dirname .. '%#StatusLine#/' .. relative
-end
+vim.opt.laststatus = 0
+-- vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
+-- vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
+-- vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
+-- function _G.git_relative_path()
+--   local filepath = vim.fn.expand('%:p')
+--   if filepath == '' then return '[No Name]' end
+--   local git_root = vim.fn.systemlist('git -C ' ..
+--     vim.fn.shellescape(vim.fn.fnamemodify(filepath, ':h')) .. ' rev-parse --show-toplevel')[1]
+--   if vim.v.shell_error ~= 0 or not git_root then
+--     return vim.fn.expand('%:p')
+--   end
+--   local root_dirname = vim.fn.fnamemodify(git_root, ':t')
+--   local relative = filepath:sub(#git_root + 2) -- strip git_root + trailing slash
+--   if relative == '' then
+--     return root_dirname
+--   end
+--   return '%#StatusLineBold#' .. root_dirname .. '%#StatusLine#/' .. relative
+-- end
 
 --- TYPING
 vim.keymap.set({ 'o', 'x' }, 'ac', 'aB', { remap = true }) -- `c`urly == `B`racket
