@@ -97,10 +97,10 @@ function MyTabLine()
 end
 
 --- STATUSLINE
-vim.opt.laststatus = 0
+-- TODO: work with navic
 -- vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
+
 -- vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
--- vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
 -- function _G.git_relative_path()
 --   local filepath = vim.fn.expand('%:p')
 --   if filepath == '' then return '[No Name]' end
@@ -126,8 +126,8 @@ vim.keymap.set('v', '$', 'g_')                             -- fix selecting newl
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
 vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
-vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gj') end) -- keep expected behavior when wrap
-vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. vim.o.scroll .. 'gk') end)
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. 15 .. 'gj') end) -- keep expected behavior when wrap
+vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. 15 .. 'gk') end)
 
 --- INTERFACE
 -- Keep view area to the left always
@@ -145,6 +145,9 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 vim.opt.mouse = ''
 
 --- SEARCH
+vim.cmd('set smartcase')
+vim.keymap.set('n', '*', [[/\C\<<C-r><C-w>\><CR>]])                -- keep dumbcase for *
+vim.keymap.set('n', '#', [[?\C\<<C-r><C-w>\><CR>]])                -- keep dumbcase for #
 vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true }) -- n searches forward regardless of / or ?
 vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true }) -- N searches backward regardless of / or ?
 vim.keymap.set("n", "<c-/>", "/\\c")                               -- N searches backward regardless of / or ?

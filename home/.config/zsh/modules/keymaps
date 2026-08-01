@@ -68,5 +68,7 @@ expand-alias() { # zshall docs state possibility of disabling completion bahvior
 }
 zle -N expand-alias
 
-insert-cr() { LBUFFER+=$'\n' }
+insert-cr() {
+  LBUFFER+=$'\n'
+}
 zle -N insert-cr

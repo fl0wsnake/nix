@@ -1,7 +1,6 @@
 ### Exec stumbles on `;`s and `,`s, so all that goes to ./scripts
 include /etc/sway/config.d/*
 
-
 # Default config: /etc/static/sway/config
 
 set $mod Mod4

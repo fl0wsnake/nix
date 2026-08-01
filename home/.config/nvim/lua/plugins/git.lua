@@ -1,3 +1,7 @@
+vim.keymap.set({ 'n' }, '<leader>go', function()
+  vim.fn.system('xdg-open ' .. vim.fn.system('git remote get-url origin'))
+end)
+
 return {
   { -- for blame
     'https://github.com/tpope/vim-fugitive',

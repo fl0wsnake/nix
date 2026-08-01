@@ -1,4 +1,4 @@
-vim.cmd('setl sw=2 sts=0 lbr noexpandtab')
+vim.cmd('setl sw=2 sts=0 lbr noexpandtab wrap')
 vim.o.conceallevel = 2
 
 -- --- MARKDOWN TODO remember why add this

@@ -228,6 +228,7 @@ in
   ### PACKAGES
   environment.systemPackages = with pkgs; [
     ### CODE
+    vscode
     just
     rust-bindgen
     pkg-config # May or may not be needed globally
@@ -285,7 +286,7 @@ in
     libva
     vlc-bittorrent
     ### SOCIAL
-    unstable.viber
+    viber
     telegram-desktop
     zapzap
     ### HARDWARE

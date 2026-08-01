@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-inotifywait -mqe modify ~/.config/sway | while read -r _; do 
+inotifywait -mqe modify ~/.config/sway | while read -r _; do
   swaymsg reload
   eww reload
 done &
 
-inotifywait -mqe modify ~/.config/eww | while read -r _; do 
+inotifywait -mqe modify ~/.config/eww | while read -r _; do
   eww reload
 done &
 
-inotifywait -mqe modify ~/.config/mako | while read -r _; do 
+inotifywait -mqe modify ~/.config/mako | while read -r _; do
   makoctl reload
-done
+done &

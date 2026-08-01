@@ -48,7 +48,6 @@ end
 vim.keymap.set("n", "<C-n>", scroll_hover(4))
 vim.keymap.set("n", "<C-p>", scroll_hover(-4))
 
-
 return {
   {
     "https://github.com/romus204/tree-sitter-manager.nvim",
@@ -60,21 +59,109 @@ return {
     end,
   },
   {
-    'https://github.com/nvimdev/lspsaga.nvim',
+    'https://github.com/Bekaboo/dropbar.nvim',
+    dependencies = {
+      'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
+      build = 'make'
+    },
     config = function()
-      require('lspsaga').setup({
-        lightbulb = {
-          enable = false
+      local bar = require('dropbar.bar')
+
+      local git_relative_path_source = {
+        get_symbols =
+            function()
+              if (vim.o.buftype ~= '') then return {} end
+              local filepath = vim.fn.expand('%:p')
+              if filepath == '' then return '[No Name]' end
+              local git_root = vim.fn.systemlist('git -C ' ..
+                vim.fn.shellescape(vim.fn.fnamemodify(filepath, ':h')) .. ' rev-parse --show-toplevel')[1]
+              if vim.v.shell_error ~= 0 or not git_root then
+                return {
+                  bar.dropbar_symbol_t:new({
+                    name = vim.fn.expand('%:p'),
+                    name_hl = 'String',
+                  }),
+                }
+              end
+              local root_dirname = vim.fn.fnamemodify(git_root, ':t')
+              local relative = filepath:sub(#git_root + 2) -- strip git_root + trailing slash
+              if relative == '' then
+                return {
+                  bar.dropbar_symbol_t:new({
+                    name = root_dirname,
+                    name_hl = 'Title',
+                  }),
+                }
+              end
+              return {
+                bar.dropbar_symbol_t:new({
+                  name = root_dirname,
+                  name_hl = 'Title',
+                }),
+                bar.dropbar_symbol_t:new({
+                  name = relative,
+                }) }
+            end
+      }
+
+      require('dropbar').setup({
+        sources = {
+          treesitter = {
+            max_depth = 3
+          },
+          lsp = {
+            max_depth = 3
+          }
+        },
+        bar = {
+          sources = function(buf, _)
+            local sources = require('dropbar.sources')
+            local utils = require('dropbar.utils')
+            if vim.bo[buf].ft == 'markdown' then
+              return {
+                -- sources.git_relative_path,
+                git_relative_path_source,
+                sources.markdown,
+              }
+            end
+            if vim.bo[buf].buftype == 'terminal' then
+              return {
+                sources.terminal,
+              }
+            end
+            return {
+              git_relative_path_source,
+              utils.source.fallback({
+                sources.lsp,
+                sources.treesitter,
+              }),
+            }
+          end
         }
       })
-    end,
+      local dropbar_api = require('dropbar.api')
+      -- dropbar_api.
+      vim.keymap.set('n', '<Leader>;', dropbar_api.pick, { desc = 'Pick symbols in winbar' })
+      vim.keymap.set('n', '[;', dropbar_api.goto_context_start, { desc = 'Go to start of current context' })
+      vim.keymap.set('n', '];', dropbar_api.select_next_context, { desc = 'Select next context' })
+    end
   },
+  -- {
+  --   'https://github.com/utilyre/barbecue.nvim',
+  --   name = "barbecue",
+  --   version = "*",
+  --   dependencies = {
+  --     "SmiteshP/nvim-navic",
+  --     "nvim-tree/nvim-web-devicons", -- optional dependency
+  --   },
+  --   opts = {
+  --     -- configurations go here
+  --   },
+  -- },
   {
     'https://github.com/neovim/nvim-lspconfig',
     init = function()
       vim.lsp.config["gitlab_duo"] = { filetypes = {} } -- XXX: KEEP THIS OR DIE
-
-      -- vim.lsp.inlay_hint.enable(false) -- false by default, check by is_enabled() if in doubt. Idk why its here
 
       vim.lsp.config["lua_ls"] = {
         settings = {
@@ -152,18 +239,21 @@ return {
       },
     }
   },
-  -- { deprecated?
-  --   'https://github.com/stevearc/aerial.nvim',
-  --   init = function()
-  --     require("aerial").setup({
-  --       on_attach = function(bufnr)
-  --         vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-  --         vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
-  --       end,
-  --     })
-  --     vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")
-  --   end
-  -- },
+  {
+    'https://github.com/stevearc/aerial.nvim',
+    init = function()
+      require("aerial").setup({
+        layout = {
+          resize_to_content = false,
+        },
+        on_attach = function(bufnr)
+          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
+        end,
+      })
+      vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")
+    end
+  },
   -- {
   --   'https://github.com/nvimtools/none-ls.nvim',
   --   dependencies = { 'https://github.com/nvim-lua/plenary.nvim' },
