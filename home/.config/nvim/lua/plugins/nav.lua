@@ -13,6 +13,16 @@ return {
         winopts = { fullscreen = true, preview = { horizontal = "right:50%" } },
         grep = {
           rg_opts = "-. --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+        },
+        keymap = {
+          builtin = {
+            ["<C-S-d>"] = "preview-page-down",
+            ["<C-S-u>"] = "preview-page-up",
+          },
+          fzf = {
+            ["ctrl-f"] = "half-page-down",
+            ["ctrl-b"] = "half-page-up",
+          }
         }
       })
       vim.keymap.set('', '<leader>sl', fzf_lua.grep_curbuf)
