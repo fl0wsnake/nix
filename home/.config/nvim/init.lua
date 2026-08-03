@@ -145,7 +145,7 @@ vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 vim.opt.mouse = ''
 
 --- SEARCH
-vim.cmd('set smartcase')
+vim.cmd('set ignorecase smartcase')
 vim.keymap.set('n', '*', [[/\C\<<C-r><C-w>\><CR>]])                -- keep dumbcase for *
 vim.keymap.set('n', '#', [[?\C\<<C-r><C-w>\><CR>]])                -- keep dumbcase for #
 vim.keymap.set("n", "n", "'Nn'[v:searchforward]", { expr = true }) -- n searches forward regardless of / or ?

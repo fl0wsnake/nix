@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-if selection="$(cliphist list | rofi -dmenu -i -show-icons)"; then
+if selection="$(cliphist list | rofi -dmenu -matching fuzzy -i -show-icons)"; then
   (cliphist decode | wl-copy) <<<"$selection"
 fi
