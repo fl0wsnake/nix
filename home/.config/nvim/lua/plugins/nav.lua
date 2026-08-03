@@ -8,29 +8,28 @@ return {
     "https://github.com/ibhagwan/fzf-lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     init = function()
-      local fl = require("fzf-lua")
-      fl.setup({
+      local fzf_lua = require("fzf-lua")
+      fzf_lua.setup({
         winopts = { fullscreen = true, preview = { horizontal = "right:50%" } },
         grep = {
           rg_opts = "-. --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
         }
       })
-      vim.keymap.set('', '<leader>sl', fl.grep_curbuf)
-      vim.keymap.set('', '<leader>so', fl.lsp_document_symbols)
-      vim.keymap.set('', '<leader>f', fl.files)
-      vim.keymap.set('', '<leader>r', function() fl.files({ cwd = gitRoot() }) end)
-      vim.keymap.set('', '<leader>sf', fl.grep_project)
+      vim.keymap.set('', '<leader>sl', fzf_lua.grep_curbuf)
+      vim.keymap.set('', '<leader>so', fzf_lua.lsp_document_symbols)
+      vim.keymap.set('', '<leader>f', fzf_lua.files)
+      vim.keymap.set('', '<leader>r', function() fzf_lua.files({ cwd = gitRoot() }) end)
+      vim.keymap.set('', '<leader>sf', fzf_lua.grep_project)
       vim.keymap.set('', '<leader>sr', function()
-        fl.grep_project({
-          fzf_opts = { ["--nth"] = "1..", },
-          cwd = gitRoot()
-        })
+        fzf_lua.grep_project({ fzf_opts = { ["--nth"] = "1..", }, cwd = gitRoot() })
       end)
-      vim.keymap.set('', '<leader>sp', function() fl.grep_project({ cwd = vim.fn.stdpath("data") }) end)
-      vim.keymap.set('', '<leader>m', fl.helptags)
-      vim.keymap.set('', '<leader>h', fl.history)
+      vim.keymap.set('', '<leader>sp', function()
+        fzf_lua.grep_project({ fzf_opts = { ["--nth"] = "1..", }, cwd = vim.fn.stdpath("data"), })
+      end)
+      vim.keymap.set('', '<leader>m', fzf_lua.helptags)
+      vim.keymap.set('', '<leader>h', fzf_lua.history)
       vim.keymap.set('', '<leader>a',
-        function() fl.files({ fd_opts = "-HE .git -d8 --base-directory ~ --ignore-file=$HOME/.fuzzy-home-ignore" }) end)
+        function() fzf_lua.files({ cwd = "~", fd_opts = "-HE .git -d8 --ignore-file=$HOME/.fuzzy-home-ignore" }) end)
     end
   },
   {
