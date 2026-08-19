@@ -1,3 +1,5 @@
+. "$SYNC/Data/.config/.profile";
+
 function set_terminal_title() {
   echo -en "\e]2;$(sed s@^$HOME@~@ <<<$PWD)" # it had \a at the end on the Internet where I found it
 }
@@ -131,7 +133,7 @@ alias win="sudo efibootmgr -n \$(sudo efibootmgr -v | grep -Po '(?<=Boot).*(?=\*
 alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
 alias xq='xdg-mime query filetype'
-alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist $(wl-paste)'
+alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
 alias zb='zig build --prominent-compile-errors --summary none -Doptimize=Debug'
 alias zf='zig fetch --save git+'
 alias zr='zig build --prominent-compile-errors --summary none -freference-trace=7 -Doptimize=Debug run -- '

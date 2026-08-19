@@ -12,7 +12,7 @@
 }:
 
 let
-  sessionVariablesFlatpak = {
+  envFlatpak = {
     LC_COLLATE = "C"; # Affects all file pickers; Should be default, because:
     # LC_COLLATE= ls # no way to put names at very start/end:
     # ~!_0-9 -> ~!_a-z -> ~!_A-Z
@@ -212,16 +212,117 @@ in
     allowUnfree = true;
   };
 
-  environment.sessionVariables = sessionVariablesFlatpak // {
+  environment.variables = envFlatpak // {
+  };
+
+  environment.sessionVariables = rec {
+    ### NIX
     USER = "nix";
     NIX_BUILD_CORES = 0;
     NIXPKGS_ALLOW_UNFREE = 1;
-  };
-
-  environment.variables = {
+    ### DEFAULT APPS
+    SHELL_COMM = "zsh"; # $SHELL is defined by nixos
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    MANPAGER = "nvim +Man!";
+    EXPLORER = "nnn";
+    TERMINAL = "alacritty";
+    BROWSER = "brave";
+    ### SYNC
+    SYNC = "$HOME/Syncthing";
+    SCRIPTS_SYNC = "${SYNC}/Data/.config/scripts";
+    WIKI = "${SYNC}/Data/Wiki";
+    CAMERA = "${SYNC}/DCIM/Camera";
+    SCREENSHOTS = "${SYNC}/DCIM/Screenshots";
+    ### DIRS
+    RICE = "$HOME/.config/nixos-rice";
+    SCRIPTS = "$HOME/.config/scripts";
+    SCRIPTS_SWAY = "$HOME/.config/sway/scripts";
+    SYNC_MOBILE = "$HOME/OneDrive";
+    ### OPTS
+    # FZF_COLORS = "hl:33,hl+:33";
+    FZF_DEFAULT_OPTS = "--color hl:33,hl+:33 --ansi --history=/tmp/.fzf-history --bind=ctrl-d:page-down --bind=ctrl-u:page-up";
+    GCM_CREDENTIAL_STORE = "plaintext";
+    GREP_COLORS = "always";
+    GRIM_DEFAULT_DIR = "${SCREENSHOTS}";
+    SXIV_SEL = "/tmp/.nsxiv.sel";
+    VIMIV_TAGFILE = "$HOME/.local/share/vimiv/tags/0";
+    ZIG_GLOBAL_CACHE_DIR = "$HOME/.cache/zig";
+    # GDK_SCALE="1.5"; # Gnome only supports non-fractional scaling by default. "2" is too much for 2560x1440 and "1" is too little.
+    # QT_SCALE_FACTOR="1.5";
+    ### KITTY
+    TMPDIR = "/tmp";
+    ### BASH
+    PROMPT_COMMAND = "history -a; history -n; $PROMPT_COMMAND";
+    HISTSIZE = "100000";
+    HISTFILESIZE = "100000";
+    HISTCONTROL = "ignoredups:erasedups";
+    ### ZSH
+    ZDOTDIR = "$HOME/.config/zsh";
+    SAVEHIST = "${HISTFILESIZE}";
+    ZSH_CUSTOM = "$HOME/.config/zsh/oh-my-zsh/custom";
+    AUTO_NOTIFY_THRESHOLD = 1;
+    AUTO_NOTIFY_EXPIRE_TIME = 2500;
+    AUTO_NOTIFY_TITLE = "%exit_code";
+    AUTO_NOTIFY_BODY = "%command";
+    ### CODE
+    GOTRACEBACK = "all"; # may be too verbose
+    RUST_BACKTRACE = 1;
+    ### NNN
+    NNN_COMM = "nnn;. /tmp/.nnn.lastd"; # needed by wcwd script
+    ### [nnn](https://github.com/jarun/nnn)
+    NNN_TMPFILE = "/tmp/.nnn.lastd";
+    NNN_SCOPE = 1;
+    NNN_USE_EDITOR = 1;
+    NNN_TRASH = 1;
+    NNN_OPTS = "rHRAJxE";
+    NNN_ORDER = "t:$HOME/Syncthing/0Phone/Camera;t:$HOME/.local/share/Trash/files;t:$HOME/.local/share/Trash/info;t:$HOME/Downloads;t:/tmp;";
+    NNN_FIFO = "/tmp/.nnn.fifo";
+    NNN_SEL = "/tmp/.nnn.sel";
+    # [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
+    ### NNN_PIPE takes full paths only
+    NNN_PLUG = ''
+      ;:preview-tui;
+      <:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
+      >:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
+      D:diffs;
+      F:!file=\$(${SCRIPTS}/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+      Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
+      a:!file=\$(${SCRIPTS}/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+      d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;
+      e:preview-tabbed;
+      f:!file=\$(${SCRIPTS}/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
+      m:mtpmount;
+      n:!nautilus . &*;
+      p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
+      s:!echo -n>$NNN_SEL*;
+      t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
+      v:!${SCRIPTS}/iv-paste*;
+      y:!printf '%s' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
+    '';
+    NNN_BMS = ''
+      D:${SYNC}/Data;
+      r:$HOME/Dropbox;
+      S:${SCREENSHOTS};
+      T:$HOME/.local/share/Trash/files;
+      W:${WIKI};
+      c:${CAMERA};
+      d:$HOME/Downloads;
+      l:${SYNC}/Large;
+      m:/run/media/$USER;
+      n:${SYNC}/Data/nsfw;
+      p:$HOME/Pictures;
+      s:${SYNC};
+      t:/tmp;
+      h:$HOME/Syncthing/Data/Health;
+      w:$HOME/WS;
+    '';
     PATH = [
+      # INFO: these binaries can be a part of this config, hence defining their paths here. Rest goes
+      "$HOME/.bun/bin"
       "$HOME/.npm/bin"
-      "$HOME/.local/bin" # cursor install script
+      "$HOME/.local/bin"
+      "${SCRIPTS}"
     ];
   };
 
@@ -449,7 +550,7 @@ in
           ]; # Ensure display sockets are available
           filesystems = [ "home" ]; # for user conf
         };
-        Environment = sessionVariablesFlatpak;
+        Environment = envFlatpak;
       };
     };
   };
@@ -477,7 +578,7 @@ in
   # };
   # Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
-    TIMEOUT=43200
+    TIMEOUT=${toString (16 * 3600)}
     TARGET_TIME=$(( $(date +%s) + $TIMEOUT ))
     echo "$TARGET_TIME" > /run/expected_rtc_wake
     echo 0 > /sys/class/rtc/rtc0/wakealarm

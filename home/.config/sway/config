@@ -292,8 +292,8 @@ exec flameshot
 exec mako
 exec wlsunset -S 4:00 -s 22:00
 
+exec brave --profile-directory=Profile\ 1 # INFO: Reversed order
 exec brave --profile-directory=Default
-exec brave --profile-directory=Profile\ 1
 
 workspace $s_workspace
 workspace $1_workspace

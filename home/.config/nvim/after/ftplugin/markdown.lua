@@ -186,3 +186,5 @@ end, { expr = true, desc = 'Italicize motion' })
 vim.keymap.set('n', '<a-i><a-i>', '0<a-i>$', { remap = true, desc = 'Italicize whole line' })
 vim.keymap.set('v', '<a-i>', 'c' .. italicize_item .. '<C-r>"' .. italicize_item .. '<Esc>',
   { desc = 'Embolden selection' })
+
+vim.keymap.set('n', '<a-p>', ':s/\\. /.\\r/g<cr>')

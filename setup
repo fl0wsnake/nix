@@ -17,6 +17,7 @@ sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 # Home
 # NOTE: don't add ~/.config/transmission/settings.json to this list, it has ever changing entries
 paths=(
+  ~/.config/ghostty/config
   ~/.bash_profile # to prevent tmux from running ~/.profile
   ~/.bashrc
   ~/.blerc
