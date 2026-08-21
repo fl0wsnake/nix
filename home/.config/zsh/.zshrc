@@ -89,6 +89,10 @@ alias grbx='git rebase -X ours'
 alias gre="git reflog --date=relative"
 alias grh='git reset --hard'
 alias grs="git reset --soft"
+alias ba="bun add"
+alias br="bun remove"
+alias bag="bun add -g"
+alias brg="bun remove -g"
 alias grt='git read-tree'
 alias gs='git status -s'
 alias gst='git stash -k'

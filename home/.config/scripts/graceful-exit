@@ -2,5 +2,5 @@
 
 # INFO: # To avoid `restore session` popups in chromium based browsers.
 swaymsg '[app_id=.*]kill' # INFO: browser should be targeted specifically, ie `pkill -u $USER` won't work as it terminates processes in wrong order
-sleep 2
+sleep 1
 swaymsg exit

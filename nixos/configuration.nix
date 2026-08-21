@@ -281,42 +281,44 @@ in
     NNN_SEL = "/tmp/.nnn.sel";
     # [plugins](https://github.com/jarun/nnn/tree/master/plugins#nnn-plugins)
     ### NNN_PIPE takes full paths only
-    NNN_PLUG = ''
-      ;:preview-tui;
-      <:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;
-      >:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;
-      D:diffs;
-      F:!file=\$(${SCRIPTS}/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-      Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;
-      a:!file=\$(${SCRIPTS}/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-      d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;
-      e:preview-tabbed;
-      f:!file=\$(${SCRIPTS}/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;
-      m:mtpmount;
-      n:!nautilus . &*;
-      p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;
-      s:!echo -n>$NNN_SEL*;
-      t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;
-      v:!${SCRIPTS}/iv-paste*;
-      y:!printf '%s' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;
-    '';
-    NNN_BMS = ''
-      D:${SYNC}/Data;
-      r:$HOME/Dropbox;
-      S:${SCREENSHOTS};
-      T:$HOME/.local/share/Trash/files;
-      W:${WIKI};
-      c:${CAMERA};
-      d:$HOME/Downloads;
-      l:${SYNC}/Large;
-      m:/run/media/$USER;
-      n:${SYNC}/Data/nsfw;
-      p:$HOME/Pictures;
-      s:${SYNC};
-      t:/tmp;
-      h:$HOME/Syncthing/Data/Health;
-      w:$HOME/WS;
-    '';
+    NNN_PLUG = lib.concatStrings [
+      ";:preview-tui;"
+      "<:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;"
+      ">:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;"
+      "D:diffs;"
+      "F:!file=\$(${SCRIPTS}/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;"
+      "Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;"
+      "a:!file=\$(${SCRIPTS}/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;"
+      "d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;"
+      "e:preview-tabbed;"
+      "f:!file=\$(${SCRIPTS}/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;"
+      "m:mtpmount;"
+      "n:!nautilus . &*;"
+      "p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;"
+      "s:!echo -n>$NNN_SEL*;"
+      "t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;"
+      "v:!${SCRIPTS}/iv-paste*;"
+      "y:!printf '%s' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;"
+    ];
+    # nnn parses bookmarks as one semicolon-separated value; embedded newlines
+    # make it reject NNN_BMS and exit at startup.
+    NNN_BMS = lib.concatStrings [
+      "D:${SYNC}/Data;"
+      "r:$HOME/Dropbox;"
+      "S:${SCREENSHOTS};"
+      "T:$HOME/.local/share/Trash/files;"
+      "W:${WIKI};"
+      "c:${CAMERA};"
+      "d:$HOME/Downloads;"
+      "l:${SYNC}/Large;"
+      "m:/run/media/$USER;"
+      "n:${SYNC}/Data/nsfw;"
+      "p:$HOME/Pictures;"
+      "s:${SYNC};"
+      "t:/tmp;"
+      "h:$HOME/Syncthing/Data/Health;"
+      "w:$HOME/WS;"
+    ];
     PATH = [
       # INFO: these binaries can be a part of this config, hence defining their paths here. Rest goes
       "$HOME/.bun/bin"
