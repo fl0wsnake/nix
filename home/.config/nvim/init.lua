@@ -75,7 +75,20 @@ end)
 vim.o.tabline = "%!v:lua.MyTabLine()"
 local git_roots = {}
 
-local function tab_name(bufname)
+local function set_tabline_git_folder_highlights()
+  for _, group in ipairs({ "TabLine", "TabLineSel" }) do
+    local highlight = vim.api.nvim_get_hl(0, { name = group, link = false })
+    highlight.bold = true
+    vim.api.nvim_set_hl(0, group .. "GitFolder", highlight)
+  end
+end
+
+set_tabline_git_folder_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = set_tabline_git_folder_highlights,
+})
+
+local function tab_name(bufname, selected)
   local path = vim.fn.fnamemodify(bufname, ":p")
   local dir = vim.fn.fnamemodify(path, ":h")
   local git_root = git_roots[dir]
@@ -85,7 +98,10 @@ local function tab_name(bufname)
     git_roots[dir] = git_root
   end
   if git_root then
-    return path:sub(#git_root + 2)
+    local group = selected and "TabLineSel" or "TabLine"
+    local project = vim.fn.fnamemodify(git_root, ":t")
+    local filename = vim.fn.fnamemodify(bufname, ":t")
+    return "%#" .. group .. "GitFolder#" .. project .. "%#" .. group .. "#/" .. filename
   end
   return vim.fn.fnamemodify(bufname, ":t")
 end
@@ -104,7 +120,7 @@ function MyTabLine()
     res = res .. tab_i .. ":"
     local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
     if bufname ~= "" then
-      res = res .. tab_name(bufname)
+      res = res .. tab_name(bufname, tab_i == vim.fn.tabpagenr())
     else
       res = res .. "[No Name]"
     end
