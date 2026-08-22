@@ -73,6 +73,23 @@ end)
 
 --- TABLINE
 vim.o.tabline = "%!v:lua.MyTabLine()"
+local git_roots = {}
+
+local function tab_name(bufname)
+  local path = vim.fn.fnamemodify(bufname, ":p")
+  local dir = vim.fn.fnamemodify(path, ":h")
+  local git_root = git_roots[dir]
+  if git_root == nil then
+    git_root = vim.fn.systemlist({ "git", "-C", dir, "rev-parse", "--show-toplevel" })[1] or false
+    if vim.v.shell_error ~= 0 then git_root = false end
+    git_roots[dir] = git_root
+  end
+  if git_root then
+    return path:sub(#git_root + 2)
+  end
+  return vim.fn.fnamemodify(bufname, ":t")
+end
+
 function MyTabLine()
   local res = ""
   for tab_i = 1, vim.fn.tabpagenr("$") do
@@ -87,7 +104,7 @@ function MyTabLine()
     res = res .. tab_i .. ":"
     local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
     if bufname ~= "" then
-      res = res .. vim.fn.fnamemodify(bufname, ":t")
+      res = res .. tab_name(bufname)
     else
       res = res .. "[No Name]"
     end
