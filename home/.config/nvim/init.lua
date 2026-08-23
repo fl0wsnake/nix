@@ -69,41 +69,77 @@ vim.keymap.set({ "", "i" }, "<C-q>", function()
   prev_tab = nil
 end)
 
-
-
 --- TABLINE
 vim.o.tabline = "%!v:lua.MyTabLine()"
 local git_roots = {}
+local git_projects = {}
+local next_git_project_id = 1
+local git_project_colors = {
+  "#a9b665", -- green
+  "#89b482", -- aqua
+  "#7daea3", -- blue
+  "#d3869b", -- purple
+  "#bd6f7a", -- rose
+  "#ea6962", -- red
+  "#e78a4e", -- orange
+  "#d8a657", -- yellow
+}
 
-local function set_tabline_git_folder_highlights()
-  for _, group in ipairs({ "TabLine", "TabLineSel" }) do
-    local highlight = vim.api.nvim_get_hl(0, { name = group, link = false })
-    highlight.bold = true
-    vim.api.nvim_set_hl(0, group .. "GitFolder", highlight)
+local function git_project_hl_set(project, base_group, project_group)
+  local highlight = vim.api.nvim_get_hl(0, { name = base_group, link = false })
+  highlight.fg = project.color
+  vim.api.nvim_set_hl(0, project_group, highlight)
+end
+
+local function set_tabline_git_project_highlights()
+  for _, project in pairs(git_projects) do
+    git_project_hl_set(project, "TabLine", project.normal_group)
+    git_project_hl_set(project, "TabLineSel", project.selected_group)
   end
 end
 
-set_tabline_git_folder_highlights()
+set_tabline_git_project_highlights()
 vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = set_tabline_git_folder_highlights,
+  callback = set_tabline_git_project_highlights,
 })
 
-local function tab_name(bufname, selected)
-  local path = vim.fn.fnamemodify(bufname, ":p")
-  local dir = vim.fn.fnamemodify(path, ":h")
-  local git_root = git_roots[dir]
+local function get_git_project_hl(git_root)
+  local project = git_projects[git_root]
+  if project == nil then
+    local id = next_git_project_id
+    next_git_project_id = next_git_project_id + 1
+    project = {
+      color = git_project_colors[(id - 1) % #git_project_colors + 1],
+      normal_group = "TabLineGitProject" .. id,
+      selected_group = "TabLineSelGitProject" .. id,
+    }
+    git_projects[git_root] = project
+    git_project_hl_set(project, "TabLine", project.normal_group)
+    git_project_hl_set(project, "TabLineSel", project.selected_group)
+  end
+  return project
+end
+
+local function get_tab_name(bufname, selected)
+  local file_path = vim.fn.fnamemodify(bufname, ":p")
+  local dir_path = vim.fn.fnamemodify(file_path, ":h")
+  local git_root = git_roots[dir_path]
   if git_root == nil then
-    git_root = vim.fn.systemlist({ "git", "-C", dir, "rev-parse", "--show-toplevel" })[1] or false
+    git_root = vim.fn.systemlist({ "git", "-C", dir_path, "rev-parse", "--show-toplevel" })[1] or false
     if vim.v.shell_error ~= 0 then git_root = false end
-    git_roots[dir] = git_root
+    git_roots[dir_path] = git_root
   end
+
+  local folder_name = vim.fn.fnamemodify(file_path, ":h:t")
+  local file_name = vim.fn.fnamemodify(file_path, ":t")
+  local tab_name = folder_name .. "/" .. file_name
   if git_root then
-    local group = selected and "TabLineSel" or "TabLine"
-    local project = vim.fn.fnamemodify(git_root, ":t")
-    local filename = vim.fn.fnamemodify(bufname, ":t")
-    return "%#" .. group .. "GitFolder#" .. project .. "%#" .. group .. "#/" .. filename
+    local project = get_git_project_hl(git_root)
+    local group = selected and project.selected_group or project.normal_group
+    local relative_name = vim.fs.relpath(git_root, file_path) or tab_name
+    return "%#" .. group .. "#" .. relative_name
   end
-  return vim.fn.fnamemodify(bufname, ":t")
+  return tab_name
 end
 
 function MyTabLine()
@@ -120,7 +156,7 @@ function MyTabLine()
     res = res .. tab_i .. ":"
     local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
     if bufname ~= "" then
-      res = res .. tab_name(bufname, tab_i == vim.fn.tabpagenr())
+      res = res .. get_tab_name(bufname, tab_i == vim.fn.tabpagenr())
     else
       res = res .. "[No Name]"
     end
