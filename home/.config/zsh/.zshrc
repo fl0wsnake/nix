@@ -36,11 +36,18 @@ alias PATH="echo $PATH | sed 's/:/\n/g' | fzf"
 alias R='cd $(git rev-parse --show-toplevel)'
 alias T=/tmp
 alias TR="$HOME/.local/share/Trash/files"
+alias ba="bun add"
+alias bag="bun add -g"
+alias bl="bun list"
+alias blg="bun list -g"
 alias bootfix='NIXOS_INSTALL_BOOTLOADER=1 /run/current-system/bin/switch-to-configuration boot'
+alias br="bun remove"
+alias brg="bun remove -g"
 alias c=wl-copy
 alias ca=calc
 alias clip="clipman pick --print0 --tool=CUSTOM --tool-args=\"fzf --prompt 'pick > ' --bind 'tab:up' --cycle --read0\""
-alias colorpick='sleep 1; hyprpicker -n | xargs pastel format name'
+alias colorpick-name='sleep 1; hyprpicker -n | xargs pastel format name'
+alias colorpick="while true; do sleep 1; hyprpicker -n || break; done"
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias cx='codex'
@@ -89,15 +96,11 @@ alias grbx='git rebase -X ours'
 alias gre="git reflog --date=relative"
 alias grh='git reset --hard'
 alias grs="git reset --soft"
-alias ba="bun add"
-alias br="bun remove"
-alias bag="bun add -g"
-alias brg="bun remove -g"
 alias grt='git read-tree'
 alias gs='git status -s'
+alias gsm='git switch --merge'
 alias gst='git stash -k'
 alias gstp='git stash pop'
-alias gsm='git switch --merge'
 alias gt='git checkout'
 alias gw='git switch'
 alias h="$EDITOR $HISTFILE"

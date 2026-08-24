@@ -15,7 +15,7 @@ function ansi_colorize() -- for browsing kitty scrollback
   vim.keymap.set("", "O", "<Nop>", {})
 end
 
-vim.cmd('command! AnsiColorize lua ansi_colorize()')
+vim.cmd('command! AnsiColorize lua ansi_colorize()') -- for kitty
 
 function Down_v()
   local col = vim.fn.match(vim.fn.getline('.'), [[\S]]) + 1

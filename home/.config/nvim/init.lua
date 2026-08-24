@@ -72,55 +72,80 @@ end)
 --- TABLINE
 vim.o.tabline = "%!v:lua.MyTabLine()"
 local git_roots = {}
-local git_projects = {}
-local next_git_project_id = 1
-local git_project_colors = {
-  "#a9b665", -- green
-  "#89b482", -- aqua
-  "#7daea3", -- blue
-  "#d3869b", -- purple
-  "#bd6f7a", -- rose
-  "#ea6962", -- red
-  "#e78a4e", -- orange
-  "#d8a657", -- yellow
+local git_projects_root_hl_data = {}
+local git_project_hl_i = 1
+-- Google Keep-inspired colors. The order deliberately alternates across the
+-- color wheel so neighboring projects remain easy to tell apart.
+local hl_datas = {
+  { "TabLineGitProject1", "#00AFFF", },
+  { "TabLineGitProject2", "#FF8019", },
+  { "TabLineGitProject3", "#FFD700", },
+  { "TabLineGitProject4", "#FF5E7A", },
+  { "TabLineGitProject5", "#D4A0FF", },
+  { "TabLineGitProject6", "#7FFF7F", },
 }
 
-local function git_project_hl_set(project, base_group, project_group)
-  local highlight = vim.api.nvim_get_hl(0, { name = base_group, link = false })
-  highlight.fg = project.color
-  vim.api.nvim_set_hl(0, project_group, highlight)
+-- for color_group in git_project_color_groups do
+--   local base_tab_highlight = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
+--   vim.api.nvim_set_hl(0, "%#" .. color_group[1] .. "#", { fg = color_group[2] })
+--   vim.api.nvim_set_hl(0, "%#" .. color_group[1] .. "Sel" .. "#", color_group[2])
+-- end
+
+
+local function git_project_hl_set(hl_group, color, focused)
+  local hl_template = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
+  local hl_template_sel = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
+  hl_template_sel.bg = color
+  hl_template_sel.fg = "#000000"
+  hl_template.fg = color
+  vim.api.nvim_set_hl(0, hl_group .. "Sel", hl_template_sel)
+  vim.api.nvim_set_hl(0, hl_group, hl_template)
 end
 
-local function set_tabline_git_project_highlights()
-  for _, project in pairs(git_projects) do
-    git_project_hl_set(project, "TabLine", project.normal_group)
-    git_project_hl_set(project, "TabLineSel", project.selected_group)
+-- local function set_tabline_git_project_hl() -- TODO
+--   for _, project in pairs(git_projects_root_hl_group_color) do
+--     git_project_hl_set(project, "TabLine", project.normal_group)
+--     git_project_hl_set(project, "TabLineSel", project.selected_group)
+--   end
+-- end
+
+-- set_tabline_git_project_hl()
+-- vim.api.nvim_create_autocmd("ColorScheme", {
+--   callback = set_tabline_git_project_hl,
+-- })
+
+local function get_git_project_hl_group(git_root, selected)
+  local project_hl_data = git_projects_root_hl_data[git_root]
+  if project_hl_data == nil then
+    -- local project_hl_i = git_project_hl_i_next
+    if git_project_hl_i > #hl_datas then
+      git_project_hl_i = git_project_hl_i % #hl_datas
+      -- git_projects_root_hl_group_color[project_hl_group_color_i] =
+      -- return project_hl_group_color_i
+    else
+      local hl_data = hl_datas[git_project_hl_i]
+      print("setting: " .. hl_data[1])
+      git_project_hl_set(hl_data[1], hl_data[2]) -- INFO: lazy set colors
+    end
+    project_hl_data = hl_datas[git_project_hl_i]
+    git_project_hl_i = git_project_hl_i + 1
+    git_projects_root_hl_data[git_root] = project_hl_data
+    -- project_color_group = hl_i % #git_project_color_groups
+    -- git_project_hl_set(project_color_group, "TabLine", project_color_group.normal_group)
+    -- git_project_hl_set(project_color_group, "TabLineSel", project_color_group.selected_group)
   end
+  return "%#" .. project_hl_data[1] .. (selected and "Sel" or "") .. "#"
 end
 
-set_tabline_git_project_highlights()
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = set_tabline_git_project_highlights,
-})
-
-local function get_git_project_hl(git_root)
-  local project = git_projects[git_root]
-  if project == nil then
-    local id = next_git_project_id
-    next_git_project_id = next_git_project_id + 1
-    project = {
-      color = git_project_colors[(id - 1) % #git_project_colors + 1],
-      normal_group = "TabLineGitProject" .. id,
-      selected_group = "TabLineSelGitProject" .. id,
-    }
-    git_projects[git_root] = project
-    git_project_hl_set(project, "TabLine", project.normal_group)
-    git_project_hl_set(project, "TabLineSel", project.selected_group)
+local function get_tab_name(tab_i)
+  -- local res = tab_i .. ":"
+  local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
+  local selected = tab_i == vim.fn.tabpagenr()
+  if bufname == "" then
+    local group = selected and "%#TabLineSel#" or "%#TabLine#"
+    return group .. tab_i .. ":" .. "[Empty]"
   end
-  return project
-end
 
-local function get_tab_name(bufname, selected)
   local file_path = vim.fn.fnamemodify(bufname, ":p")
   local dir_path = vim.fn.fnamemodify(file_path, ":h")
   local git_root = git_roots[dir_path]
@@ -134,32 +159,21 @@ local function get_tab_name(bufname, selected)
   local file_name = vim.fn.fnamemodify(file_path, ":t")
   local tab_name = folder_name .. "/" .. file_name
   if git_root then
-    local project = get_git_project_hl(git_root)
-    local group = selected and project.selected_group or project.normal_group
+    local group = get_git_project_hl_group(git_root, selected)
     local relative_name = vim.fs.relpath(git_root, file_path) or tab_name
-    return "%#" .. group .. "#" .. relative_name
+    return group .. tab_i .. ":" .. relative_name
   end
-  return tab_name
+  local group = selected and "%#TabLineSel#" or "%#TabLine#"
+  return group .. tab_i .. ":" .. tab_name
 end
 
 function MyTabLine()
   local res = ""
   for tab_i = 1, vim.fn.tabpagenr("$") do
-    if tab_i == vim.fn.tabpagenr() then
-      res = res .. "%#TabLineSel#"
-    else
-      res = res .. "%#TabLine#"
-    end
     if tab_i ~= 1 then
       res = res .. "|"
     end
-    res = res .. tab_i .. ":"
-    local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
-    if bufname ~= "" then
-      res = res .. get_tab_name(bufname, tab_i == vim.fn.tabpagenr())
-    else
-      res = res .. "[No Name]"
-    end
+    res = res .. get_tab_name(tab_i)
   end
   res = res .. "%#TabLineFill#%T"
   return res
