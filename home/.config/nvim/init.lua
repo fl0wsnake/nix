@@ -118,21 +118,15 @@ local function get_git_project_hl_group(git_root, selected)
   local project_hl_data = git_projects_root_hl_data[git_root]
   if project_hl_data == nil then
     -- local project_hl_i = git_project_hl_i_next
-    if git_project_hl_i > #hl_datas then
-      git_project_hl_i = git_project_hl_i % #hl_datas
-      -- git_projects_root_hl_group_color[project_hl_group_color_i] =
-      -- return project_hl_group_color_i
-    else
-      local hl_data = hl_datas[git_project_hl_i]
-      print("setting: " .. hl_data[1])
-      git_project_hl_set(hl_data[1], hl_data[2]) -- INFO: lazy set colors
-    end
-    project_hl_data = hl_datas[git_project_hl_i]
-    git_project_hl_i = git_project_hl_i + 1
+    local hl_data = hl_datas[git_project_hl_i]
+    git_project_hl_i = git_project_hl_i % #hl_datas + 1
+    -- Setting a highlight can invalidate the tabline and re-enter this
+    -- function. Cache the assignment before changing the highlight so a
+    -- re-render cannot assign the same project a different group.
+    project_hl_data = hl_data
     git_projects_root_hl_data[git_root] = project_hl_data
-    -- project_color_group = hl_i % #git_project_color_groups
-    -- git_project_hl_set(project_color_group, "TabLine", project_color_group.normal_group)
-    -- git_project_hl_set(project_color_group, "TabLineSel", project_color_group.selected_group)
+
+    git_project_hl_set(hl_data[1], hl_data[2]) -- lazy initialization
   end
   return "%#" .. project_hl_data[1] .. (selected and "Sel" or "") .. "#"
 end
