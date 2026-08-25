@@ -10,7 +10,14 @@ return {
       vim.keymap.set("", "<a-c>", function()
         vim.cmd('ColorizerToggle')
       end, Silent)
-      require 'colorizer'.setup({ 'css', 'scss', 'swayconfig', 'markdown', 'toml', })
+      require 'colorizer'.setup({
+        options = { parsers = { names = { enable = false } } },
+        'css',
+        'scss',
+        'swayconfig',
+        'markdown',
+        'toml',
+      })
     end
   },
   {

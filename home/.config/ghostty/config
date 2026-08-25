@@ -49,8 +49,14 @@ shell-integration-features = no-cursor
 # resize-overlay-duration = 4s 200ms
 
 # keybind = ctrl+shift+y=write_scrollback_file:open
+
+# keybind = chain=text:\x1b[Hnvim \n
+
 keybind = ctrl+shift+space=write_scrollback_file:paste
-keybind = chain=text:\x1b[Hnvim \n
+# keybind = ctrl+shift+space=write_screen_file:open
+keybind = chain=text:\x1b[Hnvim\n
+# keybind = chain=text:\x1b[Hnvim \n
+
 
 # keybind = ctrl+shift+space=write_scrollback_file:open
 # keybind = ctrl+shift+space=activate_key_table:vim

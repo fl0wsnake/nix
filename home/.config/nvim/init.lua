@@ -74,8 +74,9 @@ vim.o.tabline = "%!v:lua.MyTabLine()"
 local git_roots = {}
 local git_projects_root_hl_data = {}
 local git_project_hl_i = 1
--- Google Keep-inspired colors. The order deliberately alternates across the
--- color wheel so neighboring projects remain easy to tell apart.
+local graphite = "#A89984"
+local gray = "#7C6F64"
+local black = "#000000"
 local hl_datas = {
   { "TabLineGitProject1", "#00AFFF", },
   { "TabLineGitProject2", "#FF8019", },
@@ -84,45 +85,20 @@ local hl_datas = {
   { "TabLineGitProject5", "#D4A0FF", },
   { "TabLineGitProject6", "#7FFF7F", },
 }
+vim.api.nvim_set_hl(0, "TabLineNonGitSel", { bg = graphite, fg = black })
+vim.api.nvim_set_hl(0, "TabLineNonGit", { fg = graphite })
 
--- for color_group in git_project_color_groups do
---   local base_tab_highlight = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
---   vim.api.nvim_set_hl(0, "%#" .. color_group[1] .. "#", { fg = color_group[2] })
---   vim.api.nvim_set_hl(0, "%#" .. color_group[1] .. "Sel" .. "#", color_group[2])
--- end
-
-
-local function git_project_hl_set(hl_group, color, focused)
-  local hl_template = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
-  local hl_template_sel = vim.api.nvim_get_hl(0, { name = "TabLine", link = false })
-  hl_template_sel.bg = color
-  hl_template_sel.fg = "#000000"
-  hl_template.fg = color
-  vim.api.nvim_set_hl(0, hl_group .. "Sel", hl_template_sel)
-  vim.api.nvim_set_hl(0, hl_group, hl_template)
+local function git_project_hl_set(hl_group, color)
+  vim.api.nvim_set_hl(0, hl_group .. "Sel", { bg = color, fg = black })
+  vim.api.nvim_set_hl(0, hl_group, { fg = color })
 end
-
--- local function set_tabline_git_project_hl() -- TODO
---   for _, project in pairs(git_projects_root_hl_group_color) do
---     git_project_hl_set(project, "TabLine", project.normal_group)
---     git_project_hl_set(project, "TabLineSel", project.selected_group)
---   end
--- end
-
--- set_tabline_git_project_hl()
--- vim.api.nvim_create_autocmd("ColorScheme", {
---   callback = set_tabline_git_project_hl,
--- })
 
 local function get_git_project_hl_group(git_root, selected)
   local project_hl_data = git_projects_root_hl_data[git_root]
   if project_hl_data == nil then
-    -- local project_hl_i = git_project_hl_i_next
     local hl_data = hl_datas[git_project_hl_i]
     git_project_hl_i = git_project_hl_i % #hl_datas + 1
-    -- Setting a highlight can invalidate the tabline and re-enter this
-    -- function. Cache the assignment before changing the highlight so a
-    -- re-render cannot assign the same project a different group.
+    -- INFO: Setting a highlight can invalidate the tabline and re-enter this function. Cache the assignment before changing the highlight so a re-render cannot assign the same project a different group.
     project_hl_data = hl_data
     git_projects_root_hl_data[git_root] = project_hl_data
 
@@ -136,7 +112,7 @@ local function get_tab_name(tab_i)
   local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
   local selected = tab_i == vim.fn.tabpagenr()
   if bufname == "" then
-    local group = selected and "%#TabLineSel#" or "%#TabLine#"
+    local group = selected and "%#TabLineGitProject0Sel#" or "%#TabLineGitProject0#"
     return group .. tab_i .. ":" .. "[Empty]"
   end
 
@@ -157,7 +133,7 @@ local function get_tab_name(tab_i)
     local relative_name = vim.fs.relpath(git_root, file_path) or tab_name
     return group .. tab_i .. ":" .. relative_name
   end
-  local group = selected and "%#TabLineSel#" or "%#TabLine#"
+  local group = selected and "%#TabLineNonGitSel#" or "%#TabLineNonGit#"
   return group .. tab_i .. ":" .. tab_name
 end
 
@@ -165,34 +141,13 @@ function MyTabLine()
   local res = ""
   for tab_i = 1, vim.fn.tabpagenr("$") do
     if tab_i ~= 1 then
-      res = res .. "|"
+      res = res .. "%#Sep#|"
     end
     res = res .. get_tab_name(tab_i)
   end
   res = res .. "%#TabLineFill#%T"
   return res
 end
-
---- STATUSLINE
--- TODO: work with navic
--- vim.o.statusline = '%{%v:lua.git_relative_path()%} %h%m%r %L %c%V'
-
--- vim.api.nvim_set_hl(0, 'StatusLineBold', { bold = true, italic = true })
--- function _G.git_relative_path()
---   local filepath = vim.fn.expand('%:p')
---   if filepath == '' then return '[No Name]' end
---   local git_root = vim.fn.systemlist('git -C ' ..
---     vim.fn.shellescape(vim.fn.fnamemodify(filepath, ':h')) .. ' rev-parse --show-toplevel')[1]
---   if vim.v.shell_error ~= 0 or not git_root then
---     return vim.fn.expand('%:p')
---   end
---   local root_dirname = vim.fn.fnamemodify(git_root, ':t')
---   local relative = filepath:sub(#git_root + 2) -- strip git_root + trailing slash
---   if relative == '' then
---     return root_dirname
---   end
---   return '%#StatusLineBold#' .. root_dirname .. '%#StatusLine#/' .. relative
--- end
 
 --- TYPING
 vim.keymap.set({ 'o', 'x' }, 'ac', 'aB', { remap = true }) -- `c`urly == `B`racket
