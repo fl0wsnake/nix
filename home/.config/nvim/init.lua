@@ -78,12 +78,11 @@ local graphite = "#A89984"
 local gray = "#7C6F64"
 local black = "#000000"
 local hl_datas = {
-  { "TabLineGitProject1", "#00AFFF", },
-  { "TabLineGitProject2", "#FF8019", },
-  { "TabLineGitProject3", "#FFD700", },
-  { "TabLineGitProject4", "#FF5E7A", },
-  { "TabLineGitProject5", "#D4A0FF", },
-  { "TabLineGitProject6", "#7FFF7F", },
+  { "TabLineGitProject1", "#009FfF", },
+  { "TabLineGitProject3", "#eFc700", },
+  { "TabLineGitProject4", "#fF4f6A", },
+  { "TabLineGitProject6", "#4FcF4F", },
+  { "TabLineGitProject5", "#a460cF", },
 }
 vim.api.nvim_set_hl(0, "TabLineNonGitSel", { bg = graphite, fg = black })
 vim.api.nvim_set_hl(0, "TabLineNonGit", { fg = graphite })

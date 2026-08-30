@@ -283,22 +283,22 @@ in
     ### NNN_PIPE takes full paths only
     NNN_PLUG = lib.concatStrings [
       ";:preview-tui;"
-      ''<:!mogrify -rotate -90 "\$PWD/\$nnn"*;''
-      ''>:!mogrify -rotate 90 "\$PWD/\$nnn"*;''
+      ''<:!mogrify -rotate -90 \"\$PWD/\$nnn\"*;''
+      ''>:!mogrify -rotate 90 \"\$PWD/\$nnn\"*;''
       "D:diffs;"
-      ''F:!file=\$(${SCRIPTS}/fuzzy-ignored) && echo -n "0c\$file" >\$NNN_PIPE*;''
+      ''F:!file=\$(${SCRIPTS}/fuzzy-ignored) && echo -n \"0c\$file\" >\$NNN_PIPE*;''
       ''Y:!wl-copy --type \$(file -b --mime-type \$nnn) <\$nnn*;''
-      ''a:!file=\$(${SCRIPTS}/fuzzy-home) && echo -n "0c\$file" >\$NNN_PIPE*;''
-      ''d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p "\$dir" && printf '0c%s' "\$(realpath "\$dir")" >\$NNN_PIPE*;''
+      ''a:!file=\$(${SCRIPTS}/fuzzy-home) && echo -n \"0c\$file\" >\$NNN_PIPE*;''
+      ''d:!dir=&& read -ep 'mkdir -p ' dir && mkdir -p \"\$dir\" && printf '0c%s' \"\$(realpath \"\$dir\")\" >\$NNN_PIPE*;''
       "e:preview-tabbed;"
-      ''f:!file=\$(${SCRIPTS}/fuzzy) && echo -n "0c\$file" >\$NNN_PIPE*;''
+      ''f:!file=\$(${SCRIPTS}/fuzzy) && echo -n \"0c\$file\" >\$NNN_PIPE*;''
       "m:mtpmount;"
       "n:!nautilus . &*;"
-      ''p:!printf '0c%s' "\$(wl-paste | sed 's|^~|$HOME|')" >\$NNN_PIPE*;''
+      ''p:!printf '0c%s' \"\$(wl-paste | sed 's|^~|$HOME|')\" >\$NNN_PIPE*;''
       "s:!echo -n>$NNN_SEL*;"
-      ''t:!file=&& read -ep 'touch ' file && touch "\$file"*;''
+      ''t:!file=&& read -ep 'touch ' file && touch \"\$file\"*;''
       "v:!${SCRIPTS}/iv-paste*;"
-      ''y:!printf '%s' "\$PWD/\$nnn" | sed 's|^$HOME|~|' | wl-copy*;''
+      ''y:!printf '%s' \"\$PWD/\$nnn\" | sed 's|^$HOME|~|' | wl-copy*;''
     ];
     NNN_BMS = lib.concatStrings [
       "D:${SYNC}/Data;"
