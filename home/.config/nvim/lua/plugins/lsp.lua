@@ -227,6 +227,9 @@ return {
   },
   {
     "https://github.com/actionshrimp/direnv.nvim",
+    enabled = function()
+      return vim.fn.executable("direnv") == 1
+    end,
     opts = {
       -- async = true,
       on_direnv_finished = function()
@@ -235,7 +238,7 @@ return {
         end
       end,
       on_direnv_finished_opts = {
-        pattern = { "DirenvReady", "DirenvNotFound" },
+        pattern = { "DirenvReady" },
       },
     }
   },

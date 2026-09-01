@@ -1,4 +1,4 @@
-vim.keymap.set('n', '<localleader>z', function() -- to read code docs
+vim.keymap.set('n', '<localleader>z', function() -- goto C definition
   local word = vim.fn.expand('<cword>')
   local cache_dir = vim.fn.expand('~/.cache/zig')
 
