@@ -78,6 +78,7 @@ alias gbd='git branch --delete'
 alias gc='git commit -v'
 alias gca='git commit --amend --no-edit'
 alias gcl='git clone --recurse-submodules -j8'
+alias gcle="git clean -fd"
 alias gd='git diff'
 alias gds='git diff --staged'
 alias gi='git init'

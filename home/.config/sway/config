@@ -82,6 +82,10 @@ input type:touchpad {
 input "2:14:ETPS/2_Elantech_TrackPoint" {
   events disabled
 }
+input type:pointer {
+  accel_profile flat
+  pointer_accel -0.2
+}
 
 bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+Shift+Return exec $SCRIPTS_SWAY/clipboard-select
