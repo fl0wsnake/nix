@@ -51,15 +51,16 @@ alias colorpick="while true; do sleep 1; hyprpicker -n || break; done"
 alias cp='rsync -aP --info=progress2 --timeout=300'
 alias crawl='wget -r -l inf -k -p -N -e robots=off --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"'
 alias cx='codex'
+alias cxr='codex resume'
 alias d=dict
-alias de='direnv'
-alias dei='echo "watch_file ./shell.nix\nuse nix"> .envrc'
+alias dea='direnv allow'
+alias dei='echo "watch_file ./shell.nix\nuse nix"> .envrc; direnv allow'
 alias der='direnv reload'
 alias df='df -h'
 alias diff='diff -r'
 alias dl='nix profile list | grep'
 alias dq='nix-env -qaP | grep'
-alias dr="sudo nixos-rebuild switch"
+alias dr="sudo nixos-rebuild switch --upgrade"
 alias drb="dr && reboot"
 alias drs="dr && shutdown now"
 alias dt="nix profile list --json | jq '.elements | keys[]' | xargs nix profile remove; nix-store --gc"
@@ -81,6 +82,7 @@ alias gcl='git clone --recurse-submodules -j8'
 alias gcle="git clean -fd"
 alias gd='git diff'
 alias gds='git diff --staged'
+alias gfr='git fetch --refetch'
 alias gi='git init'
 alias gjj="git for-each-ref --format='delete %(refname)' refs/jj/ | git update-ref --stdin"
 alias gl="git log --graph --oneline --date-order --color=always --all --reflog"

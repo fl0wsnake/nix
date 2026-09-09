@@ -290,7 +290,7 @@ exec $SCRIPTS_SWAY/bar
 exec $SCRIPTS_SWAY/watch-config
 
 workspace $0_workspace
-exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"'
+# exec $TERMINAL -e sh -c 'nvim +"Man configuration.nix|on"' # FIXME
 exec wl-paste --watch cliphist store
 exec flameshot
 exec mako

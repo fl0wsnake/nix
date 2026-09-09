@@ -226,23 +226,6 @@ return {
     end
   },
   {
-    "https://github.com/actionshrimp/direnv.nvim",
-    enabled = function()
-      return vim.fn.executable("direnv") == 1
-    end,
-    opts = {
-      -- async = true,
-      on_direnv_finished = function()
-        if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
-          vim.cmd("lsp restart")
-        end
-      end,
-      on_direnv_finished_opts = {
-        pattern = { "DirenvReady" },
-      },
-    }
-  },
-  {
     'https://github.com/stevearc/aerial.nvim',
     init = function()
       require("aerial").setup({

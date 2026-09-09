@@ -329,13 +329,14 @@ in
   ### PACKAGES
   environment.systemPackages = with pkgs; [
     ### CODE
+    python3
     vscode
     just
     rust-bindgen
     pkg-config # May or may not be needed globally
     # pkgconf # INFO to find needed C packages for zig
-    zig_0_15
-    zls_0_15
+    zig
+    zls
     bubblewrap # for codex
     golangci-lint
     gofumpt
