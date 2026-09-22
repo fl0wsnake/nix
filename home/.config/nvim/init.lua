@@ -75,7 +75,6 @@ local git_roots = {}
 local git_projects_root_hl_data = {}
 local git_project_hl_i = 1
 local graphite = "#A89984"
-local gray = "#7C6F64"
 local black = "#000000"
 local hl_datas = {
   { "TabLineGitProject1", "#009FfF", },

@@ -11,8 +11,13 @@ return {
       local fzf_lua = require("fzf-lua")
       fzf_lua.setup({
         winopts = { fullscreen = true, preview = { horizontal = "right:50%" } },
-        grep = {
+        grep = { -- add -.
           rg_opts = "-. --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+        },
+        lsp = {
+          symbols = {
+            fzf_opts = { ["--tiebreak"] = "end", } -- fix longer entries getting prio
+          }
         },
         keymap = {
           builtin = {

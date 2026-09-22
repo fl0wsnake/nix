@@ -713,7 +713,7 @@
 # (action "dialogs-colors")
 # (action "layers-color-tag-violet")
 # (action "view-rotate-90")
-# (action "edit-redo" "<Primary>y")
+(action "edit-redo" "<Primary>r")
 # (action "tools-paintbrush-hardness-set")
 # (action "tools-angle-decrease-percent")
 # (action "context-brush-spacing-decrease-skip")

@@ -83,6 +83,7 @@ alias gcle="git clean -fd"
 alias gd='git diff'
 alias gds='git diff --staged'
 alias gfr='git fetch --refetch'
+alias ggu='git remote get-url origin'
 alias gi='git init'
 alias gjj="git for-each-ref --format='delete %(refname)' refs/jj/ | git update-ref --stdin"
 alias gl="git log --graph --oneline --date-order --color=always --all --reflog"
@@ -98,6 +99,7 @@ alias grba='git rebase --abort'
 alias grbx='git rebase -X ours'
 alias gre="git reflog --date=relative"
 alias grh='git reset --hard'
+alias grhh='git reset --hard HEAD~'
 alias grs="git reset --soft"
 alias grt='git read-tree'
 alias gs='git status -s'
@@ -105,6 +107,7 @@ alias gsm='git switch --merge'
 alias gst='git stash -k'
 alias gstc='git stash clear'
 alias gstp='git stash pop'
+alias gsu='git remote set-url origin'
 alias gt='git checkout'
 alias gw='git switch'
 alias h="$EDITOR $HISTFILE"

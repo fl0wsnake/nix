@@ -15,7 +15,7 @@ set $focused_window_pid $focused_window | jq '.pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
 set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"
 
-font Monospace 12
+font Noto Sans 10
 workspace_layout tabbed
 titlebar_border_thickness 0
 titlebar_padding 0
