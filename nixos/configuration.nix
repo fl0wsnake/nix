@@ -614,10 +614,11 @@ in
     packages =
       with pkgs;
       [
-        b612
-        jetbrains-mono
-        terminus_font
-        font-awesome
+        cascadia-code # Cascadia Code
+        vista-fonts # Consolas
+        jetbrains-mono # JetBrains Mono
+        fira-code # Fira Code
+        font-awesome # Font Awesome
       ]
       ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
     fontconfig = {

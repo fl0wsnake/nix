@@ -72,6 +72,7 @@ alias es='wl-paste | espeak --stdin'
 alias ewwd='killall -r eww; eww daemon; eww open bar; eww logs'
 alias fatcheck="find . -type d -print0 | xargs -0 -I D python3 -c \"import os,math; d='D'; s=sum(math.ceil(len(f)/13) for f in os.listdir(d) if os.path.isfile(os.path.join(d, f))); if s > 65536: print(d)\" 2>/dev/null" # FAT32 errors if ls_wc*filename_length/13>2^16
 alias fdisk='sudo fdisk -l'
+alias font='fc-list'
 alias g="git status -s && git log --graph --oneline --date-order --color=always --all"
 alias ga='git add -A'
 alias gb='git branch'

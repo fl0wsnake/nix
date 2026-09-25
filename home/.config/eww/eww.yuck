@@ -45,15 +45,14 @@
 
    (deflisten watch-kblayout '$SCRIPTS_SWAY/watch-kblayout')
    (defwidget kblayout []
-    (box :class { watch-kblayout != 'English (US)' ? "hl" : "nohl" } watch-kblayout)
+    (box :class { watch-kblayout != 'English (US)' ? "hl" : "nohl" } {(watch-kblayout)})
    )
-
    (deflisten watch-volume :initial "{\"vol\": 0, \"mute\": \"no\"}" 'watch-volume')
    (defwidget volume []
-    (box :class {watch-volume.vol>0?"hl":"nohl"}{ (watch-volume.mute == "yes" ? "󰖁" : 
-                                                    watch-volume.vol < 33 ? "󰕿" :
-                                                    watch-volume.vol < 67 ? "󰖀" :
-                                                    "󰕾") + watch-volume.vol })
+    (box :class {watch-volume.vol>0?"hl":"nohl"}{ (watch-volume.mute == "yes" ? "󰸈" : 
+                                                    watch-volume.vol < 33 ? "" :
+                                                    watch-volume.vol < 67 ? "" :
+                                                    "") + watch-volume.vol })
    )
 
    (deflisten watch-brightness 'watch-brightness')
@@ -64,7 +63,7 @@
    (deflisten watch-cpu 'watch-cpu')
    (defwidget cpu []
     (box :space-evenly false :class {watch-cpu.avg>12?"hl":"nohl"}
-     " "{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
+     ""{watch-cpu.avg + (watch-cpu.top!=""?(" " + watch-cpu.top):"")} 
     )
    )
 
@@ -90,7 +89,7 @@
 
    (deflisten watch-network 'watch-network')
    (defwidget network []
-    (box :class {watch-network == '' ? "hl" : "nohl"} {watch-network != '' ?"󰖩 "+watch-network:"󰖪 "}))
+    (box :class {watch-network == '' ? "hl" : "nohl"} {watch-network != '' ?""+watch-network:"󰖪 "}))
 
    (defpoll time :interval "10s" 
     "date '+%H:%M'")

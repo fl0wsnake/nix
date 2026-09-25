@@ -1,4 +1,4 @@
-require("config.util")
+require("custom_actions")
 Silent = { silent = true }
 _ = {}
 vim.api.nvim_create_augroup('default', { clear = false })
@@ -69,83 +69,8 @@ vim.keymap.set({ "", "i" }, "<C-q>", function()
   prev_tab = nil
 end)
 
---- TABLINE
+require("tabline")
 vim.o.tabline = "%!v:lua.MyTabLine()"
-local git_roots = {}
-local git_projects_root_hl_data = {}
-local git_project_hl_i = 1
-local graphite = "#A89984"
-local black = "#000000"
-local hl_datas = {
-  { "TabLineGitProject1", "#009FfF", },
-  { "TabLineGitProject3", "#eFc700", },
-  { "TabLineGitProject4", "#fF4f6A", },
-  { "TabLineGitProject6", "#4FcF4F", },
-  { "TabLineGitProject5", "#a460cF", },
-}
-vim.api.nvim_set_hl(0, "TabLineNonGitSel", { bg = graphite, fg = black })
-vim.api.nvim_set_hl(0, "TabLineNonGit", { fg = graphite })
-
-local function git_project_hl_set(hl_group, color)
-  vim.api.nvim_set_hl(0, hl_group .. "Sel", { bg = color, fg = black })
-  vim.api.nvim_set_hl(0, hl_group, { fg = color })
-end
-
-local function get_git_project_hl_group(git_root, selected)
-  local project_hl_data = git_projects_root_hl_data[git_root]
-  if project_hl_data == nil then
-    local hl_data = hl_datas[git_project_hl_i]
-    git_project_hl_i = git_project_hl_i % #hl_datas + 1
-    -- INFO: Setting a highlight can invalidate the tabline and re-enter this function. Cache the assignment before changing the highlight so a re-render cannot assign the same project a different group.
-    project_hl_data = hl_data
-    git_projects_root_hl_data[git_root] = project_hl_data
-
-    git_project_hl_set(hl_data[1], hl_data[2]) -- lazy initialization
-  end
-  return "%#" .. project_hl_data[1] .. (selected and "Sel" or "") .. "#"
-end
-
-local function get_tab_name(tab_i)
-  -- local res = tab_i .. ":"
-  local bufname = vim.fn.bufname(vim.fn.tabpagebuflist(tab_i)[vim.fn.tabpagewinnr(tab_i)])
-  local selected = tab_i == vim.fn.tabpagenr()
-  if bufname == "" then
-    local group = selected and "%#TabLineGitProject0Sel#" or "%#TabLineGitProject0#"
-    return group .. tab_i .. ":" .. "[Empty]"
-  end
-
-  local file_path = vim.fn.fnamemodify(bufname, ":p")
-  local dir_path = vim.fn.fnamemodify(file_path, ":h")
-  local git_root = git_roots[dir_path]
-  if git_root == nil then
-    git_root = vim.fn.systemlist({ "git", "-C", dir_path, "rev-parse", "--show-toplevel" })[1] or false
-    if vim.v.shell_error ~= 0 then git_root = false end
-    git_roots[dir_path] = git_root
-  end
-
-  local folder_name = vim.fn.fnamemodify(file_path, ":h:t")
-  local file_name = vim.fn.fnamemodify(file_path, ":t")
-  local tab_name = folder_name .. "/" .. file_name
-  if git_root then
-    local group = get_git_project_hl_group(git_root, selected)
-    local relative_name = vim.fs.relpath(git_root, file_path) or tab_name
-    return group .. tab_i .. ":" .. relative_name
-  end
-  local group = selected and "%#TabLineNonGitSel#" or "%#TabLineNonGit#"
-  return group .. tab_i .. ":" .. tab_name
-end
-
-function MyTabLine()
-  local res = ""
-  for tab_i = 1, vim.fn.tabpagenr("$") do
-    if tab_i ~= 1 then
-      res = res .. "%#Sep#|"
-    end
-    res = res .. get_tab_name(tab_i)
-  end
-  res = res .. "%#TabLineFill#%T"
-  return res
-end
 
 --- TYPING
 vim.keymap.set({ 'o', 'x' }, 'ac', 'aB', { remap = true }) -- `c`urly == `B`racket
@@ -232,8 +157,8 @@ vim.keymap.set("v", "<a-j>", ":m '>+1<cr>gv=gv")
 vim.keymap.set("n", "<a-k>", ":m .-2<cr>")
 vim.keymap.set("i", "<a-k>", "<esc>:m .-2<cr>==gi")
 vim.keymap.set("v", "<a-k>", ":m '<-2<cr>gv=gv")
-vim.keymap.set("", "<a-h>", Up_v)
-vim.keymap.set("", "<a-l>", Down_v)
+vim.keymap.set("", "<a-h>", indent_island_prev)
+vim.keymap.set("", "<a-l>", indent_island_next)
 
 --- PRESENTATION
 vim.o.list = true
