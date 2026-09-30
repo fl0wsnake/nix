@@ -390,7 +390,7 @@ in
     vlc-bittorrent
     ### SOCIAL
     viber
-    telegram-desktop
+    ayugram-desktop # if breaks use nixpkgs#tdl
     zapzap
     ### HARDWARE
     pciutils # for tb3/egpu

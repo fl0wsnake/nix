@@ -306,6 +306,6 @@ exec cargo run --manifest-path ~/WS/wp-daemon-rust/Cargo.toml 2>&1 >/tmp/wp-daem
 
 exec zapzap
 exec viber
-exec Telegram
+exec AyuGram
 
 exec nvim-session-socket
