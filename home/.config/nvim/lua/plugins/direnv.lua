@@ -4,7 +4,7 @@ return {
     "https://github.com/fl0wsnake/direnv.nvim",
     lazy = false,
     config = function()
-      require("direnv-nvim").setup {}
+      require("direnv-nvim").setup { async = true }
     end,
   },
 }

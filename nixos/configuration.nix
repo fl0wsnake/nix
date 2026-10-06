@@ -438,7 +438,7 @@ in
       ];
     })
     transmission_4
-    qbittorrent
+    qbittorrent-enhanced # no reason
     microsoft-edge
     google-chrome
     nix-search-cli

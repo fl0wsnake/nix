@@ -151,6 +151,7 @@ alias x="$NNN_COMM"
 alias xd='xdg-mime query default'
 alias xq='xdg-mime query filetype'
 alias yt='yt-dlp -N 8 --downloader aria2c --yes-playlist'
+alias yt403='yt-dlp --extractor-args "youtube:player_client=android"' # breaks through 403
 alias zb='zig build --prominent-compile-errors --summary none -Doptimize=Debug'
 alias zf='zig fetch --save git+'
 alias zr='zig build --prominent-compile-errors --summary none -freference-trace=7 -Doptimize=Debug run -- '

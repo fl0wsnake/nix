@@ -275,6 +275,7 @@ assign [class="Vivaldi-stable"] $s_workspace
 assign [class="Slack"] $d_workspace
 assign [class="discord"] $d_workspace
 assign [title="^Telegram.*"] $d_workspace
+assign [app_id="com.ayugram.desktop"] $d_workspace
 assign [app_id="whatsapp-electron"] $d_workspace
 assign [app_id="com.ktechpit.whatsie"] $d_workspace
 assign [title="ZapZap"] $d_workspace

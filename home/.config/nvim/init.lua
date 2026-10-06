@@ -81,8 +81,8 @@ vim.keymap.set('v', '$', 'g_')                             -- fix selecting newl
 vim.keymap.set({ "", "i" }, "<c-c>", '<esc>')
 vim.keymap.set("", "j", 'gj')
 vim.keymap.set("", "k", 'gk')
-vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. 15 .. 'gj') end) -- keep expected behavior when wrap
-vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. 15 .. 'gk') end)
+vim.keymap.set("", "<c-d>", function() vim.cmd('normal ' .. 12 .. 'gj') end) -- g<...> for wrap
+vim.keymap.set("", "<c-u>", function() vim.cmd('normal ' .. 12 .. 'gk') end)
 
 --- INTERFACE
 -- Keep view area to the left always
@@ -252,18 +252,27 @@ vim.api.nvim_create_autocmd("FileType", { pattern = "man", callback = function()
 vim.cmd('command! Wiki e $WIKI/index.md')
 vim.keymap.set('', "<leader>bN", function() vim.cmd('e ~/.config/nnn/config') end)
 vim.keymap.set('', "<leader>bW", function() vim.cmd('e ~/WS') end)
+vim.keymap.set('', "<leader>bZ", function() vim.cmd('e ~/.cache/zig') end)
+vim.keymap.set('', "<leader>ba", function() vim.cmd('e $HOME/.agents/AGENTS.md') end)
 vim.keymap.set('', "<leader>bd", function() vim.cmd('e $RICE/nixos/configuration.nix') end)
 vim.keymap.set('', "<leader>bn", function() vim.cmd('e ~/.config/nvim/init.lua') end)
 vim.keymap.set('', "<leader>bs", function() vim.cmd('e ~/.config/sway/config') end)
 vim.keymap.set('', "<leader>bw", function() vim.cmd('Wiki') end)
 vim.keymap.set('', "<leader>bz", function() vim.cmd('e $ZDOTDIR/.zshrc') end)
-vim.keymap.set('', "<leader>bZ", function() vim.cmd('e ~/.cache/zig') end)
 vim.keymap.set('', '<leader>bl', function() vim.cmd('e ~/.local/share/nvim/lazy') end)
 vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end)
+
 vim.keymap.set('', '<leader>l',
-  -- function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
-  function() vim.cmd('h lspconfig-all | on') end,
+  function() vim.cmd('h lspconfig-all | on') end, -- function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
   Silent)
+
+--- COLUMNIZE
+require('columnize')
+vim.keymap.set('v', '<a-t>', ':Columnize<CR>', { desc = 'Align columns before a separator' })
+vim.keymap.set('n', '<a-t>', function()
+  vim.o.operatorfunc = 'v:lua.columnize_operator'
+  return 'g@'
+end, { expr = true, desc = 'Align columns before a separator' })
 
 --- SESSION
 vim.cmd('se shortmess+=Ac') -- disable prompt on launch with -S option
