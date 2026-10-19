@@ -8,10 +8,6 @@ size = 10.5
 # size = 12.9
 [font.normal]
 family = "Cascadia Code"
-# family = "JetBrains Mono"
-# family = "Fira Code"
-# family = "Consolas"
-# family = "Cascadia Code"
 
 [scrolling]
 history = 10000

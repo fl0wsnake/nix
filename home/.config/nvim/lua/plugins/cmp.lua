@@ -49,17 +49,16 @@ return {
       completion = {
         autocomplete = { cmp.TriggerEvent.InsertEnter, cmp.TriggerEvent.TextChanged },
       },
+      performance = {   -- fix sources.buffer lag on large files. NOTE: if doesn't help can add sources.{name = 'buffer', option.getbufnrs = ...}
+        debounce = 150, -- Increase to reduce update frequency
+        throttle = 30,  -- Minimum time between updates
+        fetching_timeout = 200,
+      },
       sources = {
         { name = 'nvim_lsp', },
         { name = 'luasnip', },
         { name = 'path', },
-        -- { name = 'buffer', -- lags on text files
-        --   option = {
-        --     get_bufnrs = function()
-        --       return vim.api.nvim_list_bufs()
-        --     end
-        --   }
-        -- },
+        { name = 'buffer' },
       },
       mapping = cmp.mapping.preset.insert({
         ['<C-space>'] = cmp.mapping.confirm {

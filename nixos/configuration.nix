@@ -207,9 +207,10 @@ in
     enable = true;
   };
 
-  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.12" ];
   nixpkgs.config = {
+    permittedInsecurePackages = [ "ventoy-1.1.12" ];
     allowUnfree = true;
+    input-fonts.acceptLicense = true;
   };
 
   environment.variables = envFlatpak // {
@@ -575,9 +576,7 @@ in
     }
   ];
 
-  # systemd.settings.Manager = {
-  #   DefaultTimeoutStopSec = "5s";
-  # };
+  systemd.settings.Manager.DefaultTimeoutStopSec = "10s";
   # Ever sleep for TIMEOUT max, then poweroff gracefully
   powerManagement.powerDownCommands = ''
     TIMEOUT=${toString (16 * 3600)}
@@ -614,7 +613,9 @@ in
     packages =
       with pkgs;
       [
-        cascadia-code # Cascadia Code
+        atkinson-hyperlegible-next # Atkinson Hyperlegible Next - best !mono
+        cascadia-code # Cascadia Code - best mono
+        input-fonts # Input Sans
         vista-fonts # Consolas
         jetbrains-mono # JetBrains Mono
         fira-code # Fira Code

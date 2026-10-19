@@ -1,5 +1,15 @@
-  # Samsung Smart TV does not support .avi/.mp4
-  for file in "$@"; do
-    ($TERMINAL -e bash -c "ffmpeg -fflags +genpts -i '$file' -c:v copy -c:a copy -c:s srt '${file%.*}.mkv'") &
-  done
+#!/usr/bin/env bash
 
+# read either args or stdin
+args=("$@")
+if ((${#args[@]} == 0)) && [[ ! -t 0 ]]; then
+  while IFS= read -r line; do
+    args+=("$line")
+  done
+fi
+
+# Samsung Smart TV does not support .avi/.mp4
+for file in "${args[@]}"; do
+  # ($TERMINAL -e bash -c 'ffmpeg -fflags +genpts -i "$1" -c:v copy -c:a copy -c:s srt "$2"' mkvify "$file" "${file%.*}.mkv") &
+  ffmpeg -fflags +genpts -i "$file" -c:v copy -c:a copy -c:s srt "${file%.*}.mkv"
+done

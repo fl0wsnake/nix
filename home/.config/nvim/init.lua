@@ -44,14 +44,9 @@ vim.api.nvim_create_autocmd("FocusLost",
   {                                                                                                           -- wa on FocusLost
     pattern = '*', nested = true, callback = function() if vim.o.ft ~= 'oil' then vim.cmd('sil! wa') end end, -- nested for write aucmds
   })
-vim.keymap.set("", "<leader>x", function()
-  io.popen("sudo chmod +x " .. vim.fn.expand('%'))
-  vim.o.filetype = 'sh'
-  if vim.fn.getline(1) ~= '#!/usr/bin/env bash' then
-    vim.cmd("1s~^~#!/usr/bin/env bash\r\r")
-    vim.fn.setreg("/", "")
-  end
-end)
+
+require('run')
+vim.keymap.set("", "<leader>x", Run)
 
 -- vim.keymap.set({ "", 'i' }, "<C-q>", function() vim.cmd('q') end)
 -- chromium-like tabs
@@ -108,9 +103,9 @@ vim.keymap.set("n", "N", "'nN'[v:searchforward]", { expr = true }) -- N searches
 vim.keymap.set("n", "<c-/>", "/\\c")                               -- N searches backward regardless of / or ?
 
 --- SELECTION
-vim.keymap.set("n", "<a-V>", "`[v`]")  -- Pasted or yanked text
+vim.keymap.set("n", "<a-v>", "`[v`]")  -- Pasted or yanked text
 vim.keymap.set("n", "<a-=>", "`[v`]=") -- = format said text
-vim.keymap.set("n", "<a-v>", "ggVG")   -- All text
+vim.keymap.set("n", "<a-a>", "ggVG")   -- All text
 -- vim.keymap.set("n", "<", "`[")
 -- vim.keymap.set("n", ">", "`]")
 
@@ -265,6 +260,12 @@ vim.keymap.set('', '<leader>bp', function() vim.cmd('e ~/.profile') end)
 vim.keymap.set('', '<leader>l',
   function() vim.cmd('h lspconfig-all | on') end, -- function() vim.cmd('h lspconfig-all | on | tabe | exe "e" stdpath("data") .. "/lazy/none-ls.nvim/doc/BUILTINS.md"') end,
   Silent)
+
+--- DIARY
+vim.keymap.set('', '<leader>w', function()
+  local diary_path = vim.fn.expand('$WIKI') .. '/' .. os.date('%Y-%m-%d') .. '.md'
+  vim.cmd.edit(vim.fn.fnameescape(diary_path))
+end)
 
 --- COLUMNIZE
 require('columnize')

@@ -9,8 +9,8 @@
 --   end
 -- end
 
-vim.keymap.set('n', '<c-cr>', function() vim.diagnostic.jump { count = 1, float = true } end)
-vim.keymap.set('n', '<s-c-cr>', function() vim.diagnostic.jump { count = -1, float = true } end)
+vim.keymap.set('n', '<c-a-cr>', function() vim.diagnostic.jump { count = 1, float = true } end)
+vim.keymap.set('n', '<s-c-a-cr>', function() vim.diagnostic.jump { count = -1, float = true } end)
 vim.keymap.set('n', '<localleader>D', vim.lsp.buf.declaration)
 vim.keymap.set('n', '<localleader>d', vim.lsp.buf.definition)
 vim.keymap.set('n', '<localleader>i', vim.lsp.buf.implementation)
@@ -206,6 +206,17 @@ return {
           }
         }
       })
+      vim.lsp.config['cssls'] = {
+        capabilities = {
+          textDocument = {
+            completion = {
+              completionItem = {
+                snippetSupport = true, -- TODO: does nothing - no css cmps - fix
+              },
+            },
+          },
+        },
+      }
       vim.lsp.enable({
         "gopls",
         "golangci_lint_ls",
@@ -233,8 +244,8 @@ return {
           resize_to_content = false,
         },
         on_attach = function(bufnr)
-          vim.keymap.set("n", "<s-c-a-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-          vim.keymap.set("n", "<c-a-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
+          vim.keymap.set("n", "<s-c-cr>", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+          vim.keymap.set("n", "<c-cr>", "<cmd>AerialNext<CR>", { buffer = bufnr })
         end,
       })
       vim.keymap.set("n", "<leader>o", "<cmd>AerialNavToggle<CR>")

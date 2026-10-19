@@ -15,7 +15,7 @@ set $focused_window_pid $focused_window | jq '.pid' 2>/dev/null
 set $focused_output $(swaymsg -t get_outputs | jq -r '.|map(select(.active)|select(.focused))[0]')
 set $current_ws_name "$(swaymsg -t get_workspaces | jq -r '.[] | select(.focused==true).name')"
 
-font Cascadia Code 12
+font Atkinson Hyperlegible Next 12
 workspace_layout tabbed
 titlebar_border_thickness 0
 titlebar_padding 0
@@ -88,7 +88,8 @@ input type:pointer {
 }
 
 bindsym $mod+Return exec $TERMINAL -e sh -c "cd '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
-bindsym $mod+Shift+Return exec $SCRIPTS_SWAY/clipboard-select
+bindsym $mod+Shift+Return exec 'if selection="$(cliphist list | rofi -dmenu -matching fuzzy -sort -sorting-method fzf)"; then (cliphist decode | wl-copy) <<<"$selection"; fi'
+bindsym $mod+Control+Shift+Return exec 'rofi -show run -matching fuzzy -sort -sorting-method fzf'
 bindsym $mod+Control+Return exec $TERMINAL -e sh -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+x exec $TERMINAL -e $SHELL -c "$EXPLORER '$($SCRIPTS_SWAY/wcwd)'; $SHELL"
 bindsym $mod+e exec $TERMINAL -e $SHELL -c "$EDITOR"

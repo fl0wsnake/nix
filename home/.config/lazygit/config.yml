@@ -2,7 +2,8 @@
 
 promptToReturnFromSubprocess: false
 gui:
-  scrollHeight: 15
+  scrollHeight: 12
+  sidePanelWidth: 0.1666
 git:
   pagers:
     - colorArg: always
