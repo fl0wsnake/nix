@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if (($# != 2)); then
+  printf 'Usage: %s SOURCE_DIR DEST_DIR\n' "${0##*/}" >&2
+  exit 2
+fi
+
+if ! src=$(cd -- "$1" && pwd -P); then
+  printf 'mv-nr: source is not a directory: %s\n' "$1" >&2
+  exit 2
+fi
+
+mkdir -p -- "$2"
+dst=$(cd -- "$2" && pwd -P)
+[[ $src == "$dst" ]] && exit 0
+
+while IFS= read -r -d '' file; do
+  case "$file" in
+    "$dst"/*) continue ;;
+  esac
+
+  rel=${file#"$src"}
+  rel=${rel#/}
+  target=$dst/$rel
+  [[ -e $target || -L $target ]] && continue
+  mkdir -p -- "${target%/*}"
+  mv -n -- "$file" "$target"
+done < <(find "$src" \( -type f -o -type l \) -print0)

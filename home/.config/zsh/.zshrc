@@ -15,6 +15,7 @@ alias f='file="$(~/.config/scripts/fuzzy)" && nnn "$file" && . "$NNN_TMPFILE"'
 
 # Bookmarks
 alias D="cd $RICE"
+alias W="cd ~/WS"
 
 # alias gemini='gemini -r'
 # alias j='jj'

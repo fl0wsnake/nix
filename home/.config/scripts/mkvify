@@ -9,7 +9,50 @@ if ((${#args[@]} == 0)) && [[ ! -t 0 ]]; then
 fi
 
 # Samsung Smart TV does not support .avi/.mp4
-for file in "${args[@]}"; do
-  # ($TERMINAL -e bash -c 'ffmpeg -fflags +genpts -i "$1" -c:v copy -c:a copy -c:s srt "$2"' mkvify "$file" "${file%.*}.mkv") &
-  ffmpeg -fflags +genpts -i "$file" -c:v copy -c:a copy -c:s srt "${file%.*}.mkv"
+is_supported_input() {
+  case "${1,,}" in
+  *.mp4 | *.avi) return 0 ;;
+  *) return 1 ;;
+  esac
+}
+
+mkvify_file() {
+  local file=$1
+  local output=$2
+  mkdir -p -- "$(dirname -- "$output")" || return
+  # ($TERMINAL -e bash -c 'ffmpeg -fflags +genpts -i "$1" -c:v copy -c:a copy -c:s srt "$2"' mkvify "$file" "$output") &
+  ffmpeg -fflags +genpts -i "$file" -c:v copy -c:a copy -c:s srt "$output"
+}
+
+for path in "${args[@]}"; do
+  if [[ -d "$path" ]]; then
+    input_root=$path
+    while [[ "$input_root" != "/" && "$input_root" == */ ]]; do
+      input_root=${input_root%/}
+    done
+    if [[ "$input_root" == "/" ]]; then
+      output_root="_mkv"
+    else
+      output_root="${input_root}_mkv"
+    fi
+
+    mapfile -d '' -t files < <(find -H -- "$input_root" -type f -print0)
+    for file in "${files[@]}"; do
+      is_supported_input "$file" || continue
+      if [[ "$input_root" == "/" ]]; then
+        relative=${file#/}
+      else
+        relative=${file#"$input_root"/}
+      fi
+      output="$output_root/${relative%.*}.mkv"
+      if [[ ! -f "$output" ]]; then
+        mkvify_file "$file" "$output"
+      fi
+    done
+  else
+    output="${path%.*}.mkv"
+    if is_supported_input "$path" && [[ ! -f "$output" ]]; then
+      mkvify_file "$path" "$output"
+    fi
+  fi
 done
