@@ -3,6 +3,9 @@
 # security.pam.services.greetd.enableGnomeKeyring = true;
 # services.dbus.packages = [ pkgs.gcr ];
 
+# Also run as part of installation:
+# bun i -g @opencode/cli@latest
+
 {
   config,
   pkgs,

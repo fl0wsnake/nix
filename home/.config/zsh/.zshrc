@@ -190,24 +190,24 @@ bindkey '^?' backward-delete-char
 di() { for arg in $@; do nix profile add nixpkgs#$arg; done }
 ds() { unbuffer nix-search -d "$@" || nix search nixpkgs "$@"| less }
 mt() { mkdir -p "$(dirname "$1")" && touch "$1" && xdg-open "$1"}
-mdc() {
+mdcd() {
   if [ $#@ -gt 1 ]; then
     mkdir -p $@
   else
     mkdir -p $@ && cd $_
   fi
 }
-subs_set_default() { # set eng subs
+mkv_subs_set_default() { # set eng subs
   if [[ -z "$*" || -d "$*" ]]; then
     find "$@" -maxdepth 1 -name '*.mkv' -type f | while read -r file; do
       echo "$file"
-      subs_set_default_file "$file"
+      mkv_subs_set_default_file "$file"
     done
   else
-    subs_set_default_file "$@"
+    mkv_subs_set_default_file "$@"
   fi
 }
-subs_set_default_file() {
+mkv_subs_set_default_file() {
   sub_count=0
   eng_sub_count=
   while read -r line; do
@@ -221,14 +221,12 @@ subs_set_default_file() {
   mkvpropedit "$@" --edit track:s --set flag-default=0 >/dev/null 2>&1
   mkvpropedit "$@" --edit track:s"$eng_sub_count" --set flag-default=1
 }
-probe() { # Samsung Smart TV does not support some audio codecs
+media_probe() { # Samsung Smart TV does not support some audio codecs
   for i in "$@"; do
     echo "--> $i"
     ffprobe 2>&1 "$i" | grep -P '^ *Stream #'
   done
 }
-timestampify() {
-  while read line; do echo "$(date +%T): $line"; done
-}
+timestampify() { while read line; do echo "$(date +%T): $line"; done }
 
 # eval "$(fzf --zsh)" # for <C-r> history search

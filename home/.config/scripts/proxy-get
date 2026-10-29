@@ -163,4 +163,4 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// vim:ft=typescript
+// vim:ft=javascript
