@@ -1,7 +1,7 @@
 [Default Applications]
 application/javascript=nvim-smart.desktop
 application/json=nvim-smart.desktop
-application/octet-stream=mpv-smart.desktop;vlc.desktop
+application/octet-stream=mpv-in-session.desktop;vlc.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/toml=nvim-smart.desktop
 application/vnd.ms-excel=libreoffice.desktop
@@ -30,11 +30,11 @@ text/x-makefile=nvim-smart.desktop
 text/x-script.python=nvim-smart.desktop
 text/x-shellscript=nvim-smart.desktop
 text/x.typescript=nvim-smart.desktop
-video/3gpp=mpv-smart.desktop;vlc.desktop
-video/mp4=mpv-smart.desktop;vlc.desktop
-video/webm=mpv-smart.desktop;vlc.desktop
-video/x-matroska=mpv-smart.desktop;vlc.desktop
-video/x-msvideo=mpv-smart.desktop;vlc.desktop
+video/3gpp=mpv-in-session.desktop;vlc.desktop
+video/mp4=mpv-in-session.desktop;vlc.desktop
+video/webm=mpv-in-session.desktop;vlc.desktop
+video/x-matroska=mpv-in-session.desktop;vlc.desktop
+video/x-msvideo=mpv-in-session.desktop;vlc.desktop
 x-scheme-handler/about=brave-browser.desktop;google-chrome.desktop
 x-scheme-handler/http=brave-browser.desktop;google-chrome.desktop
 x-scheme-handler/https=brave-browser.desktop;google-chrome.desktop

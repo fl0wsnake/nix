@@ -219,6 +219,8 @@ in
   environment.variables = envFlatpak // {
   };
 
+  # ~/.profile defined vars are inaccessible by flatpak.
+  # Any app could be launched from flatpak or in other weird ways, hence making one table of truth.
   environment.sessionVariables = rec {
     ### NIX
     USER = "nix";
@@ -322,7 +324,6 @@ in
       "w:$HOME/WS;"
     ];
     PATH = [
-      # INFO: these binaries can be a part of this config, hence defining their paths here. Rest goes
       "$HOME/.bun/bin"
       "$HOME/.npm/bin"
       "$HOME/.local/bin"
@@ -377,7 +378,9 @@ in
     eww
     sysstat
     ### MEDIA
-    pdftk # pdf editor, for img->pdf use convert (from imagemagick)
+    imagemagick # image rotate, align
+    pdftk # pdf editor. For img->pdf use convert (from imagemagick)
+    poppler-utils # extract jpg from pdf
     losslesscut-bin
     rclip
     shotcut
@@ -385,7 +388,6 @@ in
     nsxiv
     shotcut
     python313Packages.grip # uses github API
-    imagemagick # rotate images from nnn
     gimp3
     mkvtoolnix-cli
     libreoffice-fresh

@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=mpv-smart
-Exec=mpv-smart %U
+Name=mpv-in-session
+Exec=mpv-in-session %U
 Terminal=false
 Type=Application
 Icon=mpv
