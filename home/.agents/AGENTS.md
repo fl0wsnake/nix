@@ -2,6 +2,7 @@
 
 - Use tools to gather information rather than relying on assumptions
 - Examine existing code before making changes
+- Adhere to existing philosophy. Never assume. Suggest instead.
 - Follow existing code style and patterns in the project
 - Name meaningfully. Follow word pattern generic to specific. Stop when name fully identifies what the thing is across codebase.
 list -> unmergedPRs

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+workspace_name=${1:?workspace name required}
+shift
+
+if swaymsg -t get_tree |
+  jq -e --arg name "$workspace_name" '[.. | objects | select(.type? == "workspace" and .name == $name) | (.nodes | length)] == [0]' >/dev/null
+then
+  for command in "$@"; do
+    bash -c "$command" &
+  done
+fi

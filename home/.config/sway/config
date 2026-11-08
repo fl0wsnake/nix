@@ -175,19 +175,19 @@ bindsym $mod+Tab+Shift move container to workspace back_and_forth
 # bindsym $mod+0 workspace number 10
 
 set $a_workspace 10:A
-bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMINAL -e $EDITOR -S \"$HOME/.cache/nvim/session_1\""
+bindsym --to-code $mod+a workspace $a_workspace; exec $SCRIPTS_SWAY/ws-init $a_workspace "$TERMINAL -e $EDITOR -S '$HOME/.cache/nvim/session_1'"
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave --profile-directory=Profile\ 1 & brave --profile-directory=Default)" # reversed order
+bindsym --to-code $mod+s workspace $s_workspace; exec $SCRIPTS_SWAY/ws-init $s_workspace "brave --profile-directory='Profile 1'" "brave --profile-directory=Default" # reversed order
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
-bindsym --to-code $mod+d workspace $d_workspace; exec $focused_window || (viber & Telegram & zapzap & zapzap)
+bindsym --to-code $mod+d workspace $d_workspace; exec $SCRIPTS_SWAY/ws-init $d_workspace viber Telegram zapzap zapzap
 bindsym --to-code $mod+d+Shift move container to workspace $d_workspace
 bindsym --to-code $mod+d+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $d_workspace
 set $f_workspace 13:F
-bindsym --to-code $mod+f workspace $f_workspace; exec "$focused_window || qbittorrent"
+bindsym --to-code $mod+f workspace $f_workspace; exec $SCRIPTS_SWAY/ws-init $f_workspace qbittorrent
 bindsym --to-code $mod+f+Shift move container to workspace $f_workspace
 bindsym --to-code $mod+f+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $f_workspace
 set $g_workspace 14:G
@@ -197,7 +197,7 @@ bindsym --to-code $mod+g+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_n
 workspace $g_workspace output HEADLESS-1
 
 set $1_workspace 31:1
-bindsym $mod+1 workspace $1_workspace; exec "$focused_window || nvim-session-socket"
+bindsym $mod+1 workspace $1_workspace; exec $SCRIPTS_SWAY/ws-init $1_workspace nvim-session-socket
 bindsym $mod+1+Shift move container to workspace $1_workspace
 bindsym $mod+1+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $1_workspace
 set $2_workspace 32:2
