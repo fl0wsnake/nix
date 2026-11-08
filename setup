@@ -17,14 +17,16 @@ sudo ln -sTv $DIR/nixos /etc/nixos 2>/dev/null
 # Home
 # NOTE: don't add ~/.config/transmission/settings.json to this list, it has ever changing entries
 paths=(
-  ~/.config/GIMP/3.0/shortcutsrc
-  ~/.config/ghostty/config
+  ~/.agents/AGENTS.md
   ~/.bash_profile # to prevent tmux from running ~/.profile
   ~/.bashrc
   ~/.blerc
+  ~/.codex/AGENTS.md
+  ~/.config/GIMP/3.0/shortcutsrc
   ~/.config/alacritty
   ~/.config/eww
   ~/.config/flameshot
+  ~/.config/ghostty/config
   ~/.config/i3status-rust
   ~/.config/jj
   ~/.config/kitty
@@ -54,6 +56,8 @@ paths=(
   ~/.local/share/applications
   ~/.local/share/lf/marks
   ~/.npmrc
+  ~/.pi/agent/models.json
+  ~/.pi/agent/settings.json
   ~/.profile
   ~/.tmux.conf
   ~/.zprofile

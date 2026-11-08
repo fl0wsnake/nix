@@ -4,7 +4,8 @@
 # services.dbus.packages = [ pkgs.gcr ];
 
 # Also run as part of installation:
-# bun i -g @opencode/cli@latest
+# bun i -g --ignore-scripts --minimum-release-age=0 @opencode/cli@latest @earendil-works/pi-coding-agent
+# pi install npm:pi-toggle-skills
 
 {
   config,
@@ -333,7 +334,9 @@ in
 
   ### PACKAGES
   environment.systemPackages = with pkgs; [
-    ### CODE
+    ### DEV
+    unstable.pi-coding-agent
+    android-tools # adb - install apks via usb
     python3
     vscode
     just

@@ -295,4 +295,16 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+--- `#!...bun` filetype
+vim.filetype.add({
+  pattern = {
+    [".*"] = function(_, bufnr)
+      local first = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] or ""
+      if first:match("^#!.*[%s/]bun") then
+        return "javascript"
+      end
+    end,
+  },
+})
+
 require("config.lazy")

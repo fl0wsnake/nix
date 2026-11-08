@@ -179,7 +179,7 @@ bindsym --to-code $mod+a workspace $a_workspace; exec "$focused_window || $TERMI
 bindsym --to-code $mod+a+Shift move container to workspace $a_workspace
 bindsym --to-code $mod+a+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $a_workspace
 set $s_workspace 11:S
-bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave --profile-directory=Default & brave --profile-directory=Profile\ 1)"
+bindsym --to-code $mod+s workspace $s_workspace; exec "$focused_window || (brave --profile-directory=Profile\ 1 & brave --profile-directory=Default)" # reversed order
 bindsym --to-code $mod+s+Shift move container to workspace $s_workspace
 bindsym --to-code $mod+s+Control exec $SCRIPTS_SWAY/move_workspace $current_ws_name $s_workspace
 set $d_workspace 12:D
@@ -298,7 +298,7 @@ exec flameshot
 exec mako
 exec wlsunset -S 4:00 -s 22:00
 
-exec brave --profile-directory=Profile\ 1 # INFO: Reversed order
+exec brave --profile-directory=Profile\ 1 # reversed order
 exec brave --profile-directory=Default
 
 workspace $s_workspace

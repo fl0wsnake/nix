@@ -1,4 +1,4 @@
-vim.cmd('setl lbr noexpandtab')
+vim.cmd('setl lbr')
 vim.o.conceallevel = 2
 
 -- --- MARKDOWN TODO remember why add this

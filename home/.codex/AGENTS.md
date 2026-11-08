@@ -1,0 +1,1 @@
+/home/nix/.agents/AGENTS.md

@@ -1,0 +1,16 @@
+{
+  "lastChangelogVersion": "1.5.0",
+  "theme": "dark",
+  "defaultProvider": "openrouter",
+  "defaultModel": "z-ai/glm-5.2:free",
+  "defaultThinkingLevel": "medium",
+  "outputPad": 0,
+  "showHardwareCursor": false,
+  "tuiMode": "regular",
+  "packages": [
+    "npm:pi-toggle-skills"
+  ],
+  "enabledModels": [
+    "deepseek/deepseek-flash"
+  ]
+}

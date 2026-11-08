@@ -3,18 +3,34 @@
 const PROXY_LISTS = [
   {
     url: "https://raw.githubusercontent.com/ProxyScrape/free-proxy-list/main/proxies/all/data.txt",
-    stripScheme: true,
+    scheme: true,
   },
   {
     url: "https://raw.githubusercontent.com/xyzs996/free-proxy-health-list/main/socks5.txt",
-    stripScheme: false,
+    scheme: false,
   },
 ];
 
 const CHECK_URL = "https://example.com/";
-const TARGET_COUNT = 10;
-const BATCH_SIZE = 64;
-const PARALLELISM = 32;
+const CHECKS_PER_LIST = 10;
+const LIST_TIMEOUT_MS = 30_000;
+const CHECK_TIMEOUT_SECONDS = 8;
+
+const args = process.argv.slice(2);
+const outputCountText = args[0];
+const outputCount = outputCountText === undefined ? 16 : Number(outputCountText);
+
+if (
+  args.length > 1 ||
+  (outputCountText !== undefined && !/^\d+$/.test(outputCountText)) ||
+  !Number.isSafeInteger(outputCount)
+) {
+  console.error("Usage: proxy-get [outputCount: non-negative integer]");
+  process.exit(2);
+}
+
+if (outputCount === 0) process.exit(0);
+
 const CURL = Bun.which("curl");
 
 if (!CURL) {
@@ -24,17 +40,20 @@ if (!CURL) {
 
 const activeDownloads = new Set();
 const activeChecks = new Set();
-let interrupted = false;
+let finished = false;
+let foundCount = 0;
 
-function stopActiveWork(signal) {
+function stopActiveWork(signal = "SIGTERM") {
+  if (finished) return;
+  finished = true;
+
   for (const controller of activeDownloads) controller.abort();
-  for (const child of activeChecks) child.kill(signal);
+  for (const check of activeChecks) check.kill(signal);
 }
 
 function handleSignal(signal) {
-  if (interrupted) return;
+  if (finished) return;
 
-  interrupted = true;
   process.exitCode = signal === "SIGINT" ? 130 : 143;
   stopActiveWork(signal);
 }
@@ -45,7 +64,7 @@ process.on("SIGTERM", () => handleSignal("SIGTERM"));
 async function downloadList(url) {
   const controller = new AbortController();
   activeDownloads.add(controller);
-  const timeout = setTimeout(() => controller.abort(), 30_000);
+  const timeout = setTimeout(() => controller.abort(), LIST_TIMEOUT_MS);
 
   try {
     const response = await fetch(url, { signal: controller.signal });
@@ -57,110 +76,93 @@ async function downloadList(url) {
   }
 }
 
-function isValidEndpoint(endpoint) {
-  const [host, port, ...extra] = endpoint.split(":");
-  return extra.length === 0 &&
-    /^[a-zA-Z0-9.-]+$/.test(host) &&
-    /^\d+$/.test(port) &&
-    Number(port) >= 1 && Number(port) <= 65535;
-}
-
-function parseCandidates(text, stripScheme) {
+function parseCandidates(text, includesScheme) {
   const candidates = [];
 
-  for (const line of text.split("\n")) {
-    let endpoint = line.trim().split(/\s+/, 1)[0] ?? "";
+  for (const line of text.split(/\r?\n/)) {
+    const endpoint = line.trim().split(/\s+/, 1)[0] ?? "";
+    if (!endpoint || endpoint.startsWith("#")) continue;
 
-    if (stripScheme) {
-      if (!endpoint.startsWith("socks5://")) continue;
-      endpoint = endpoint.slice("socks5://".length);
-    }
-
-    if (isValidEndpoint(endpoint)) candidates.push(endpoint);
+    candidates.push(includesScheme ? endpoint : `socks5://${endpoint}`);
   }
 
   return candidates;
 }
 
-function shuffle(items) {
-  for (let index = items.length - 1; index > 0; index--) {
-    const other = Math.floor(Math.random() * (index + 1));
-    [items[index], items[other]] = [items[other], items[index]];
-  }
-  return items;
-}
+async function isWorkingProxy(proxy) {
+  if (finished) return false;
 
-async function isWorkingProxy(endpoint) {
-  if (interrupted) return false;
-
-  const check = Bun.spawn([
-    CURL, "-q", "-fsS", "--noproxy", "",
-    "--connect-timeout", "3", "--max-time", "8",
-    "--proxy", `socks5h://${endpoint}`,
-    CHECK_URL, "-o", "/dev/null",
-  ], {
-    stdin: "ignore",
-    stdout: "ignore",
-    stderr: "ignore",
-  });
-  activeChecks.add(check);
+  let check;
 
   try {
-    return await check.exited === 0;
+    check = Bun.spawn([
+      CURL,
+      "-q",
+      "-fsS",
+      "--noproxy",
+      "",
+      "--connect-timeout",
+      "3",
+      "--max-time",
+      String(CHECK_TIMEOUT_SECONDS),
+      "--proxy",
+      proxy,
+      "--output",
+      "/dev/null",
+      CHECK_URL,
+    ], {
+      stdin: "ignore",
+      stdout: "ignore",
+      stderr: "ignore",
+    });
+    activeChecks.add(check);
+    return await check.exited === 0 && !finished;
+  } catch {
+    return false;
   } finally {
-    activeChecks.delete(check);
+    if (check) activeChecks.delete(check);
   }
 }
 
-async function checkBatch(batch) {
-  const working = [];
-  let next = 0;
+function reportWorkingProxy(proxy) {
+  if (finished || foundCount >= outputCount) return;
+
+  console.log(proxy);
+  foundCount++;
+
+  if (foundCount >= outputCount) stopActiveWork();
+}
+
+async function checkList(list) {
+  let candidates;
+
+  try {
+    candidates = parseCandidates(await downloadList(list.url), list.scheme);
+  } catch (error) {
+    if (!finished) {
+      console.error(`proxy-get: ${error instanceof Error ? error.message : error}`);
+    }
+    return;
+  }
+
+  let nextCandidate = 0;
 
   async function worker() {
-    while (!interrupted) {
-      const endpoint = batch[next++];
-      if (endpoint === undefined) return;
-      if (await isWorkingProxy(endpoint)) working.push(endpoint);
+    while (!finished) {
+      const proxy = candidates[nextCandidate++];
+      if (proxy === undefined) return;
+
+      if (await isWorkingProxy(proxy)) reportWorkingProxy(proxy);
     }
   }
 
-  const workerCount = Math.min(PARALLELISM, batch.length);
+  const workerCount = Math.min(CHECKS_PER_LIST, candidates.length);
   await Promise.all(Array.from({ length: workerCount }, worker));
-  return working;
 }
 
-async function main() {
-  const lists = await Promise.all(PROXY_LISTS.map(({ url }) => downloadList(url)));
-  const candidates = [...new Set(lists.flatMap((list, index) =>
-    parseCandidates(list, PROXY_LISTS[index].stripScheme),
-  ))];
-  shuffle(candidates);
+await Promise.all(PROXY_LISTS.map(checkList));
 
-  let found = 0;
-  for (let start = 0; start < candidates.length && found < TARGET_COUNT; start += BATCH_SIZE) {
-    const batch = candidates.slice(start, start + BATCH_SIZE);
-    const working = await checkBatch(batch);
-
-    for (const endpoint of working) {
-      if (found === TARGET_COUNT) break;
-      console.log(endpoint);
-      found++;
-    }
-  }
-
-  if (interrupted) return;
-  if (found !== TARGET_COUNT) {
-    console.error(`proxy-get: found ${found} working SOCKS5 proxies; need ${TARGET_COUNT}`);
-    process.exitCode = 1;
-  }
-}
-
-main().catch((error) => {
-  if (interrupted) return;
-  interrupted = true;
-  stopActiveWork("SIGTERM");
-  console.error(`proxy-get: ${error instanceof Error ? error.message : error}`);
+if (!finished && foundCount < outputCount) {
+  console.error(`proxy-get: found ${foundCount} working proxies; requested ${outputCount}`);
   process.exitCode = 1;
-});
-
-// vim:ft=javascript
+}
